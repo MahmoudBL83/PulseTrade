@@ -139,7 +139,7 @@ class User(UserMixin, db.Model):
     lastName = db.Column(db.String(120))
     is_verified = db.Column(db.Boolean, default=False)
     img = db.Column(db.String(120),default="/static/assets/images/avatars/01.png")
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(512), nullable=False)
     ip_check = db.Column(db.Boolean,default=True)
     last_ip = db.Column(db.String(120))
     subType_id = db.Column(db.Integer, db.ForeignKey('subscriptions.id'))

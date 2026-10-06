@@ -474,13 +474,28 @@ def update_symbol_indicator2(symbols,exchange):
 from crypto.models import Exchange2,Pair,Bot, User
 from crypto.models import SmartTrade as SmartTrade2
 
-# Fresh DBs (first Vercel boot, new Postgres) have no tables yet.
-# create_all is a no-op when tables already exist.
-with app.app_context():
+def _init_db():
+    """Create tables if missing + widen columns older create_all runs made
+    too narrow (SQLite ignores lengths; Postgres enforces them). Idempotent."""
     try:
         db.create_all()
     except Exception as e:
         print(f"db.create_all failed: {e}")
+    if db.engine.dialect.name == "postgresql":
+        from sqlalchemy import text as _text
+        for _ddl in (
+            "ALTER TABLE users ALTER COLUMN password_hash TYPE VARCHAR(512)",
+        ):
+            try:
+                with db.engine.begin() as _conn:
+                    _conn.execute(_text(_ddl))
+            except Exception as e:
+                print(f"migrate skipped ({_ddl}): {e}")
+                break
+
+# Fresh DBs (first Vercel boot, new Postgres) have no tables yet.
+with app.app_context():
+    _init_db()
 
 exchanges = []
 with app.app_context():
@@ -589,7 +604,7 @@ def _ensure_tables():
     if _tables_ready:
         return
     try:
-        db.create_all()
+        _init_db()
         _tables_ready = True
     except Exception as e:
         print(f"ensure_tables failed: {e}")
