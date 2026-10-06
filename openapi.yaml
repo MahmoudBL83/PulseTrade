@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: PulseTrade API
+  version: 1.0.0
+  description: >
+    Refreshed public API surface. Auth is session cookie (Flask-Login) or
+    JWT Bearer depending on endpoint; admin routes require admin session.
+    Endpoints marked demo return synthetic data when DEMO=1 and no
+    exchange keys or local JSON dumps exist.
+servers:
+  - url: /
+paths:
+  /api/health:
+    get:
+      summary: Liveness probe
+      responses: { '200': { description: ok } }
+  /api/demo/status:
+    get:
+      summary: Whether DEMO mode is on
+      responses: { '200': { description: ok } }
+  /api/demo/seed:
+    get:
+      summary: Create tables + catalog rows (subscriptions, exchanges). DEMO=1 only.
+      responses: { '200': { description: seeded }, '403': { description: demo disabled } }
+  /api/cron/{job}:
+    get:
+      summary: Vercel Cron entrypoint (price|indicator|bots|smart). Ack on serverless.
+      parameters:
+        - { name: job, in: path, required: true, schema: { type: string } }
+      responses: { '200': { description: ok }, '404': { description: unknown job } }
+  /getPrice/:
+    get:
+      summary: Price + indicator snapshot for a symbol (demo fallback available)
+      parameters:
+        - { name: symbol, in: query, schema: { type: string } }
+        - { name: interval, in: query, schema: { type: string } }
+        - { name: exchange, in: query, schema: { type: string } }
+      responses: { '200': { description: snapshot } }
+  /openOrders/:
+    get:
+      summary: Cached open orders (demo fallback available)
+      responses: { '200': { description: ok }, '404': { description: no data } }
+  /lastTrades/:
+    get:
+      summary: Cached recent trades (demo fallback available)
+      responses: { '200': { description: ok }, '404': { description: no data } }
+  /api/v1/exchanges/:
+    get: { summary: Active exchanges, responses: { '200': { description: ok } } }
+  /api/v1/connect/:
+    post: { summary: Connect exchange keys (Fernet-encrypted), responses: { '200': { description: ok } } }
+  /api/v1/disconnect/:
+    post: { summary: Disconnect exchange, responses: { '200': { description: ok } } }
+  /api/v1/fav_exchange/:
+    post: { summary: Set favourite exchange, responses: { '200': { description: ok } } }
+  /api/v1/order/:
+    post: { summary: Place order, responses: { '200': { description: ok } } }
+  /api/v1/order/cancel:
+    post: { summary: Cancel order, responses: { '200': { description: ok } } }
+  /api/v1/create_bot/:
+    get: { summary: Create DCA bot, responses: { '200': { description: ok } } }
+    post: { summary: Create DCA bot, responses: { '200': { description: ok } } }
+  /api/v1/edit_bot/:
+    get: { summary: Edit bot, responses: { '200': { description: ok } } }
+    post: { summary: Edit bot, responses: { '200': { description: ok } } }
+  /api/v1/toggle_bot:
+    get: { summary: Enable/disable bot, responses: { '200': { description: ok } } }
+    post: { summary: Enable/disable bot, responses: { '200': { description: ok } } }
+  /api/v1/delete_bot:
+    get: { summary: Delete bot, responses: { '200': { description: ok } } }
+    post: { summary: Delete bot, responses: { '200': { description: ok } } }
+  /api/v1/run_bot:
+    get: { summary: Run bot once, responses: { '200': { description: ok } } }
+    post: { summary: Run bot once, responses: { '200': { description: ok } } }
+  /api/v1/get_bot_stats:
+    get: { summary: Bot stats, responses: { '200': { description: ok } } }
+    post: { summary: Bot stats, responses: { '200': { description: ok } } }
+  /api/v1/smart_trades/:
+    get: { summary: List smart trades, responses: { '200': { description: ok } } }
+    post: { summary: Create smart trade, responses: { '200': { description: ok } } }
+  /api/v1/smart_trades/{id}:
+    get:
+      summary: Smart trade detail
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: ok } }
+  /api/v1/smart_trades/open/{smart_trade_id}:
+    post:
+      summary: Open smart trade
+      parameters:
+        - { name: smart_trade_id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: ok } }
+  /api/v1/smart_trades/close/{smart_trade_id}:
+    post:
+      summary: Close smart trade
+      parameters:
+        - { name: smart_trade_id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: ok } }
+  /api/v1/smart_trades/cancel/{smart_trade_id}:
+    post:
+      summary: Cancel smart trade
+      parameters:
+        - { name: smart_trade_id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: ok } }
+  /api/v1/smart_trades/edit/{smart_trade_id}:
+    post:
+      summary: Edit smart trade
+      parameters:
+        - { name: smart_trade_id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: ok } }
+  /api/v1/smart_trades/run/{smart_trade_id}:
+    post:
+      summary: Run smart trade loop once
+      parameters:
+        - { name: smart_trade_id, in: path, required: true, schema: { type: integer } }
+      responses: { '200': { description: ok } }
+  /api/v1/history/orders/:
+    get: { summary: Order history, responses: { '200': { description: ok } } }
+    post: { summary: Order history, responses: { '200': { description: ok } } }
+  /api/v1/history/trades/:
+    get: { summary: Trade history, responses: { '200': { description: ok } } }
+    post: { summary: Trade history, responses: { '200': { description: ok } } }
+  /api/v1/history/open_orders/:
+    get: { summary: Open orders, responses: { '200': { description: ok } } }
+    post: { summary: Open orders, responses: { '200': { description: ok } } }
+  /api/v1/history/positions_history/:
+    get: { summary: Position history, responses: { '200': { description: ok } } }
+    post: { summary: Position history, responses: { '200': { description: ok } } }
+  /api/v1/history/funding_history/:
+    get: { summary: Funding history, responses: { '200': { description: ok } } }
+    post: { summary: Funding history, responses: { '200': { description: ok } } }
+  /api/v1/deposit/:
+    get: { summary: Deposit address, responses: { '200': { description: ok } } }
+    post: { summary: Deposit address, responses: { '200': { description: ok } } }
+  /api/v1/withdraw/:
+    get: { summary: Withdraw, responses: { '200': { description: ok } } }
+    post: { summary: Withdraw, responses: { '200': { description: ok } } }
+  /api/v1/transfer/:
+    get: { summary: Transfer, responses: { '200': { description: ok } } }
+    post: { summary: Transfer, responses: { '200': { description: ok } } }
+  /api/v1/convert/:
+    get: { summary: Convert quote, responses: { '200': { description: ok } } }
+    post: { summary: Convert quote, responses: { '200': { description: ok } } }
+  /api/v1/deposits/:
+    get: { summary: Deposit history, responses: { '200': { description: ok } } }
+    post: { summary: Deposit history, responses: { '200': { description: ok } } }
+  /api/v1/withdrawals/:
+    get: { summary: Withdrawal history, responses: { '200': { description: ok } } }
+    post: { summary: Withdrawal history, responses: { '200': { description: ok } } }
+  /api/v1/live_price:
+    get: { summary: Live price ticker, responses: { '200': { description: ok } } }
+  /api/v1/live_balance:
+    get: { summary: Live balance page data, responses: { '200': { description: ok } } }
+  /api/v1/live_balance_json:
+    get: { summary: Live balance JSON, responses: { '200': { description: ok } } }
+  /api/v1/live_crypto_data:
+    get: { summary: Live crypto table data, responses: { '200': { description: ok } } }
+  /api/v1/market_table:
+    get: { summary: Market table, responses: { '200': { description: ok } } }
+  /api/v1/markets/{exchange_name}:
+    get: { summary: Markets for exchange, responses: { '200': { description: ok } } }
+    post: { summary: Markets for exchange, responses: { '200': { description: ok } } }
+  /api/v1/all_markets/{exchange_name}:
+    get: { summary: All markets for exchange, responses: { '200': { description: ok } } }
+    post: { summary: All markets for exchange, responses: { '200': { description: ok } } }
+  /api/v1/currencies/{exchange_name}:
+    get: { summary: Currencies for exchange, responses: { '200': { description: ok } } }
+    post: { summary: Currencies for exchange, responses: { '200': { description: ok } } }
+  /api/v1/precision/{exchange_name}:
+    get: { summary: Precision/limits for exchange, responses: { '200': { description: ok } } }
+    post: { summary: Precision/limits for exchange, responses: { '200': { description: ok } } }
+  /api/v1/fees:
+    get: { summary: Exchange fees, responses: { '200': { description: ok } } }
+    post: { summary: Exchange fees, responses: { '200': { description: ok } } }
+  /api/v1/indicators:
+    get: { summary: Indicator snapshot, responses: { '200': { description: ok } } }
+  /api/v1/indicators_signals:
+    get: { summary: Indicator signals, responses: { '200': { description: ok } } }
+  /api/v1/order_book_history/:
+    get: { summary: Order book history, responses: { '200': { description: ok } } }
+  /api/v1/order_book_history:
+    get: { summary: Order book history (alias), responses: { '200': { description: ok } } }
+  /api/v1/last_trades_history:
+    get: { summary: Last trades history, responses: { '200': { description: ok } } }
+  /api/v1/get_notifications/:
+    get: { summary: Notifications, responses: { '200': { description: ok } } }
+  /api/v1/get_notifications_count/:
+    get: { summary: Unread count, responses: { '200': { description: ok } } }
+  /api/v1/read_notifications/:
+    get: { summary: Mark read, responses: { '200': { description: ok } } }
+  /api/v1/demo/:
+    post: { summary: Toggle demo exchange mode, responses: { '200': { description: ok } } }
+  /api/v1/user_settings/ip_check:
+    post: { summary: IP check setting, responses: { '200': { description: ok } } }
+  /api/v1/logout:
+    post: { summary: Revoke session/JWT, responses: { '200': { description: ok } } }

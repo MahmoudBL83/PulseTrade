@@ -188,6 +188,7 @@ from crypto import transactions
 from crypto import orders
 from crypto import bots
 from crypto import smartTrade
+from crypto import demo
 
 '''@celery.task
 def update_symbol_data(symbol,intervals,exchange):

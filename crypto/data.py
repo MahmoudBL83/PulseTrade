@@ -147,8 +147,14 @@ def getPrice():
                     "ema200_signal": ma_signal(price,ema200),
                 })
             else:
+                if os.environ.get("DEMO", "0") == "1":
+                    from crypto.demo import demo_price_payload
+                    return jsonify(demo_price_payload(symbol_val))
                 return jsonify({"error": f"{symbol} not found"})
     else:
+        if os.environ.get("DEMO", "0") == "1":
+            from crypto.demo import demo_price_payload
+            return jsonify(demo_price_payload(symbol_val))
         return jsonify({"error": "Data not found"})
     
 @app.route("/openOrders/")
@@ -156,15 +162,27 @@ def openOrders():
     symbol = request.args.get("symbol")
     exchange = request.args.get("exchange")
     side = request.args.get("side")
-    with open(f"orders/{side}_{symbol}_{exchange}.json", "r") as f:
-        return json.load(f)
+    try:
+        with open(f"orders/{side}_{symbol}_{exchange}.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        if os.environ.get("DEMO", "0") == "1":
+            from crypto.demo import DEMO_ORDERBOOK
+            return jsonify({**DEMO_ORDERBOOK, "demo": True})
+        return jsonify({"error": "Data not found"}), 404
 
 @app.route("/lastTrades/")
 def lastTrades():
     symbol = request.args.get("symbol")
     exchange = request.args.get("exchange")
-    with open(f"trades/{symbol}_{exchange}.json", "r") as f:
-        return json.load(f)
+    try:
+        with open(f"trades/{symbol}_{exchange}.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        if os.environ.get("DEMO", "0") == "1":
+            from crypto.demo import DEMO_TRADES
+            return jsonify({"trades": DEMO_TRADES, "demo": True})
+        return jsonify({"error": "Data not found"}), 404
 
 ##############################################################################
 

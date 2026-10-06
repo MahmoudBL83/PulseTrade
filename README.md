@@ -35,6 +35,16 @@ docker compose up --build
 # web :8000, worker runs celery, postgres + redis included
 ```
 
+## Demo mode (no API keys)
+```bash
+DEMO=1 python run.py
+# then visit /api/demo/seed once to create catalog rows
+```
+- `/getPrice/?symbol=BTCUSDT` returns synthetic snapshot (`"demo": true`).
+- `/openOrders/`, `/lastTrades/` return synthetic book/trades.
+- `/api/demo/status` reports mode. Real exchange paths untouched.
+- Full endpoint list: `openapi.yaml`.
+
 ## Repo hygiene
 - Secrets: none committed. All via env (`crypto/__init__.py`, `models.py`,
   `auth.py`, `routes.py`, `bard.py`, `gpt.py`, `gpt_ace.py` patched).
