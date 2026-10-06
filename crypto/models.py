@@ -807,14 +807,15 @@ class Exchange(db.Model,UserMixin):
         return decrypted_api_key.decode(), decrypted_api_secret.decode(), decrypted_password.decode()
 
     def serialize(self):
+        # Never expose credential material (even encrypted) to the frontend.
         return {
             'id': self.id,
             'number': self.number,
             'owner_id': self.owner_id,
             'name': self.name,
-            'api_key': self.api_key,
-            'api_secret': self.api_secret,
-            'password': self.password,
+            'has_api_key': bool(self.api_key),
+            'has_api_secret': bool(self.api_secret),
+            'has_password': bool(self.password),
             'demo': self.demo,
             'isActive': self.isActive,
         }

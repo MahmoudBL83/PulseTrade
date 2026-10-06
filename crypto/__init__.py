@@ -178,6 +178,10 @@ def jwt_required(fn):
 
 mail = Mail(app)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-change-me")
+for _var in ("SECRET_KEY", "JWT_SECRET_KEY", "SECURITY_PASSWORD_SALT", "FERNET_KEY",
+             "ADMIN_PASSWORD", "ADMIN_EMAIL"):
+    if not os.environ.get(_var):
+        print(f"SECURITY WARNING: {_var} env var not set — using insecure default. Set it before any public deploy.")
 db = SQLAlchemy(app)
 
 IS_VERCEL = IS_VERCEL_EARLY
@@ -197,7 +201,6 @@ from crypto import routes
 from crypto import notify
 from crypto import data
 from crypto import notify
-from crypto import gpt
 from crypto import transactions
 from crypto import orders
 from crypto import bots

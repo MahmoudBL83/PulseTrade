@@ -347,6 +347,7 @@ def get_subscriptions_and_invoices_user():
 ###################################################tickets##################################################
 
 @app.route('/admin/support/tickets', methods=['GET'])
+@admin_required
 def admin_support_tickets_get():
     if request.args.get("user_id"):
         tickets_json = [ticket.serialize() for ticket in Ticket.query.filter(Ticket.user_id==int(request.args.get("user_id"))).all()]
@@ -355,12 +356,14 @@ def admin_support_tickets_get():
     return jsonify(tickets_json)
 
 @app.route('/admin/support/messages', methods=['GET'])
+@admin_required
 def admin_support_messages_get():
     ticket_id = request.args.get('ticket_id')
     messages_json = [message.serialize() for message in Ticket.query.filter(Ticket.id == ticket_id).first().messages.all()]
     return jsonify(messages_json)
 
 @app.route('/admin/support/tickets', methods=['POST'])
+@jwt_required
 def open_ticket():
     subject = request.json.get('subject')
     user_id = current_user.id
@@ -388,10 +391,12 @@ def close_ticket(ticket_id):
     return jsonify(ticket.serialize())
 
 @app.route('/admin/support/tickets/<int:ticket_id>/messages', methods=['POST'])
+@jwt_required
 def send_message(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)
     content = request.json['content']
-    is_admin = bool(request.json['is_admin'])
+    # is_admin can only be asserted by an admin session; everyone else posts as themselves.
+    is_admin = bool(request.json.get('is_admin')) and session.get('admin')
     if is_admin == False:
         user_id = current_user.id
     else:
@@ -437,6 +442,7 @@ def admin_blog_posts_get():
     return jsonify(posts_json)
 
 @app.route('/admin/blog/posts', methods=['POST'])
+@admin_required
 def admin_blog_posts_post():
     title = request.json.get('title')
     content = request.json.get('content')
@@ -452,6 +458,7 @@ def admin_blog_posts_post():
     return jsonify({'message':'the post has been published','ok':True,'id':post.id}), 201
 
 @app.route('/admin/blog/posts/<int:post_id>', methods=['PUT'])
+@admin_required
 def admin_blog_posts_put(post_id):
     post = Post.query.get_or_404(post_id)
     title = request.json.get('title')
@@ -467,6 +474,7 @@ def admin_blog_posts_put(post_id):
     return jsonify({'message':'the post has been updated','ok':True}), 201
 
 @app.route('/admin/blog/posts/<int:post_id>', methods=['DELETE'])
+@admin_required
 def admin_blog_posts_delete(post_id):
     try:
         post = Post.query.get_or_404(post_id)
@@ -477,6 +485,7 @@ def admin_blog_posts_delete(post_id):
         return jsonify({'message':'the post has not been deleted','ok':False}), 201
 
 @app.route('/admin/blog/cats', methods=['POST'])
+@admin_required
 def admin_blog_cats_new():
     cat = Category(title=request.json.get('title'),img=request.json.get('img'),title_ar=request.json.get('title_ar'))
     db.session.add(cat)
@@ -484,6 +493,7 @@ def admin_blog_cats_new():
     return jsonify({'message':'the category has been created','ok':True,'id':cat.id}), 201
 
 @app.route('/admin/blog/cats/<int:cat_id>', methods=['DELETE'])
+@admin_required
 def admin_blog_cats_del(cat_id):
     cat = Category.query.get_or_404(cat_id)
     db.session.delete(cat)
@@ -491,6 +501,7 @@ def admin_blog_cats_del(cat_id):
     return jsonify({'message':'the category has been deleted','ok':True}), 201
 
 @app.route('/admin/blog/cats/edit/<int:cat_id>', methods=['POST'])
+@admin_required
 def admin_blog_cats_edit(cat_id):
     cat = Category.query.get_or_404(cat_id)
     cat.title = request.json.get('title')
@@ -509,7 +520,7 @@ def login():
         if admin:
             email = request.json['email']
             password = request.json['password']
-            if email == 'admin' and password == os.environ.get('ADMIN_PASSWORD', ''):
+            if email == 'admin' and os.environ.get('ADMIN_PASSWORD', '') and password == os.environ.get('ADMIN_PASSWORD', ''):
                 admin_email = os.environ.get('ADMIN_EMAIL', '')
                 # Generate the OTP
                 otp = generate_otp(admin_email)

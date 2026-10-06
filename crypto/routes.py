@@ -4,6 +4,7 @@ import ccxt
 import ccxt.async_support as ccxt2
 from flask_login import login_required,current_user
 from crypto import app,db,socketio,celery,scheduler,jwt_required
+from crypto.auth import admin_required
 from crypto.models import User, Exchange, Post, Category,UserCount,BotCount,Pair,Bot,SmartTrade, BalanceHistory24h, Subscription, BotHistory, Transaction,Exchange2, TransactionHistory
 from crypto.notify import send_notification
 from crypto.dataStream_indicators import update_symbol_data2,calculate_signals2
@@ -52,11 +53,13 @@ def ai_social():
     return render_template("ai_social.html")
 
 @app.route("/drop_all/")
+@admin_required
 def drop_all():
     db.drop_all()
     return jsonify("dropped")
 
 @app.route("/create_all/")
+@admin_required
 def create_all():
     db.create_all()
     '''for x in ['news','updates','announcements','general','trading','technical','fundamental','other']:
@@ -1182,7 +1185,7 @@ def user_settings_ip_check():
 #####################################admin###################################
 
 @app.route('/api/admin/v1/send_custom_notification', methods=['POST'])
-@jwt_required
+@admin_required
 def send_custom_notification():
     message = request.json['message']
     user_id = request.json['user_id']
@@ -1190,7 +1193,7 @@ def send_custom_notification():
     return jsonify({"message": "the message has been sent successfully",'ok':True})
 
 @app.route('/api/admin/v1/send_custom_notification_all', methods=['POST'])
-@jwt_required
+@admin_required
 def send_custom_notification_all():
     message = request.json['message']
     for user in User.query.all():

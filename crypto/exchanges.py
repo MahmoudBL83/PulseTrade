@@ -35,7 +35,7 @@ def exchanges():
 def get_exchanges():
     current_user = get_current_user()
     # return all exchanges of user by its id as api from outside the flask app
-    return jsonify([exchange.to_dict() for exchange in current_user.exchanges.all()])
+    return jsonify([exchange.serialize() for exchange in current_user.exchanges.all()])
 
 # Define an endpoint to connect to an exchange
 @app.route('/api/v1/connect/', methods=['POST'])

@@ -68,8 +68,7 @@ def demo_status():
 
 
 @app.route("/api/demo/seed")
-def demo_seed():
-    """Create tables + minimal catalog rows (subscriptions, exchanges).
+def demo_seed():    """Create tables + minimal catalog rows (subscriptions, exchanges).
     Safe to call repeatedly. Requires DEMO=1."""
     if not is_demo():
         return jsonify({"error": "DEMO=1 required"}), 403
@@ -84,3 +83,16 @@ def demo_seed():
             db.session.add(Exchange2(exchange=name, isActive=(name == "binance")))
     db.session.commit()
     return jsonify({"status": "seeded", "demo": True})
+
+
+# Disabled AI routes (crypto/gpt.py references g4f, which is not installed).
+# Explicit 410 so clients get a clear answer instead of a 500 NameError.
+@app.route("/chat/", methods=["GET", "POST"])
+@app.route("/llama/", methods=["GET", "POST"])
+@app.route("/gpt", methods=["GET", "POST"])
+@app.route("/binggpt/", methods=["GET", "POST"])
+@app.route("/bardgpt/", methods=["GET", "POST"])
+@app.route("/llamagpt/", methods=["GET", "POST"])
+@app.route("/chat/completions", methods=["GET", "POST"])
+def _ai_disabled():
+    return jsonify({"error": "AI chat disabled: no backend configured"}), 410
