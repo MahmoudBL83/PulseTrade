@@ -1,0 +1,66 @@
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
+import torch
+import sagemaker
+from sagemaker.model import Model
+from sagemaker.huggingface import HuggingFaceModel, get_huggingface_llm_image_uri
+import os
+
+model_name_or_path = "MohamedRashad/AceGPT-7B-chat-AWQ"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, padding_side="right")
+model = AutoModelForCausalLM.from_pretrained(
+    model_name_or_path,
+    use_flash_attention_2=False, # disable if you have problems with flash attention 2
+    torch_dtype=torch.float16,
+    low_cpu_mem_usage=True,
+    device_map="auto",
+)
+
+try:
+    role = sagemaker.get_execution_role()
+except ValueError:
+    iam = boto3.client('iam')
+    role = iam.get_role(RoleName='AmazonSageMaker-ExecutionRole-20231007T001648')['Role']['Arn']
+
+local_model_path = "acegpt"   
+model.save_pretrained("acegpt")
+
+# Upload the model to Amazon S3
+s3_model_path = "s3://az-apt/acegpt"
+!aws s3 cp $local_model_path $s3_model_path --recursive
+
+# Create a SageMaker model
+sagemaker_model = HuggingFaceModel(
+    env = {
+        'HF_MODEL_ID':'FreedomIntelligence/AceGPT-7b-chat-GPTQ',
+        'SM_NUM_GPUS': json.dumps(1),
+    },
+    role=role,
+    image_uri=get_huggingface_llm_image_uri("huggingface",version="1.0.3"),
+)
+
+
+# deploy model to SageMaker Inference
+predictor = sagemaker_model.deploy(
+    initial_instance_count=1,
+    instance_type="ml.g4dn.xlarge",
+    container_startup_health_check_timeout=300,
+)
+
+'''# Generate streamed output, visible one token at a time
+generation_output = model.generate(
+    tokens,
+    streamer=streamer,
+    **generation_params
+)
+
+# Generation without a streamer, which will include the prompt in the output
+generation_output = model.generate(
+    tokens,
+    **generation_params
+)
+
+# Get the tokens from the output, decode them, print them
+token_output = generation_output[0]
+text_output = tokenizer.decode(token_output)
+print("model.generate output: ", text_output)'''

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}    
+{% block title %}Coinex | Deposit Crypto{% endblock %}
+{% block head %}
+<style>
+select,input{
+    background: #ffffff08!important;
+}
+</style>
+{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0;overflow: hidden;">
+        <div>  
+            <div class="wrapper">
+              <div class="gradient1">
+                <div class="container text-center" style="position:relative; top:30vh">
+                    <!--img src="/static/assets/images/error/404.png" class="img-fluid  w-50" alt=""--> 
+                    <h2 class="mb-0 mt-5 text-white service_err_text">Service Is not Availabel at that Exchange</h2>
+                    <a class="btn btn-primary text-white d-inline-flex align-items-center mt-3 service_err_text2" href="/dashboard">Back to Home</a>
+                    <div class="" style="position: absolute; top:0;left:-291px;transform: rotate(-15.75deg);">
+                        <img src="/static/assets/images/error/01.png" alt="error" style="height: 500px" class="d-none d-md-block">
+                    </div>
+                </div>    
+            </div>
+            </div>
+          </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/deposit.js"></script>
+
+    <script>
+      selectedExchangeMain.parentElement.classList.add("hidden")
+      selectedExchangeMain.parentElement.classList.remove("hidden")
+    </script>
+</html>
+{% endblock %}

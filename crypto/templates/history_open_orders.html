@@ -1,0 +1,288 @@
+{% extends 'base.html' %}    
+{% block title %}PulseTrade | Open Orders{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+            <div class="wrapper">
+                    <!--div class="card card-block card-stretch custom-scroll" style="background: transparent;">
+                        <div class="card-body" style="background: transparent;">
+                            <div class="btn-check-group" style="margin-bottom: 32px;">
+                                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary active rounded-start">Buy/Sell</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Trade</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Buy</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary rounded-end">Smart Sell</label>
+                                 </div>
+                            </div>
+                        </div>
+                     </div-->
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch custom-scroll">
+                  <div class="card-body" style="padding:0;">
+                     <div style="padding: 15px 0;" class="scroll-wrap-mf1FlhVw enable-scroll-mf1FlhVw" data-name="square-tabs-buttons">
+                        <div class="intervals">
+                            <div class="interval active" data-interval="all"><span class="multi-lang-text-open_orders">All </span> ({{mormal_count + trigger_count}})</div>
+                            <div class="interval" data-interval="limit market conditional"><span class="multi-lang-text-open_orders">Limit | Market </span> ({{mormal_count}})</div>
+                            <div class="interval" data-interval="trigger"><span class="multi-lang-text-open_orders">Trigger </span> ({{trigger_count}})</div>
+                        </div>
+                     </div>
+                     
+                     <div class="alert alert-danger d-flex align-items-center {% if not_supported_open_orders|count > 0 %}{%else%}hidden{%endif%}" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24">
+                              <use xlink:href="#exclamation-triangle-fill01"></use>
+                        </svg>
+                        <div>
+                              <span class="multi-lang-text-open_orders">These data are shown without the following exchanges:</span>
+                              {% for x in not_supported_open_orders %}
+                              {% if loop.last %}{{x}}{% else %}{{x}}, {% endif %}
+                              {% endfor %}
+                        </div>
+                     </div>
+                  </div>
+                   <div class="card-body">
+                      <div class="table-responsive">
+                        
+                         <table class="table data-table mb-0" id="assets_table">
+                            <thead>
+                               <tr>
+                                    <th class="col multi-lang-text-open_orders">Order Time</th>
+                                    <th class="col multi-lang-text-open_orders">Exchange</th>
+                                    <th class="col multi-lang-text-open_orders">Symbol</th>
+                                    <th class="col multi-lang-text-open_orders">Side</th>
+                                    <th class="col multi-lang-text-open_orders">Filled | Total</th>
+                                    <th class="col multi-lang-text-open_orders">Order type</th>
+                                    <th class="col multi-lang-text-open_orders">Trigger Price</th>
+                                    <th class="col multi-lang-text-open_orders">Order price</th>
+                                    <th class="col multi-lang-text-open_orders">Reduce-only</th>
+                                    <th class="col multi-lang-text-open_orders">Status</th>
+                                    <th class="col multi-lang-text-open_orders">Action</th>
+                                 </tr>
+                            </thead>
+
+                               <tbody id="assetsTable">
+                                 {% set exchanges = {
+                                    'okex': '#ffffff14',
+                                    'binance': '#e6b22e1c',
+                                    'bybit': '#b47d0829',
+                                    'kucoin': '#14664b33',
+                                    'coinbase': '#0057ff1f',
+                                    'cryptocom': '#ffffff14',
+                                    'bittrex': '#008eed2b',
+                                    None:'#1aa0531f'
+                                } %}
+                                {% for order in orders %}
+                                  <tr class="white-space-no-wrap" idNum="{{order.id}}" style="">
+                                       <td class="pe-2 timestamp">{{order.time}}</td>
+                                       <td class="pe-2 text-center">
+                                          <img src="/static/images/{{order.exchange}}.svg" class="img-fluid avatar avatar-40" alt="img6">
+                                       </td>
+                                       <td class="pe-2">{{order.symbol}}</td>
+                                       <td class="pe-2 buy_sell_lang">{{order.side}}</td>
+                                       <td class="pe-2">{{order.filled_amount}} | {{order.total_amount}}</td>
+                                       <td class="pe-2">{{order.order_type}}</td>
+                                       <td class="pe-2">{{order.trigger_price}}</td>
+                                       <td class="pe-2">{{order.order_price}}</td>
+                                       <td class="pe-2">{{order.reduceOnly}}</td>
+                                       <td class="pe-2">{{order.status}}</td>
+                                       <td class="pe-2">
+                                      <button class="btn btn-primary" onclick="cancel_order('{{order.id}}','{{order.symbol}}')">Cancel</button>
+                                    </td>
+                                  </tr>
+                               {% endfor %}
+                               {% if orders|count == 0 %}
+                                <tr class="white-space-no-wrap">
+                                    <td style="padding: 0;" colspan="8">
+                                        <div class="card mb-0" style="background: transparent;
+                                        width: 100%;
+                                        padding: 50px 0;">
+                                            <img src="/static/images/not-found.png" style="max-width: 140px;margin:0 auto;filter:grayscale(1)">
+                                            <span style="display: block;text-align: center;font-size: 20px;" class="no-records-found">No Records Found</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                         </table>
+                         
+                      </div>
+                      <ul class="pagination card-header" style="margin:0;"></ul>
+                   </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/open_orders.js"></script>
+    
+    <script>
+      selectedExchangeMain.parentElement.classList.add("hidden")
+      document.querySelectorAll(".multi-lang-text-open_orders").forEach(function(element,i){
+         element.innerHTML = lang_data_open_orders[localStorage.getItem('lang')][i]
+     })
+      document.querySelector('#sidebar').querySelectorAll("a.nav-link")[4].classList.add("active")
+      document.querySelector('#sidebar').querySelectorAll("a.nav-link")[5].classList.add("active")
+      async function cancel_order(id,symbol) {
+         swal({
+            title: localStorage.getItem("lang") != 'ar' ? "Are you sure you want to cancel the order?" : "هل أنت متأكد أنك تريد إلغاء الطلب؟",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+         })
+         .then(async (willDelete) => {
+            if (willDelete) {
+               [...assetsTable.querySelectorAll("tr")].filter(e=>e.getAttribute("idNum")==id)[0].querySelector("button").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+               await fetch("/api/v1/order/cancel", {
+                  method: "POST",
+                  headers: {
+                     'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                     id: id,
+                     exchange:selectedExchangeMain.value,
+                     symbol:symbol,
+                  })
+               })
+               .then((response) => response.json())
+               .then((data)=>{
+                     if (data.ok){
+                     [...assetsTable.querySelectorAll("tr")].filter(e=>e.getAttribute("idNum")==id)[0].remove();
+                     swal("Order Cancelled", data.message, "success")
+                     }
+                     
+                     else
+                     swal("Error", data.message, "error")
+                  })
+                  .catch((error) => {
+                     console.error("Error:", error);
+                  })
+                  .finally(()=>{
+                     [...assetsTable.querySelectorAll("tr")].filter(e=>e.getAttribute("idNum")==id)[0].querySelector("button").innerHTML = 'cancel'
+                  })
+            }
+         })
+      }
+
+      document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(e.innerHTML)
+        })
+
+        let currentPage2 = 0
+        const pageSize = 10
+
+        if (!assets_table.parentElement.nextElementSibling.innerHTML)
+            for(let i=1;i<=Math.ceil((assets_table.querySelectorAll("tr").length -1)/pageSize);i++){
+               assets_table.parentElement.nextElementSibling.insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            
+            if (currentPage2 == 0) currentPage2 = 1;
+
+            function showPage(pageNumber) {
+               /*assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+               [...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+               currentPage2 = pageNumber;*/
+
+               [...assets_table.querySelectorAll("tbody tr")]
+               .filter(e=>!e.classList.contains("hidden"))
+               .forEach(tr => tr.style.display = "none");
+
+               [...assets_table.querySelectorAll("tbody tr")]
+               .filter(e=>e.classList.contains("hidden"))
+               .forEach(tr => tr.style.display = "");
+
+               [...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden"))
+               .filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize)
+               .forEach(tr => tr.style.display = "");
+
+               currentPage2 = pageNumber;
+            }
+
+            assets_table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+
+            showPage(currentPage2);
+
+            document.querySelectorAll(".interval").forEach(int=>{
+               int.addEventListener("click",function(){
+                  [...document.querySelectorAll(".interval")].filter(e=>e.classList.contains("active")).forEach(e=>{
+                     e.classList.remove('active')
+                  })
+                  this.classList.add('active')
+                  currentPage2 = 1;
+                  assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "");
+                  [...assets_table.querySelectorAll("tbody tr")].filter(e=>{
+                     console.log(int.getAttribute("data-interval").includes(e.querySelectorAll("td")[5].innerHTML.toLowerCase()))
+                     int.getAttribute("data-interval").includes(e.querySelectorAll("td")[5].innerHTML.toLowerCase()) || int.getAttribute("data-interval")=="all" ? e.classList.remove("hidden") : e.classList.add("hidden")
+                  });
+                  assets_table.parentElement.nextElementSibling.innerHTML = ''
+                  for(let i=1;i<=Math.ceil(parseFloat([...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden")).length)/pageSize);i++){
+                     assets_table.parentElement.nextElementSibling.insertAdjacentHTML("beforeend",
+                     `<li class="page-item ${i==1?'active':''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                     </li>`
+                     );
+                  }
+                  assets_table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.addEventListener("click", event => {
+                        event.preventDefault();
+                        assets_table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                           link.parentElement.classList.remove("active");
+                        })
+                        event.target.parentElement.classList.add("active");
+                        const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                        showPage(pageNumber);
+                     });
+                  });
+                  showPage(currentPage2)
+               })
+            })
+
+            
+            
+    </script>
+</html>
+{% endblock %}

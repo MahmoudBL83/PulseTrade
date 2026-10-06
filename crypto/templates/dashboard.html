@@ -1,0 +1,2239 @@
+{% extends 'base.html' %}    
+{% block title %}PulseTrade | Dashboard{% endblock %}
+{% block head %}
+<script src="https://s3.tradingview.com/tv.js"></script>
+{% endblock %}
+{% block content %}
+<main class="main-content">
+      <div class="container-fluid content-inner pb-0">
+         <div class="row">
+            <div class="col-xl-12 noScroll-webkit"  style="overflow: scroll;">
+               <div class="d-grid grid-1-auto gap-card">
+                  <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px">
+                     <a href="{{ url_for('crypto_convert') }}" id="walletOverview_transaction_history_aLink" class="btn btn-secondary">
+                        <span class="remove_on_mobile">Convert</span>
+                        <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M13.1406 6.90042H19.4413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>                              
+                     </a>
+                     <a href="{{ url_for('crypto_transfer') }}" id="walletOverview_top_transfer" class="btn btn-secondary">
+                        <span class="remove_on_mobile">Transfer</span>
+                        <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>                            
+                     </a>
+                     <a href="{{ url_for('crypto_withdraw') }}" id="walletOverview_top_withdrawal" class="btn btn-secondary">
+                        <span class="remove_on_mobile">Withdraw</span>
+                        <svg style="transform:rotate(180deg)" width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                     </a>
+                     <a href="{{ url_for('crypto_deposit') }}" id="walletOverview_top_deposit" class="btn btn-secondary">
+                        <span class="remove_on_mobile">Deposit</span>
+                        <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                     </a>
+                  </div>                 
+               </div>
+            </div>
+         </div>
+         <br>
+         <!--div class="row">
+            <div class="col-lg-12">
+                  <div class="row align-items-start mb-4">
+                     <div class="col-xl-4 d-md-block">
+                        <div class="card shining-card mb-xl-0">
+                           <div class="card-body" style="height: 182.8px;">
+                              <div class="d-flex justify-content-between flex-wrap">
+                                 <div class="d-flex smartTradeHeader row">
+                                    
+                                 </div>
+                              </div>
+                           </div>
+                        </div>     
+                     </div>  
+                     <div class="col-lg-8 d-md-block d-none">
+                        <div class="row" id="top3Currencies">
+                        </div>
+                     </div>    
+                  </div>
+            </div>
+         </div-->
+         <div class="row">
+            <div class="col-lg-12 col-xl-8">
+               <div class="row">
+                  <div class="col-lg-12 hidden">
+                     <div class="row" id="top3Currencies"></div>
+                  </div>
+                  <div class="col-lg-12">
+                     <div class="card">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                           <div class="header-title" id="dashboard_title" style="display: flex;justify-content: space-between;width:100%;align-items: center;gap:20px;flex-wrap: wrap;">
+                              <h4 style="display: flex;gap:10px;align-items: center;margin-bottom: 0!important;" class="card-title mb-2">
+                                 <!--svg style="background: #ffffff12;padding: 5px;border-radius: 6px;" width="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17.2777 13.8894C17.9524 13.8894 18.5188 14.4462 18.4156 15.1125C17.8103 19.0325 14.4545 21.9431 10.4072 21.9431C5.92928 21.9431 2.2998 18.3136 2.2998 13.8368C2.2998 10.1483 5.10191 6.71255 8.25665 5.9357C8.93454 5.76834 9.62928 6.24518 9.62928 6.94307C9.62928 11.6715 9.78823 12.8947 10.6861 13.5599C11.584 14.2252 12.6398 13.8894 17.2777 13.8894Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21.6921 9.9517C21.7458 6.9138 18.0142 2.01696 13.4669 2.10117C13.1132 2.10749 12.83 2.40222 12.8142 2.75485C12.6995 5.25275 12.8542 8.48959 12.9406 9.95696C12.9669 10.4138 13.3258 10.7727 13.7816 10.7991C15.29 10.8854 18.6448 11.0033 21.1069 10.6306C21.4416 10.5801 21.6869 10.2896 21.6921 9.9517Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                 </svg-->                          
+                                 <span class="multi-lang-text-dashboard">Statistics</span>
+                              </h4>
+                              <div style="display: flex;gap:15px;align-items: center;">
+                                 <i id="refresh_user_stats" class="fa fa-refresh" aria-hidden="true" style="cursor: pointer;"></i>
+                                 <button type="button" class="btn btn-sm btn-outline-primary multi-lang-text-dashboard" id="reset_stats">Reset Stats</button>  
+                              </div>
+                                   
+                           </div>
+                        </div>
+
+                        <div class="card-body">
+                           <div class="card-skeleton" style="height: 132px;" id="skel_dashboard">
+                              <div class="animated-background"> 
+                                <div class="skel-mask-container">
+                                  <div class="skel-mask skel-mask-1"></div>
+                                  <div class="skel-mask skel-mask-2"></div>
+                                  <div class="skel-mask skel-mask-3"></div>
+                                  <div class="skel-mask skel-mask-4"></div>
+                                  <div class="skel-mask skel-mask-5"></div>
+                                  <div class="skel-mask skel-mask-6"></div>
+                                </div>
+                              </div>
+                            </div>
+                           <div class="flexbox hidden">
+                              
+                              <div class="mainstats account-balances-stats">
+                                 
+                                 <!--div class="piechart-place">
+                                    <div width="120px" height="120px" class="sc-bXdNzS cLukBA" _echarts_instance_="ec_1690934248903" style="position: relative;">
+                                          <div style="position: relative; overflow: hidden; width: 120px; height: 120px;">
+                                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" width="120" height="120" style="position: absolute; left: 0; top: 0; user-select: none;">
+                                                <rect width="120" height="120" x="0" y="0" id="0" fill="none"></rect>
+                                                <g>
+                                                      <path d="M60 5.4A54.6 54.6 0 0 1 77.9129 111.578L60 60Z" fill="#23c6c8"></path>
+                                                      <path d="M77.9129 111.578A54.6 54.6 0 0 1 8.201 42.7366L60 60Z" fill="#1c84c6"></path>
+                                                      <path d="M8.201 42.7366A54.6 54.6 0 0 1 40.7966 8.8885L60 60Z" fill="#f8ac59"></path>
+                                                      <path d="M40.7966 8.8885A54.6 54.6 0 0 1 60 5.4L60 60Z" fill="#ed5565"></path>
+                                                </g>
+                                             </svg>
+                                          </div>
+                                          <div class=""></div>
+                                    </div>
+                                 </div-->
+                                 <div class="spinner-border text-light" id="pie_loader" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                 <canvas id="pieChart" class="piechart-place" style="height: 120px;width:120px;">
+                                 </canvas>
+                                 <div class="flexbox">
+                                    <div>
+                                          <div class="stat-string xsmall multi-lang-text-dashboard">Balance</div>
+                                          <div class="stat-string stat-string_icon-no-margin large"><span class="can-hidden-balance" id="balance_BTC"><span>{{balance_btc|float|round(2)}}</span> BTC</span></div>
+                                          <div class="stat-string stat-string_icon-no-margin small"><span class="can-hidden-balance" id="balance_USD">$ <span>{{balance_usd|float|round(2)}} </span></span></div>
+                                    </div>
+                                    <div>
+                                          <div class="stat-string xsmall">
+                                             <span class="tooltip-btn multi-lang-text-dashboard">
+                                                Overall profit
+                                                <!--svg width="16px" height="16px" class="svg-icon svg-icon_issue undefined svg-icon_black" viewBox="0 0 16 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M8 16C3.5816 16 0 12.4184 0 8C0 3.5816 3.5816 0 8 0C12.4184 0 16 3.5816 16 8C16 12.4184 12.4184 16 8 16ZM7.2 10.4V12H8.8V10.4H7.2ZM8.8 9.084C9.44294 8.89022 9.99488 8.47196 10.3553 7.90539C10.7158 7.33883 10.8607 6.66164 10.7638 5.99717C10.6669 5.3327 10.3345 4.72515 9.82721 4.28517C9.31993 3.84518 8.6715 3.60203 8 3.6C7.35268 3.59995 6.72533 3.82412 6.22463 4.23439C5.72394 4.64467 5.38081 5.2157 5.2536 5.8504L6.8232 6.1648C6.86774 5.94195 6.97465 5.73632 7.13149 5.57185C7.28833 5.40738 7.48865 5.29083 7.70914 5.23576C7.92963 5.18069 8.16122 5.18937 8.37698 5.26078C8.59273 5.33218 8.78377 5.46339 8.92787 5.63913C9.07196 5.81487 9.1632 6.02791 9.19095 6.25347C9.2187 6.47904 9.18182 6.70784 9.08462 6.91327C8.98741 7.11869 8.83387 7.29229 8.64186 7.41386C8.44985 7.53544 8.22726 7.59999 8 7.6C7.78783 7.6 7.58434 7.68429 7.43431 7.83431C7.28429 7.98434 7.2 8.18783 7.2 8.4V9.6H8.8V9.084Z"
+                                                      ></path>
+                                                </svg-->
+                                             </span>
+                                          </div>
+                                          <div class="stat-string stat-string_icon-no-margin large">
+                                             <span class="can-hidden-balance {% if profit_overall_btc >= 0 %}plus{% else %}minus{% endif %}">
+                                                <span class="balance_stat_data" data-stat="profit_overall_btc">{{profit_overall_btc|round(7)}}</span> BTC
+                                                {% if profit_overall_btc > 0 %}
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                                {% elif profit_overall_btc < 0 %}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                                   <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                                </svg>
+                                                {% endif %}
+                                             </span>
+                                          </div>
+                                          <div class="stat-string stat-string_icon-no-margin small">
+                                             <span class="can-hidden-balance {% if profit_overall_usd >= 0 %}plus{% else %}minus{% endif %}">
+                                                <span class="balance_stat_data">$ <span class="balance_stat_data" data-stat="profit_overall_usd">{{profit_overall_usd|round(7)}}</span></span>
+                                                {% if profit_overall_usd > 0 %}
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                                {% elif profit_overall_usd < 0 %}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                                   <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                                </svg>
+                                                {% endif %}
+                                             </span>
+                                          </div>
+                                    </div>
+                                    <div class="hidden-xs">
+                                          <div class="stat-string xsmall multi-lang-text-dashboard">Latest 30 days profit, BTC / $</div>
+                                          <div class="stat-string stat-string_icon-no-margin large">
+                                             <span class="can-hidden-balance {% if profit_monthly_btc >= 0 %}plus{% else %}minus{% endif %}">
+                                                <span class="balance_stat_data" data-stat="profit_monthly_btc">{{profit_monthly_btc|round(7)}}</span> BTC
+                                                {% if profit_monthly_btc > 0 %}
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                                {% elif profit_monthly_btc < 0 %}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                                   <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                                </svg>
+                                                {% endif %}
+                                             </span>
+                                          </div>
+                                          <div class="stat-string stat-string_icon-no-margin small">
+                                             <span class="can-hidden-balance {% if profit_monthly_usd >= 0 %}plus{% else %}minus{% endif %}">
+                                                $ <span class="balance_stat_data" data-stat="profit_monthly_usd">{{profit_monthly_usd|round(7)}}</span>
+                                                {% if profit_monthly_usd > 0 %}
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                                {% elif profit_monthly_usd < 0 %}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                                   <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                                </svg>
+                                                {% endif %}
+                                             </span>
+                                          </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="detailstats flexbox">
+                                 <div class="title-with-padding">
+                                    <div class="stat-string xsmall multi-lang-text-dashboard">Profit, % Month</div>
+                                    <div class="stat-string stat-string_icon-no-margin large">
+                                          <span class="can-hidden-balance {% if profit_monthly_percent_btc >= 0 %}plus{% else %}minus{% endif %}">
+                                             <span class="balance_stat_data" data-stat="profit_monthly_percent_btc">{{profit_monthly_percent_btc|round(7)}}</span> %
+                                             {% if profit_monthly_percent_btc > 0 %}
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                                {% elif profit_monthly_percent_btc < 0 %}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                                   <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                                </svg>
+                                                {% endif %}
+                                          </span>
+                                    </div>
+                                    <div class="stat-string stat-string_icon-no-margin small">
+                                          <span class="can-hidden-balance {% if profit_monthly_percent_usd >= 0 %}plus{% else %}minus{% endif %}">
+                                             <span class="balance_stat_data" data-stat="profit_monthly_percent_usd">{{profit_monthly_percent_usd|round(7)}}</span> %
+                                             {% if profit_monthly_percent_usd > 0 %}
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                                {% elif profit_monthly_percent_usd < 0 %}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                                   <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                                </svg>
+                                                {% endif %}
+                                          </span>
+                                    </div>
+                                 </div>
+                                 <div class="title-with-padding">
+                                    <div class="stat-string xsmall multi-lang-text-dashboard">Profit, % Day</div>
+                                    <div class="stat-string stat-string_icon-no-margin large">
+                                       <span class="can-hidden-balance {% if profit_daily_percent_btc >= 0 %}plus{% else %}minus{% endif %}">
+                                          <span class="balance_stat_data" data-stat="profit_daily_percent_btc">{{profit_daily_percent_btc|round(7)}}</span> %
+                                          {% if profit_daily_percent_btc > 0 %}
+                                          <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                <path
+                                                   fill="currentColor"
+                                                   d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                ></path>
+                                          </svg>
+                                          {% elif profit_daily_percent_btc < 0 %}
+                                          <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                             <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                          </svg>
+                                          {% endif %}
+                                       </span>
+                                    </div>
+                                    <div class="stat-string stat-string_icon-no-margin small">
+                                       <span class="can-hidden-balance {% if profit_daily_percent_usd >= 0 %}plus{% else %}minus{% endif %}">
+                                          <span class="balance_stat_data" data-stat="profit_daily_percent_btc">{{profit_daily_percent_usd|round(7)}}</span> %
+                                          {% if profit_daily_percent_usd > 0 %}
+                                          <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                <path
+                                                   fill="currentColor"
+                                                   d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                ></path>
+                                          </svg>
+                                          {% elif profit_daily_percent_usd < 0 %}
+                                          <svg width="8px" height="16px" class="svg-icon svg-icon_danger" viewBox="0 0 8 16" fill="none">
+                                             <path fill="currentColor" d="M3.37879 2V11.2017C2.99495 10.8927 2.53535 10.6123 2 10.3605V11.6824C2.37374 12.0372 2.69697 12.4092 2.9697 12.7983C3.25253 13.1874 3.4899 13.588 3.68182 14H4.33333C4.70707 13.1531 5.26263 12.3805 6 11.6824V10.3605C5.73737 10.475 5.4899 10.6009 5.25757 10.7382C5.03535 10.8755 4.82828 11.0243 4.63637 11.1845V2H3.37879Z"></path>
+                                          </svg>
+                                          {% endif %}
+                                       </span>
+                                    </div>
+                                 </div>
+                                 <div>
+                                    <div class="stat-string xsmall multi-lang-text-dashboard">Sharpe ratio</div>
+                                    <div class="stat-string small balance_stat_data" data-stat="sharpe_ratio">{{sharpe_ratio|round(5)}}</div>
+                                    <div class="stat-string xsmall multi-lang-text-dashboard">Deviation</div>
+                                    <div class="stat-string small balance_stat_data" data-stat="deviation">{{deviation|round(2)}}</div>
+                                    <div class="stat-string xsmall multi-lang-text-dashboard">Sortino ratio</div>
+                                    <div class="stat-string small balance_stat_data" data-stat="sortino_ratio">{{sortino_ratio|round(4)}}</div>
+                                 </div>
+                              </div>
+                        </div>                 
+                        </div>
+                     </div>
+                  </div>
+
+                  <div class="col-lg-12">
+                     <div class="card card-block card-stretch custom-scroll">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center" style="position: relative;gap:15px;">
+                           <h4 class="multi-lang-text-dashboard">Balance</h4>
+                           <div style="display: flex;gap: 8px;
+                           align-items: center;">
+                              <div style="width: fit-content!important;" id="balance_chart_btns" class="btn-group btn-check-group" ticket_type="all" role="group" aria-label="Basic checkbox toggle button group">
+                                 <input type="checkbox" class="btn-check" id="">
+                                 <label class="btn btn-sm btn-secondary active rounded-start multi-lang-text-dashboard" for="">On Changes</label>
+                     
+                                 <input type="checkbox" class="btn-check" id="">
+                                 <label class="btn btn-sm btn-secondary multi-lang-text-dashboard rounded-end" for="">Daily</label>
+                              </div>
+                              <button class="tIa2C button button_caret" type="button">
+                                 <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" class="FBR5l"><path d="M16.7929 15.7071C17.1834 16.0976 17.8166 16.0976 18.2071 15.7071C18.5976 15.3166 18.5976 14.6834 18.2071 14.2929L12.7071 8.79289C12.3166 8.40237 11.6834 8.40237 11.2929 8.79289L5.79289 14.2929C5.40237 14.6834 5.40237 15.3166 5.79289 15.7071C6.18342 16.0976 6.81658 16.0976 7.20711 15.7071L12 10.9142L16.7929 15.7071Z" fill="currentColor"></path></svg>
+                              </button>
+                           </div>
+                           
+                        </div>
+                        <div class="card-body">
+                           <canvas class="hidden" id="balanceChart"></canvas>
+                           <canvas id="balanceChart_changes"></canvas>
+                        </div>
+
+                     </div>
+                     
+                  </div>
+
+                  <div class="col-lg-12">
+                     <div class="card card-block card-stretch custom-scroll">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center" style="position: relative;">
+                           <img id="assets_bg" class="hidden" src="" style="position: absolute;display: none;
+                           top: 50%;
+                           transform: translate(0,-50%);
+                           right: 15px;
+                           height: calc(100% - 30px);
+                           opacity: 0.1;width: fit-content;" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                           <div class="caption">
+                              <h4 class="mb-2 multi-lang-text-dashboard">Assets</h4>
+                              <div class="btn-group btn-check-group hidden" id="assets_check_group" role="group" aria-label="Basic checkbox toggle button group">
+                                 <input type="checkbox" class="btn-check">
+                                 <label class="btn btn-sm btn-secondary active rounded-start">All</label>
+                                 {% for exchange2 in exchanges %}
+                                 <input type="checkbox" class="btn-check">
+                                 <label class="btn btn-sm btn-secondary {% if loop.index == exchanges|length or exchanges|length==1 %}rounded-end{% endif %}">{{exchange2.name}}</label>
+                                 {% endfor %}
+                              </div>
+                           </div>
+                           <button class="tIa2C button button_caret" type="button">
+                              <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" class="FBR5l"><path d="M16.7929 15.7071C17.1834 16.0976 17.8166 16.0976 18.2071 15.7071C18.5976 15.3166 18.5976 14.6834 18.2071 14.2929L12.7071 8.79289C12.3166 8.40237 11.6834 8.40237 11.2929 8.79289L5.79289 14.2929C5.40237 14.6834 5.40237 15.3166 5.79289 15.7071C6.18342 16.0976 6.81658 16.0976 7.20711 15.7071L12 10.9142L16.7929 15.7071Z" fill="currentColor"></path></svg>
+                           </button>
+                        </div>
+                        <div class="card-body">
+                           <div class="form-outline w-100">
+                              <input type="search" id="search_filter" class="form-control ms-1 hidden" placeholder="Search.." aria-label="Search" />
+                          </div>
+                           <div class="table-responsive" style="overflow: hidden;">
+                              <div class="spinner-border text-light" id="assets_table_loader" role="status">
+                                 <span class="visually-hidden">Loading...</span>
+                             </div>
+                              <table class="table data-table mb-0" id="assets_table" data-page-size="5" style="display: none;">
+                                 <thead>
+                                    <tr>
+                                       <th scope="col" class="multi-lang-text-dashboard">Token</th>
+                                       <th scope="col" class="multi-lang-text-dashboard">Amount (Free)</th>
+                                       <th scope="col" class="multi-lang-text-dashboard">Amount (Used)</th>
+                                       <th scope="col" class="multi-lang-text-dashboard">Amount (Total)</th>
+                                       <th scope="col" class="multi-lang-text-dashboard">% Portfolio</th>
+                                       <th scope="col" class="multi-lang-text-dashboard">eqUSD</th>
+                                       <!--th scope="col">Change (24h)</th-->
+                                       <!--th scope="col">Action</th-->
+                                    </tr>
+                                 </thead>
+                                 <tbody id="assetsTable">
+                                 </tbody>
+                                    
+                              </table>
+                              
+                           </div>
+                           <ul class="pagination card-header" style="margin:0;"></ul>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Pop-up div with input fields -->
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                                 <h5 class="modal-title" id="myModalLabel">API Credentials</h5>
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                 </button>
+                           </div>
+                           <div class="modal-body">
+                                 <form method="POST">
+                                    <div class="form-group">
+                                       <label for="apiKey">API Key</label>
+                                       <input type="text" class="form-control" id="apiKey" name="api_key" placeholder="Enter API Key">
+                                    </div>
+                                    <div class="form-group">
+                                       <label for="apiSecret">API Secret</label>
+                                       <input type="text" class="form-control" id="apiSecret" name="api_secret" placeholder="Enter API Secret">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                 </form>
+                           </div>
+                           <div class="modal-footer">
+                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                           </div>
+                        </div>
+                     </div>
+               </div>
+               
+               <!-- Pop-up div for success message -->
+               <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                     <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                        Your API credentials have been saved successfully.
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                     </div>
+               </div>
+               <div class="col-lg-12">
+                  <div class="card card-block card-stretch custom-scroll">
+                     <div class="card-header d-flex flex-wrap justify-content-between align-items-center" style="gap:10px;">
+                        <!--h4 class="" style="display: flex;gap:5px;"><span class="multi-lang-text-dashboard">Crypto Market of</span>{{exchang_active[0].name}}</h4-->
+                        <h4 class="" style="display: flex;gap:5px;align-items: center;gap:8px;">
+                           <span class="multi-lang-text-dashboard">Crypto Market of</span>
+                           <select id="market_table_change" disabled class="form-control" style="cursor: pointer;background: transparent;width: fit-content;height: fit-content;">
+                              {% for exchange in exchanges %}
+                              <option value="{{exchange.id}}" {% if exchange.id == exchang_active[0].id %}selected{% endif %}>{{exchange.name}}</option>
+                              {% endfor %}
+                           </select>
+                        </h4>
+                        <div style="display: flex;gap:15px;align-items: center;">
+                           <i id="refresh_market_table" class="fa fa-refresh" aria-hidden="true" style="cursor: pointer;"></i>
+                           <button class="tIa2C button button_caret" type="button">
+                              <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" class="FBR5l"><path d="M16.7929 15.7071C17.1834 16.0976 17.8166 16.0976 18.2071 15.7071C18.5976 15.3166 18.5976 14.6834 18.2071 14.2929L12.7071 8.79289C12.3166 8.40237 11.6834 8.40237 11.2929 8.79289L5.79289 14.2929C5.40237 14.6834 5.40237 15.3166 5.79289 15.7071C6.18342 16.0976 6.81658 16.0976 7.20711 15.7071L12 10.9142L16.7929 15.7071Z" fill="currentColor"></path></svg>
+                           </button>  
+                        </div>
+                        
+                     </div>
+                     <div class="card-body" style="overflow: scroll hidden;">
+                        <!-- TradingView Widget BEGIN -->
+                        <!--div class="tradingview-widget-container">
+                           <div class="tradingview-widget-container__widget"></div>
+                           
+                           <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                           {
+                           "width": 1000,
+                           "height": 490,
+                           "defaultColumn": "overview",
+                           "screener_type": "crypto_mkt",
+                           "displayCurrency": "USD",
+                           "colorTheme": "dark",
+                           "locale": "en",
+                           "isTransparent": true
+                        }
+                           </script>
+                        </div-->
+                        <div class="table-responsive" style="overflow: hidden;">
+                           <div class="spinner-border text-light" id="market_table_loader" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                          </div>
+                           <table class="table data-table mb-0" id="market_table" data-page-size="5" style="display: none;">
+                              <thead>
+                                 <tr>
+                                    <th scope="col" class="multi-lang-text-dashboard">Crypto</th>
+                                    <th scope="col" class="multi-lang-text-dashboard">Price</th>
+                                    <th scope="col" class="multi-lang-text-dashboard">24h Change</th>
+                                    <th scope="col" class="multi-lang-text-dashboard">24h Low</th>
+                                    <th scope="col" class="multi-lang-text-dashboard">24h High</th>
+                                    <th scope="col" class="multi-lang-text-dashboard">24h Volume</th>
+                                    <th scope="col" class="multi-lang-text-dashboard"></th>
+                                 </tr>
+                              </thead>
+                              <tbody id="marketTable"></tbody> 
+                           </table>
+                           
+                        </div>
+                        <ul class="pagination card-header" style="margin:0;"></ul>
+                     </div>
+                  </div>
+               </div>
+               
+
+                  <div class="col-lg-12 hidden">
+                     <div class="card card-block card-stretch custom-scroll">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                           <div class="caption">
+                              <h4 class="font-weight-bold mb-2">Top Tokens by Market Capitalization</h4>
+                              <p class="mb-0">Get a comprehensive snapshot of all cryptocurrencies available on Binance. This page displays the latest prices, 24-hour trading volume, price changes, and market capitalizations for all cryptocurrencies on Binance. Users can quickly access key information about these digital assets and access the trade page from here.</p>
+                           </div>
+                        </div>
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <div class="spinner-border text-light" id="market_info_loader" role="status">
+                                 <span class="visually-hidden">Loading...</span>
+                             </div>
+                              <table class="table data-table mb-0"  data-page-size="5" id="market_info" style="display:none">
+                                 <thead>
+                                    <tr>
+                                       <th>Symbol</th>
+                                       <th>Rank</th>
+                                       <th>Price</th>
+                                       <th>Volume (24h)</th>
+                                       <th>Dominance</th>
+                                       <th>Price Change (24h)</th>
+                                       <th>MarketCap</th>
+                                       <th>circulating Supply</th>
+                                       <th>Action</th>
+                                    </tr>
+                                 </thead>
+                                    <tbody></tbody>
+                              </table>
+                              <ul class="pagination"></ul>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            
+
+            <div class="col-lg-12 col-xl-4">
+               <div class="row">
+                  <div class="col-lg-12">
+                     <div class="card">
+                        <div class="card-header">
+                           <div class="header-title" style="display: flex;align-items: center;justify-content: space-between;">
+                              <h4 class="card-title multi-lang-text-dashboard">My Bots</h4>
+                              <div style="display: flex;gap: 8px;
+                              align-items: center;">
+                                 <!--i id="" class="fa fa-refresh" aria-hidden="true" style="cursor: pointer;"></i-->
+                                 <button class="tIa2C button button_caret" type="button">
+                                    <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" class="FBR5l"><path d="M16.7929 15.7071C17.1834 16.0976 17.8166 16.0976 18.2071 15.7071C18.5976 15.3166 18.5976 14.6834 18.2071 14.2929L12.7071 8.79289C12.3166 8.40237 11.6834 8.40237 11.2929 8.79289L5.79289 14.2929C5.40237 14.6834 5.40237 15.3166 5.79289 15.7071C6.18342 16.0976 6.81658 16.0976 7.20711 15.7071L12 10.9142L16.7929 15.7071Z" fill="currentColor"></path></svg>
+                                 </button>
+                                 <button class="tIa2C button button_caret" type="button" onclick="location.href='/bots'">
+                                    <i style="height: 16px;
+                                    width: 16px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;" class="fa fa-plus"></i>
+                                 </button>
+                              </div>                   
+                           </div>
+                        </div>
+                        <div class="card-body" style="overflow: scroll hidden;flex-direction: row;display: flex;padding: 0!important;">
+                           {% for bot in bots|reverse %}
+                           <div class="col-12">
+                                 <div class="card mb-0 botCard2 botCard" style="background: #242424;margin-bottom: 10px!important;padding-bottom: 20px!important;" id="{{bot.id}}">
+                                    <div class="symbol-imgs">
+                                       <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.quote_currency}}--big.svg" style="border: 1px solid white;position: absolute;right: -8px;bottom: 16px;" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                                       <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.base_currency}}--big.svg" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60" style="border: 1px solid white;margin-left: -36px;"> 
+                                    </div>
+                                    <div class="card-body">
+                                       <h5 style="background: transparent;font-style: italic;
+                                       margin: 0px;
+                                       padding: 20px;
+                                       border-radius: 0;
+                                       border-bottom: 2px solid #ffffff0f;" class="card-title" exchange="{{bot.exchange}}" quote="{{bot.quote_currency}}" base="{{bot.base_currency}}">{{bot.name}}</h5>
+                                       <p class="card-text">
+                                             <div class="progress">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: {% if bot.isActive %}33%;{% else %}0%{% endif %}" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                             </div>
+                                       </p>
+                                    </div>
+                                    <!--ul class="list-group list-group-flush bots" style="border-radius: 8px;margin: 0 10px;">
+                                       <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important;align-items: center;"><span class="multi-lang-text-bots2">Exchange: </span><span class="bot_exchange"><img src="/static/images/{{bot.exchange}}.svg" class="img-fluid avatar avatar-40" alt="img6"></span></li>
+                                       <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Opened Trades: </span><span class="bot_total_trades">{{bot.total_trades}}</span></li>
+                                       <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Amount: </span><span><span class="bot_amount">{{bot.amount|round(8)}}</span> {{bot.base_currency}}</span></li>
+                                       <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Filled Amount: </span><span><span class="bot_units">{{bot.units|round(8)}}</span> {{bot.base_currency}}</span></li>
+                                       <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Buy Price: </span><span><span class="bot_buy_price">{{bot.buy_price}}</span> {{bot.quote_currency}}</span></li>
+                                       <li class="list-group-item"><span class="multi-lang-text-bots2">Sell Price: </span><span><span class="sell_price">{{bot.sell_price}}</span> {{bot.quote_currency}}</span></li>
+                                       <li class="list-group-item"><span class="multi-lang-text-bots2">Profit/Loss: </span><span><span class="total_profit">{{bot.total_profit}}</span></span></li>
+                                    </ul-->
+                                    <div class="smartTradeProgress_bot" style="height: 153px;
+                                    padding: 46px 0;
+                                    margin: auto;">
+                                       
+                                    </div>
+                                    <!--div class="card-body">
+                                       <button class="btn btn-outline-primary btn-sm" style="width: 100%;">View</button>
+                                    </div-->
+                                    
+                                 </div>
+                           </div>
+                           {% endfor %}
+                           {% set bots_modified = bots|selectattr('isActive', 'equalto', True)|list %}  
+                           {% set bots_modified = bots_modified|selectattr('is_hidden', 'equalto', False)|list %}  
+                             
+                           {% if bots_modified|count == 0 %}
+                           <div class="col-12">
+                              <div class="card mb-0" style="width: 100%;">
+                                  <img src="/static/images/not-found.png" style="max-width: 200px;margin:25px auto;filter:grayscale(1)">
+                                  <span style="display: block;text-align: center;font-size: 20px;font-weight: 600;" class="no-bots-found">No Bots Found</span>
+                              </div>
+                          </div>
+                          {% endif %}
+                        </div>
+                        <div class="card-body">
+                           <a class="btn btn-sm btn-outline-primary multi-lang-text-dashboard" style="width:100%" href="/bots">View All</a>
+                        </div>
+                     </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                     <div class="card">
+                        <div class="card-header">
+                           <div class="header-title" style="display: flex;align-items: center;justify-content: space-between;">
+                              <h4 class="card-title multi-lang-text-dashboard">My Smart Trades</h4>
+                              <div style="display: flex;gap: 8px;align-items: center;">
+                                 <!--i id="" class="fa fa-refresh" aria-hidden="true" style="cursor: pointer;"></i-->
+                                 <button class="tIa2C button button_caret" type="button">
+                                    <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" class="FBR5l"><path d="M16.7929 15.7071C17.1834 16.0976 17.8166 16.0976 18.2071 15.7071C18.5976 15.3166 18.5976 14.6834 18.2071 14.2929L12.7071 8.79289C12.3166 8.40237 11.6834 8.40237 11.2929 8.79289L5.79289 14.2929C5.40237 14.6834 5.40237 15.3166 5.79289 15.7071C6.18342 16.0976 6.81658 16.0976 7.20711 15.7071L12 10.9142L16.7929 15.7071Z" fill="currentColor"></path></svg>
+                                 </button>
+                                 <button class="tIa2C button button_caret" type="button" onclick="location.href='/trade'">
+                                    <i style="height: 16px;
+                                    width: 16px;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;" class="fa fa-plus"></i>
+                                 </button>
+                              </div>                   
+                           </div>
+                        </div>
+                        <div class="card-body" style="overflow: scroll hidden;flex-direction: row;display: flex;padding: 0!important;">
+                           {% for bot in SMAs|reverse %}
+                           <div class="col-12">
+                                 <div class="card mb-0 botCard" style="background: #242424;margin-bottom: 10px!important;padding-bottom: 20px!important;" id="{{bot.id}}">
+                                    <div class="symbol-imgs">
+                                       <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.quote_currency}}--big.svg" style="border: 1px solid white;position: absolute;right: -8px;bottom: 16px;" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                                       <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.base_currency}}--big.svg" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60" style="border: 1px solid white;margin-left: -36px;"> 
+                                    </div>
+                                    <div class="card-body">
+                                       <h5 style="background: transparent;font-style: italic;
+                                       margin: 0px;
+                                       padding: 20px;
+                                       border-radius: 0;
+                                       border-bottom: 2px solid #ffffff0f;" class="card-title" exchange="{{bot.exchange}}" quote="{{bot.quote_currency}}" base="{{bot.base_currency}}">{{bot.trade_type}}</h5>
+                                       <p class="card-text">
+                                             <div class="progress">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: {% if bot.isActive %}33%;{% else %}0%{% endif %}" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                             </div>
+                                       </p>
+                                    </div>
+                                    <div class="smaCard" style=""></div>                    
+                                 </div>
+                           </div>
+                           {% endfor %}
+                           {% if SMAs|count == 0 %}
+                           <div class="col-12">
+                              <div class="card mb-0" style="width: 100%;">
+                                  <img src="/static/images/not-found.png" style="max-width: 140px;margin:25px auto;filter:grayscale(1)">
+                                  <span style="display: block;text-align: center;font-size: 20px;font-weight: 600;margin-bottom: 12px;" class="no-smas-found">No SMAs Found</span>
+                              </div>
+                          </div>
+                          {% endif %}
+                        </div>
+                        <div class="card-body">
+                           <a class="btn btn-sm btn-outline-primary multi-lang-text-dashboard" style="width:100%" href="/trade">View All</a>
+                        </div>
+                     </div>
+                    </div>
+
+                  <div class="col-lg-12 hidden">
+                     <div class="card">
+                         <div class="card-header d-flex justify-content-between flex-wrap align-items-center" style="gap:8px;
+                    padding: 20px;
+                    margin: 25px 25px 0 25px;
+                    border-radius: 6px;">
+                        <div class="header-title">
+                            <h4 class="card-title"><span class="multi-lang-text-dashboard">Quick Trading</span> ({{exchang_active[0].name}})</h4>        
+                        </div>
+                        <div class="d-flex" style="flex-direction: row;
+                        align-items: flex-end;
+                        margin-bottom: 0px;
+                        background: #ffffff1a;
+                        padding: 10px;
+                        border-radius: 4px;
+                        gap: 18px;">
+                            <div>BTC/USDT</div>
+                        </div>
+                    </div>
+                         <div class="card-body">
+                             <form class="">
+                                 <div class="form-floating mb-3">
+                                     <select name="order_type" class="form-control" id="order_type">
+                                         <option value="limit">limit</option>
+                                         <option value="market">market</option>
+                                     </select>
+                                     <label for="floatingInput" class="multi-lang-text-dashboard">Order Type</label>
+                                 </div>
+                                 <div class="form-floating mb-3">
+                                     <input type="number" class="form-control units_input" id="floatingInput" name="amount">
+                                     <label for="floatingInput" class="multi-lang-text-dashboard">Units</label>
+                                 </div>
+                                 <div class="form-floating mb-3">
+                                     <input type="number" class="form-control price_val price_input" id="price_input" name="price">
+                                     <label for="floatingInput" class="multi-lang-text-dashboard">Price</label>
+                                 </div>
+                                 <div class="form-floating mb-3">
+                                     <input type="number" class="form-control total_input" id="floatingInput">
+                                     <label for="floatingInput" class="multi-lang-text-dashboard">Total</label>
+                                 </div>
+                                 <div class="">
+                                     <div class="d-grid gap-card grid-cols-2">
+                                         <button class="btn btn-success" disabled id="quickBuy">
+                                             <span class="multi-lang-text-dashboard">BUY</span>
+                                             <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                         </button>
+                                         <button class="btn btn-danger" disabled id="quickSell">
+                                             <span class="multi-lang-text-dashboard">SELL</span>
+                                             <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                         </button>
+                                      </div>
+                                      <div class="d-grid gap-card grid-cols-1" style="margin-top:12px;">
+                                       <a href="/trade"><button type="button" class="btn btn-outline-primary multi-lang-text-dashboard" style="width:100%">Go To Smart Trade</button></a>
+                                    </div>
+                                      
+                                 </div>
+                             </form>
+                         </div>                                          
+                     </div>
+                 </div>
+
+                 
+
+                  <div class="col-lg-12">
+                     <div class="card">
+                        <div class="card-header">
+                           <div class="header-title" style="display: flex;align-items: center;justify-content: space-between;">
+                                 <h4 class="card-title multi-lang-text-dashboard">Recent transactions</h4>
+                                 <div style="display: flex;gap: 8px;
+                                 align-items: center;">
+                                    <i id="refresh_user_trans" class="fa fa-refresh" aria-hidden="true" style="cursor: pointer;"></i>
+                                    <button class="tIa2C button button_caret" type="button">
+                                       <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" class="FBR5l"><path d="M16.7929 15.7071C17.1834 16.0976 17.8166 16.0976 18.2071 15.7071C18.5976 15.3166 18.5976 14.6834 18.2071 14.2929L12.7071 8.79289C12.3166 8.40237 11.6834 8.40237 11.2929 8.79289L5.79289 14.2929C5.40237 14.6834 5.40237 15.3166 5.79289 15.7071C6.18342 16.0976 6.81658 16.0976 7.20711 15.7071L12 10.9142L16.7929 15.7071Z" fill="currentColor"></path></svg>
+                                    </button>
+                                 </div>
+                                 
+                           </div>
+                        </div>
+
+                        <div class="card-body">
+                           <div class="card-skeleton" style="height: 132px;" id="trans_skel">
+                              <div class="animated-background"> 
+                                <div class="skel-mask-container">
+                                  <div class="skel-mask skel-mask-1"></div>
+                                  <div class="skel-mask skel-mask-2"></div>
+                                  <div class="skel-mask skel-mask-3"></div>
+                                  <div class="skel-mask skel-mask-4"></div>
+                                  <div class="skel-mask skel-mask-5"></div>
+                                  <div class="skel-mask skel-mask-6"></div>
+                                </div>
+                              </div>
+                            </div>
+                           <ul class="list-inline m-0 p-0" id="transactions">
+                              
+                              <li style="text-align: end;" class="transaction_not">
+                                 <div class="okui-hyperlink okui-hyperlink-primary okui-hyperlink-no-hover-underline okui-hyperlink-sm okui-hyperlink-medium">
+                                    <span class="okui-hyperlink-text" style="background: #ffffff08;padding: 5px 20px;border-radius: 200px;">
+                                       <a href="{{url_for('history_trades_history')}}" class="multi-lang-text-dashboard">Go to all</a>
+                                    </span>
+                                    <i class="icon iconfont okds-arrow-chevron-right-centered-md icon-arrow"></i>
+                                 </div>
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            
+
+         </div>
+
+      </div>
+    </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+    <script src="/static/js/langs/dashboard.js"></script>
+    <script src="/static/js/langs/bots.js"></script>
+    <!-- JavaScript code to handle Save Changes button click -->
+    <script>
+
+         document.querySelectorAll(".multi-lang-text-dashboard").forEach(function(element,i){
+            element.innerHTML = lang_data_dashboard[localStorage.getItem('lang')][i]
+        })
+
+      
+         selectedExchangeMain.parentElement.classList.add("hidden")
+
+         document.querySelector('#sidebar').querySelectorAll("a.nav-link")[0].classList.add("active")
+
+        $(document).ready(function() {
+        $("#saveChangesBtn").click(function() {
+            // Perform API key and API secret validation here
+            
+            // Show success message
+            $("#successModal").modal("show");
+        });
+        });
+
+        document.querySelector("#quickBuy").addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            let oldHTML = this.innerHTML
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+            const form = this.closest("form");
+            const data = {
+                amount: form.elements.amount.value,
+                order_price: form.elements.price.value,
+                type: form.elements.order_type.value,
+                side: "buy",
+                symbol: "BTC/USDT",
+                exchange: selectedExchangeMain.value,
+            };
+            fetch('/api/v1/order/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.ok){
+                    // Show a success message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?'Success':"تم", data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?'Error':"خطاً", data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal(localStorage.getItem("lang")!="ar"?'Error':"خطاً", error.message, 'error');
+            })
+            .finally(()=>{
+               this.innerHTML = oldHTML
+            });
+        });
+
+        document.querySelector("#quickSell").addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            let oldHTML = this.innerHTML
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+            const form = this.closest("form");
+            const data = {
+                amount: form.elements.amount.value,
+                order_price: form.elements.price.value,
+                type: form.elements.order_type.value,
+                side: "sell",
+                symbol: "BTC/USDT",
+                exchange: selectedExchangeMain.value,
+            };
+            fetch('/api/v1/order/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.ok){
+                    // Show a success message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?'Success':"تم", data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?'Error':"خطاً", data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal(localStorage.getItem("lang")!="ar"?'Error':"خطاً", error.message, 'error');
+            })
+            .finally(()=>{
+               this.innerHTML = oldHTML
+            });
+        });
+        
+
+        /*tradingViewWidget = new TradingView.widget({
+            "width": "100%",
+            "height": 610,
+            "symbol": "OKX:BTCUSDT",
+            "interval": "1",
+            "timezone": "Asia/Riyadh",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": false,
+            "container_id": "chart-container",
+            "background":"#202022"
+        });*/
+
+         /*****************Market Info*********************/
+         fetch(`/getData/?exchange=${selectedExchangeMain.value}`)
+         .then(res => res.json())
+         .then(res => {
+            allSymbols = res;
+            //setInterval(getPrice, 3000);
+            getPriceAssets()
+            //setInterval(getPriceAssets, 3000);
+         })
+         .catch(error => {
+            // Handle error
+            console.error("Error during fetch:", error);
+            // Display an error message to the user, or retry the fetch
+         });
+
+         let currentPage2 = 0
+         async function getPriceAssets() {
+            try {
+               let total = 0;
+               assetsTable.querySelectorAll("tr").forEach(async e=>{
+                  //const res = await fetch(`/getPrice/?symbol=${e.querySelector("td").querySelector("span").innerHTML}USDT&exchange=${selectedExchangeMain.value.toUpperCase()}&interval=15m`);
+                  //const data = await res.json();
+                  /*if (data.price) {
+                     //e.querySelectorAll("td")[5].textContent = data.price + " USDT";
+                     e.querySelectorAll("td")[6].textContent = data.price_change.toFixed(2) + "%";
+                     if (data.price_change >= 0) {
+                        e.querySelectorAll("td")[6].classList.add("text-success");
+                        e.querySelectorAll("td")[6].classList.remove("text-danger");
+                     } else {
+                        e.querySelectorAll("td")[6].classList.add("text-danger");
+                        e.querySelectorAll("td")[6].classList.remove("text-success");
+                     }
+                  }*/
+               })
+               assetsTable.querySelectorAll("tr").forEach(elm=>{
+                  if (parseFloat(elm.querySelectorAll("td")[5].innerHTML.replace(" USDT",""))) 
+                  total += parseFloat(elm.querySelectorAll("td")[5].innerHTML.replace(" USDT",""));
+               })
+               assetsTable.querySelectorAll("tr").forEach(elm=>{
+                  elm.querySelectorAll("td")[4].innerHTML = (parseFloat(elm.querySelectorAll("td")[5].textContent.replace(" USDT",""))/total*100).toFixed(2) + "%";
+               })
+            } catch (error) {
+            // Handle error
+            console.error("Error during fetch:", error);
+            // Display an error message to the user, or retry the fetch
+            }
+            const table = document.getElementById("assets_table");
+            const pageSize = parseInt(table.getAttribute("data-page-size"));
+
+            if (!assets_table.parentElement.nextElementSibling.innerHTML)
+            for(let i=1;i<=(assets_table.querySelectorAll("tr").length-1)/pageSize;i++){
+               assets_table.parentElement.nextElementSibling.insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            
+            //assets_table.style.display = "";
+            //assets_table_loader.style.display = "none";
+            //assets_table.parentElement.nextElementSibling.style.display = "";
+            
+            if (currentPage2 == 0) currentPage2 = 1;
+
+            function showPage(pageNumber) {
+               table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+               [...table.querySelectorAll("tbody tr")].filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+               currentPage2 = pageNumber;
+            }
+
+            table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+
+            showPage(currentPage2);
+         }
+
+         let currentPage = 0;
+
+         async function getPrice() {
+         if (allSymbols.length > 0) {
+            for (const e of allSymbols) {
+               try {
+               const res = await fetch(`/getPrice/?symbol=${e.symbol}&exchange=${e.exchange}&interval="15m"`);
+               const data = await res.json();
+               if (data.price) {
+                  if (e.symbol == 'BTCUSDT')
+                  document.querySelectorAll(".price_val").forEach(e=>{
+                    if(!e.value || e.value == 0 || order_type.value == "market")
+                    e.value = data.price
+                })
+                  let existingRow = document.querySelector(`tr[data-symbol="${data.symbol}"]`);
+                  const market_cap = calcMarketCap_dominance(data.circulating_supply, data.price, data.full_market_cap)[0];
+                  const dominance = (calcMarketCap_dominance(data.circulating_supply, data.price, data.full_market_cap)[1] * 1000000).toFixed(2);
+                  if (existingRow) {
+                     existingRow.cells[1].textContent = data.cmc_rank;
+                     existingRow.cells[2].textContent = data.price;
+                     existingRow.cells[3].textContent = parseFloat(data.volume).toFixed(2);
+                     existingRow.cells[4].textContent = dominance + "%";
+                     existingRow.cells[5].textContent = data.price_change.toFixed(2) + "%";
+                     existingRow.cells[6].textContent = parseFloat(market_cap).toFixed(2);
+                     existingRow.cells[7].textContent = data.circulating_supply;
+                     /*existingRow.cells[8].querySelector("button").setAttribute("ma", data.ma);
+                     existingRow.cells[8].querySelector("button").setAttribute("rsi", data.rsi);
+                     existingRow.cells[8].querySelector("button").setAttribute("stoch", data.stoch);
+                     existingRow.cells[8].querySelector("button").setAttribute("macd", data.macd);
+                     existingRow.cells[8].querySelector("button").setAttribute("bb_upper", data.bb_upper);
+                     existingRow.cells[8].querySelector("button").setAttribute("bb_middle", data.bb_middle);
+                     existingRow.cells[8].querySelector("button").setAttribute("bb_lower", data.bb_lower);*/
+                  } else {
+                     document.querySelector("#market_info").querySelector("tbody").insertAdjacentHTML("beforeend", `
+                     <tr data-symbol="${data.symbol}" style="display:none;">
+                        <td>${data.symbol}</td>
+                        <td>${data.rank}</td>
+                        <td class='price'>${data.price}</td>
+                        <td>${parseFloat(data.volume).toFixed(2)}</td>
+                        <td>${dominance}%</td>
+                        <td>${data.price_change.toFixed(2) + "%"}</td>
+                        <td>${market_cap}</td>
+                        <td>${data.circulating_supply}</td>
+                        <td><a target="_blank" href="/trade/?symbol=${data.symbol.replace("USDT","")}&exchange=${selectedExchangeMain.value}">Trade</a></td>
+                     </tr>
+                     `);
+                  }
+               }
+               top3Currencies.innerHTML = '';
+               [...document.querySelector("#market_info").querySelectorAll("tr")].filter((_,i)=>i>0&&i<3).forEach(e=>{
+                  top3Currencies.insertAdjacentHTML("beforeend",`
+                     <div class="col-lg-6">
+                        <div class="card shining-card">
+                           <div class="card-body">                    
+                              <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${e.querySelector("td").innerHTML.replace("USDT",'')}--big.svg" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                              <span class="fs-5 me-2">${e.querySelector("td").innerHTML}</span>
+                              <svg width="36" height="35" viewBox="0 0 36 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M3.86124 21.6224L11.2734 16.8577C11.6095 16.6417 12.041 16.6447 12.3718 16.8655L18.9661 21.2663C19.2968 21.4871 19.7283 21.4901 20.0644 21.2741L27.875 16.2534" stroke="#BFBFBF" stroke-linecap="round" stroke-linejoin="round"/>
+                              <path d="M26.7847 13.3246L31.6677 14.0197L30.4485 18.7565L26.7847 13.3246ZM30.2822 19.4024C30.2823 19.4023 30.2823 19.4021 30.2824 19.402L30.2822 19.4024ZM31.9991 14.0669L31.9995 14.0669L32.0418 13.7699L31.9995 14.0669C31.9994 14.0669 31.9993 14.0669 31.9991 14.0669Z" fill="#BFBFBF" stroke="#BFBFBF"/>
+                              </svg>
+                              <div class="pt-3">
+                                 <h4 class="counter" style="visibility: visible;">${e.querySelectorAll("td")[2].innerHTML} $</h4>
+                                 <div class="pt-3">
+                                    <small>${e.querySelectorAll("td")[5].innerHTML}</small>
+                                 </div>
+                              </div>
+                           </div>            
+                        </div>
+                     </div>
+                  `)
+               })
+
+               //balance_BTC.innerHTML = parseFloat(balance_USD.querySelector("span").innerHTML) / parseFloat([...document.querySelector("#market_info").querySelectorAll("tr")].find(e=>e.getAttribute("data-symbol")=="BTCUSDT").querySelector(".price").innerHTML);
+               
+               } catch (error) {
+               // Handle error
+               console.error("Error during fetch:", error);
+               // Display an error message to the user, or retry the fetch
+               }
+            }  
+            const table = document.getElementById("market_info");
+            const pageSize = parseInt(table.getAttribute("data-page-size"));
+
+            if (!market_info.nextElementSibling.innerHTML)
+            for(let i=1;i<=(market_info.querySelectorAll("tr").length-1)/pageSize;i++){
+               market_info.nextElementSibling.insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            market_info.style.display = "";
+            market_info_loader.style.display = "none";
+            
+            if (currentPage == 0) currentPage = 1;
+
+            function showPage(pageNumber) {
+               table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+               [...table.querySelectorAll("tbody tr")].filter((e,i)=>i<=pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+               currentPage = pageNumber;
+            }
+
+            table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+
+            showPage(currentPage);
+         }
+         }
+            let table = document.querySelector("#market_info");
+            let rows = Array.from(table.rows).slice(1);  // Exclude the header row
+            rows.sort(function(a, b) {
+                let aText = parseInt(a.cells[1].textContent);
+                let bText = parseInt(b.cells[1].textContent);
+                if (aText < bText) {
+                    return -1;
+                } else if (aText > bText) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+            rows.forEach(function(row) {
+                table.appendChild(row);
+            });
+
+        
+        function calcMarketCap_dominance(circulating_supply, price,full_market_cap){
+            let market_cap = parseFloat(circulating_supply) * parseFloat(price)
+            let dominance = (parseFloat(market_cap) / parseFloat(full_market_cap)) * 100
+            return [market_cap, dominance]
+        }
+
+        /**************************************************/
+        let quickTradeInterval = null
+        document.querySelector("#order_type").addEventListener("change",function(){
+            if(this.value=="market"){
+                document.querySelector('#price_input').setAttribute("disabled","disabled")
+                  quickTradeInterval = setInterval(async function(){
+                     await fetch(`/api/v1/live_price?pair=BTC&market=USDT&exchange=${selectedExchangeMain.value.toUpperCase()}&stream=false`)
+                     .then(res => res.json())
+                     .then(res => {
+                        document.querySelector('#price_input').value = res
+                     })
+
+                  },1000)
+            }else{
+               document.querySelector('#price_input').removeAttribute("disabled")
+               clearInterval(quickTradeInterval)
+            }
+        })
+
+        async function getLiveBalance(){
+            await fetch(`/api/v1/live_balance?exchange=${selectedExchangeMain.value}&symbol=BTC`)
+            .then(res=>res.json())
+            .then(res=>{
+                document.body.setAttribute("bal_btc",res.toFixed(2))
+                
+            })
+            .finally(()=>{
+                getLiveBalance()
+            })
+        }
+        getLiveBalance()
+
+        async function getLiveBalance2(){
+            await fetch(`/api/v1/live_balance?exchange=${selectedExchangeMain.value}&symbol=USDT`)
+            .then(res=>res.json())
+            .then(res=>{
+               document.body.setAttribute("bal_usd",res.toFixed(2))
+            })
+            .finally(()=>{
+                getLiveBalance2()
+            })
+        }
+        getLiveBalance2()
+
+        document.querySelectorAll(".btn-check-group").forEach(elm=>{
+            document.querySelectorAll(".btn-check").forEach(e=>{  
+                e.nextElementSibling.addEventListener("click",async function(){
+                  
+                  this.closest(".btn-check-group").querySelectorAll("label").forEach(e=>{
+                     e.classList.remove("active")
+                  })
+                  this.classList.add("active")
+                  if(elm.id == "balance_chart_btns"){
+                     if(this.innerHTML == "On Changes" || this.innerHTML == 'على التغييرات'){
+                        document.getElementById('balanceChart_changes').classList.remove("hidden")
+                        document.getElementById('balanceChart').classList.add("hidden")
+                        balanceChart_changes.update()
+                     }
+                     else{
+                        document.getElementById('balanceChart_changes').classList.add("hidden")
+                        document.getElementById('balanceChart').classList.remove("hidden")
+                        balanceChart.update()
+                     }
+                  }
+                  else{
+                     search_filter.classList.add("hidden")
+                     assets_table_loader.closest(".table-responsive").style ='overflow: hidden;'
+                     assets_check_group.classList.add("hidden")
+                     get_assets(this.innerHTML)
+                  }
+                })
+            })
+         })
+
+         get_assets("all")
+
+         async function get_assets(text){
+                  if (text.toLowerCase()=='all'){
+                     assets_bg.classList.add('hidden')
+                  }
+                  else{
+                     assets_bg.classList.remove('hidden')
+                  }
+                  assets_bg.src = `/static/images/${text}.svg`
+                  
+                  assets_table.style.display = "none";
+                  assets_table_loader.style.display = "";
+                  assets_table.parentElement.nextElementSibling.style.display = "none";
+                  await fetch(`/api/v1/assets?exchange=${text}`)
+                  .then(res => res.json())
+                  .then(res => {
+                     
+                     assetsTable.innerHTML = "";
+                     assets_table.style.display = "";
+                     assets_table_loader.style.display = "none";
+                     search_filter.classList.remove("hidden")
+                     assets_table_loader.closest(".table-responsive").style =''
+                     assets_table.parentElement.nextElementSibling.style.display = "";
+                     res.forEach(e=>{
+                        assetsTable.insertAdjacentHTML("beforeend",`
+                        <tr>
+                           <td>
+                              <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${e.currency}--big.svg" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                              <span>${e.currency}</span>
+                           </td>
+                           <td>${e.free.toFixed(3)}</td>
+                           <td>${e.used.toFixed(3)}</td>
+                           <td>${e.total.toFixed(3)}</td>
+                           <td>212</td>
+                           <td>${e.eqUSD.toFixed(3)}</td>
+                           <!--td>
+                              <div class="d-flex justify-content-between">          
+                                 <div class="dropdown ms-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                    </svg>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                       <li><a class="dropdown-item" href="#">Buy / Sell</a></li>
+                                       <li><a class="dropdown-item" href="#">Deposit</a></li>
+                                       <li><a class="dropdown-item" href="#">Receive</a></li>
+                                       <li><a class="dropdown-item" href="#">Convert</a></li>
+                                       <li><a class="dropdown-item" href="#">Send</a></li>
+                                       <li><a class="dropdown-item" href="#">Withdraw</a></li>
+                                       <li><a class="dropdown-item" href="#">Transfer</a></li>
+                                    </ul>
+                                 </div>
+                              </div>
+                           </td-->
+                        </tr>
+                        `)
+                     })
+                  })
+                  .then(()=>{
+                     
+                     getPriceAssets()
+                     assets_check_group.classList.remove("hidden")
+                  })
+                }
+
+         reset_stats.addEventListener("click",async function(){
+            //ask user if he sure need to reset the stats
+            swal({
+               title: localStorage.getItem("lang")!="ar" ? "Are you sure?" : "هل أنت متأكد؟",
+               text: localStorage.getItem("lang")!="ar" ? "Once reset, you will not be able to recover this stats!" : "بمجرد إعادة التعيين ، لن تتمكن من استعادة هذه الإحصائيات!",
+               icon: "warning",
+               buttons: true,
+               dangerMode: true,
+            })
+            .then(async (willDelete) => {
+               if (willDelete) {
+                  await fetch(`/api/v1/reset_stats?exchange=${selectedExchangeMain.value.toUpperCase()}`)
+                  .then(res => res.json())
+                  .then(res => {
+                     if(res.ok){
+                        document.querySelectorAll(".balance_stat_data").forEach(e=>{
+                           e.innerHTML = '0.0'
+                        })
+                        swal(localStorage.getItem("lang")!="ar"?'Success':"تم", res.message, 'success')
+                     }
+                     else{
+                        swal(localStorage.getItem("lang")!="ar"?'Error':"خطاً", res.message, 'error');
+                     }
+                  })
+               } else {
+                  swal(localStorage.getItem("lang")!="ar"?"Your stats is safe!":"إحصائياتك آمنة!", {
+                     icon: "info",
+                     button: localStorage.getItem("lang")!="ar"?"Ok":"حسناً",
+                  });
+               }
+            });
+         })
+    </script>
+    <script>
+      // Get the canvas element
+      const ctx = document.getElementById('pieChart').getContext('2d');
+    
+      // Define the data for the pie chart
+      const data = {
+        labels: [],
+        datasets: [{
+          data: [],
+          backgroundColor: []
+        }]
+      };
+    
+      // Create the pie chart
+      let pie_chart = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: {
+         responsive: true,
+         plugins: {
+            legend: {
+               display: false // Hide the legend
+            },
+         }
+      },
+      });
+
+      fetch("/api/v1/assets?exchange=all")
+      .then(res => res.json())
+      .then(res => {
+         let total = 0;
+         res.forEach(e=>{
+            total += parseFloat(e.eqUSD)
+         })
+         res.forEach(e=>{
+            pie_chart.data.labels.push(e.currency)
+            pie_chart.data.datasets[0].data.push(parseFloat(e.eqUSD)/total*100)
+            pie_chart.data.datasets[0].backgroundColor.push(getRandomColor())
+         })
+         pie_chart.update()
+         pie_loader.classList.add("hidden")
+      })
+
+      function getRandomColor() {
+         var letters = '0123456789ABCDEF';
+         var color = '#';
+         for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+         }
+         return color;
+      }
+
+      /***********************total_values***********************/
+      setInterval(function(){
+            document.querySelectorAll(".total_input").forEach(e=>{
+                if(e.closest(".card-body").querySelector(".units_input").value && e.closest(".card-body").querySelector(".buy_price_val")?.value){
+                    e.value = e.closest(".card-body").querySelector(".units_input").value * e.closest(".card-body").querySelector(".price_input").value
+                }
+            })
+        },100)
+
+        /************units input*****************/
+        document.querySelectorAll(".units_input").forEach(e=>{
+            e.addEventListener('input',()=>{
+                e.closest(".card-body").querySelector(".total_input").value = e.closest(".card-body").querySelector(".price_input").value * e.value
+            })
+        })
+
+        /*****************price input**********************/
+        document.querySelectorAll(".price_input").forEach(e=>{
+            e.addEventListener('input',()=>{
+                e.closest(".card-body").querySelector(".total_input").value = e.closest(".card-body").querySelector(".units_input").value * e.value
+            })
+        })
+
+        /*****************total input**********************/
+        document.querySelectorAll(".total_input").forEach(e=>{
+            e.addEventListener('input',()=>{
+                e.closest(".card-body").querySelector(".units_input").value = e.value / e.closest(".card-body").querySelector(".price_input").value * e.value
+            })
+        })
+
+
+        /***********chart************/
+
+        // Assuming you have an array of balance history objects called 'balanceHistory'
+
+        //let balanceHistory = JSON.parse('{{ balance_history|tojson }}'.slice(1,-1));
+        let balanceHistory = JSON.parse('{{ balance_history24h|tojson }}'.slice(1,-1));
+        let balanceHistory_changes = JSON.parse('{{ balance_history|tojson }}'.slice(1,-1));
+
+         const timestamps = balanceHistory.map(entry => Intl.DateTimeFormat('en-us',{
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(new Date(entry.timestamp)));
+
+            const timestamps_changes = balanceHistory_changes.map(entry => Intl.DateTimeFormat('en-us',{
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(new Date(entry.timestamp)));
+
+         if (timestamps.length > 7){
+            timestamps.splice(0,timestamps.length-7)
+            balanceHistory.splice(0,balanceHistory.length-7)    
+         }
+
+         if (timestamps_changes.length > 7){
+            timestamps_changes.splice(0,timestamps_changes.length-7)
+            balanceHistory_changes.splice(0,balanceHistory_changes.length-7)    
+         }
+
+         const balanceUSD = balanceHistory.map(entry => entry.balance_usd);
+         const balanceBTC = balanceHistory.map(entry => entry.balance_btc);
+
+         const balanceUSD_changes = balanceHistory_changes.map(entry => entry.balance_usd);
+         const balanceBTC_changes = balanceHistory_changes.map(entry => entry.balance_btc);
+
+         const balanceChart = new Chart(document.getElementById('balanceChart').getContext('2d'), {
+            type: 'line',
+            options: {
+               responsive: true,
+               interaction: {
+                  mode: 'index',
+                  intersect: false,
+               },
+               stacked: false,
+               plugins: {
+                  title: {
+                  display: false,
+                  text: ''
+                  }
+               },
+               scales: {
+                  y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  },
+                  y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+
+                  // grid line settings
+                  grid: {
+                     drawOnChartArea: false, // only want the grid lines for one axis to show up
+                  },
+                  },
+               }
+            },
+            data:{
+            labels: timestamps,
+            datasets: [
+                  {
+                     label: 'BTC',
+                     data: balanceBTC,
+                     borderColor: "#f7931a",
+                     backgroundColor: "#f7931a",
+                     yAxisID: 'y',
+                     tension: 0.2,
+                  },
+                  {
+                     label: 'USDT',
+                     data: balanceUSD,
+                     borderColor: "#009393",
+                     backgroundColor: "#009393",
+                     yAxisID: 'y1',
+                     tension: 0.2,
+                  }
+               ]
+            }
+         })
+
+         const balanceChart_changes = new Chart(document.getElementById('balanceChart_changes').getContext('2d'), {
+            type: 'line',
+            options: {
+               responsive: true,
+               interaction: {
+                  mode: 'index',
+                  intersect: false,
+               },
+               stacked: false,
+               plugins: {
+                  title: {
+                  display: false,
+                  text: ''
+                  }
+               },
+               scales: {
+                  y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  },
+                  y1: {
+                     type: 'linear',
+                     display: true,
+                     position: 'right',
+                     grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                     },
+                  },
+               }
+            },
+            data:{
+            labels: timestamps_changes,
+            datasets: [
+                  {
+                     label: 'BTC',
+                     data: balanceBTC_changes,
+                     borderColor: "#f7931a",
+                     backgroundColor: "#f7931a",
+                     yAxisID: 'y',
+                     tension: 0.2,
+                  },
+                  {
+                     label: 'USDT',
+                     data: balanceUSD_changes,
+                     borderColor: "#009393",
+                     backgroundColor: "#009393",
+                     yAxisID: 'y1',
+                     tension: 0.2,
+                  }
+               ]
+            }
+         })
+         async function refresh_stats_func(){
+            document.querySelector(".account-balances-stats").parentElement.classList.remove("hidden")
+            skel_dashboard.classList.add("hidden")
+            transactions.innerHTML = ""
+            refresh_user_stats.classList.add("fa-spin")
+            await fetch(`/api/v1/user_stats/`,{
+               method: 'POST',
+               headers: {
+               'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({}),
+            })
+            .then(res => res.json())
+            .then(res => {
+                  document.querySelectorAll(".balance_stat_data").forEach(e=>{
+                     if(res[e.getAttribute("data-stat")])
+                     e.innerHTML = res[e.getAttribute("data-stat")].toFixed(7)
+                  })
+                  balance_BTC.querySelector("span").innerHTML = res.balance_btc.toFixed(2)
+                  balance_USD.querySelector("span").innerHTML = res.balance_usd.toFixed(2)
+                  chartData = JSON.parse(res.balance_history)
+                  let balanceUSD = chartData.map(entry => entry.balance_usd);
+                  let balanceBTC = chartData.map(entry => entry.balance_btc);
+                  balanceChart_changes.data.datasets = 
+                     [
+                        {
+                           label: 'BTC',
+                           data: balanceBTC,
+                           borderColor: "#f7931a",
+                           backgroundColor: "#f7931a",
+                           yAxisID: 'y',
+                           tension: 0.2,
+                        },
+                        {
+                           label: 'USDT',
+                           data: balanceUSD,
+                           borderColor: "#009393",
+                           backgroundColor: "#009393",
+                           yAxisID: 'y1',
+                           tension: 0.2,
+                        }
+                     ]
+                  balanceChart_changes.update()
+            })
+            .finally(()=>{
+               refresh_user_stats.classList.remove("fa-spin")
+               refresh_user_trans.classList.remove("fa-spin")
+            })
+         }
+         refresh_stats_func()
+         refresh_user_stats.addEventListener("click",refresh_stats_func)
+
+         async function get_trans(elm=null){
+            elm?.classList.add("fa-spin")
+            await fetch(`/api/v1/user_stats/`,{
+               method: 'POST',
+               headers: {
+               'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({}),
+            })
+            .then(res => res.json())
+            .then(res => {
+
+               if(res.not_supported_trans.length){
+                  exchanges_unsupported_list = ""
+                  res.not_supported_trans.forEach((e,i)=>{
+                     if(i!=res.not_supported_trans.length - 1)
+                     exchanges_unsupported_list += `${e}, `
+                     else
+                     exchanges_unsupported_list += `${e}`
+                  })
+                  transactions.insertAdjacentHTML('beforeend',`
+                     <div class="alert alert-danger d-flex align-items-center ${res.not_supported_trans.length ? '':'hidden'}" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24">
+                              <use xlink:href="#exclamation-triangle-fill01"></use>
+                        </svg>
+                        <div>
+                              ${localStorage.getItem("lang")!="ar"?'These data are shown without the following exchanges:':'هذه البيانات تظهر بدون الصرافات التالية:'}
+                              ${exchanges_unsupported_list}
+                        </div>
+                     </div>
+                  `)
+               }
+               res.transactions.reverse().forEach((transaction,i)=>{
+                  if(i<10)
+                  transactions.insertAdjacentHTML('beforeend',`
+                        <li class="d-flex align-items-center pt-3">
+                           <div style="width: 100%;flex-wrap:wrap;" class="d-flex justify-content-between rounded-pill">
+                              <!--img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${transaction.currency}--big.svg" class="img-fluid avatar avatar-40 avatar-rounded" alt="img6"-->
+                              <img src="/static/images/${transaction.exchange}.svg" class="img-fluid avatar avatar-40 avatar-rounded" alt="img6">
+                              <div class="ms-3 flex-grow-1" style="width:calc(100% - 100px)">
+                                 <h5 class="mb-2">${transaction.type}</h5>
+                                 <p class="fs-6 timestamp" style="text-align:start">${transaction.timestamp}</p>
+                              </div>
+                              <div style="width:100%">
+                                 <p style="margin: 0;
+                                 padding: 8px!important;text-align: end;" class="card-header"><span class="text-${transaction.amount >=0?'success':'danger'}">${transaction.amount}</span> ${transaction.currency}</p>
+                              </div>
+                           </div>
+                        </li>     
+                  `)
+               })
+               if(res.transactions.length == 0){
+                  transactions.insertAdjacentHTML('beforeend',`
+                     <li class="d-flex align-items-center pt-3">
+                        <div style="width: 100%;flex-wrap:wrap;" class="d-flex justify-content-between rounded-pill">
+                           <div class="ms-3 flex-grow-1" style="width:100%; text-align: center;">
+                              <img src="/static/images/not-found.png"style="max-width: 200px;margin:0px auto;filter:grayscale(1)">
+                              <h5 class="mb-2">${localStorage.getItem("lang")!="ar"?'No transactions yet':'لا توجد معاملات بعد'}</h5>
+                           </div>
+                        </div>
+                     </li>     
+                  `)
+               }
+               else{
+                  transactions.insertAdjacentHTML('beforeend',`
+                  <li style="text-align: end;" class="transaction_not">
+                        <div class="okui-hyperlink okui-hyperlink-primary okui-hyperlink-no-hover-underline okui-hyperlink-sm okui-hyperlink-medium">
+                           <span class="okui-hyperlink-text" style="background: #ffffff08;padding: 5px 20px;border-radius: 200px;">
+                              <a href="{{url_for('history_trades_history')}}">${document.dir=='rtl'?'عرض الكل':'Go to all'}</a>
+                           </span>
+                           <i class="icon iconfont okds-arrow-chevron-right-centered-md icon-arrow"></i>
+                        </div>
+                     </li>   
+               `)
+               }
+               
+               trans_skel.classList.add("hidden")
+            })
+            .finally(()=>{
+               document.querySelectorAll(".timestamp").forEach(e=>{
+                     e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                        hour12: false,
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                     }).format(e.innerHTML)
+               })
+               elm?.classList.remove("fa-spin")
+            })
+         }
+
+         refresh_user_trans.addEventListener("click",async function(){
+            get_trans(this)
+         })
+         get_trans()
+
+         document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+               year: "numeric",
+               month: "numeric",
+               day: "numeric",
+               hour: "numeric",
+               minute: "numeric",
+               second: "numeric",
+               hour12: false,
+               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(e.innerHTML)
+         })
+
+         setInterval(()=>{
+            if(parseFloat(document.body.getAttribute("bal_usd"))>=parseFloat(document.querySelector(".total_input").value)){
+               quickBuy.removeAttribute("disabled")
+            }
+            else{
+               quickBuy.setAttribute("disabled","disabled")
+            }
+
+            if(parseFloat(document.body.getAttribute("bal_btc"))>=parseFloat(document.querySelector(".units_input").value)){
+               quickSell.removeAttribute("disabled")
+            }
+            else{
+               quickSell.setAttribute("disabled","disabled")
+            }
+         },100)
+
+         get_market_table()
+         async function get_market_table(x=false){
+            await fetch(`/api/v1/market_table?exchange=${!x?selectedExchangeMain.value:x}`)
+            .then(res => res.json())
+            .then(res => {
+               marketTable.innerHTML = ""
+               //loop over ovject values
+               //res = [...Object.values(res)].filter(res=>res.symbol.split("/")[1]=="USDT")
+               //for(let e of Object.values(res)){
+                  for(let e of res){
+                  e=Object.values(e)[0]
+                  marketTable.insertAdjacentHTML("beforeend",`
+                     <tr>
+                        <td>
+                           <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${e.symbol.split("/")[0]}--big.svg" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                           <span>${e.symbol.split("/")[0]}</span>
+                        </td>
+                        <td>$${e.last}</td>
+                        <td class="${(e.change/100)>0 ? 'text-success' : 'text-danger'}">${(e.change/100).toFixed(2)} %</td>
+                        <td>$${e.low}</td>
+                        <td>$${e.high}</td>
+                        <td>${e.baseVolume.toFixed(3)}</td>
+                        <td><a href="/trade?symbol=${e.symbol}"><button class="btn btn-outline-primary btn-sm">${document.dir=='rtl'?'تداول':'Trade'}</button></a></td>
+                        <!--td>
+                           <div class="d-flex justify-content-between">          
+                              <div class="dropdown ms-4">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                 </svg>
+                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                    <li><a class="dropdown-item" href="#">Buy / Sell</a></li>
+                                    <li><a class="dropdown-item" href="#">Deposit</a></li>
+                                    <li><a class="dropdown-item" href="#">Receive</a></li>
+                                    <li><a class="dropdown-item" href="#">Convert</a></li>
+                                    <li><a class="dropdown-item" href="#">Send</a></li>
+                                    <li><a class="dropdown-item" href="#">Withdraw</a></li>
+                                    <li><a class="dropdown-item" href="#">Transfer</a></li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </td-->
+                     </tr>
+                  `)
+               }
+               const table = document.getElementById("market_table");
+               const pageSize = 20;
+
+               if (!market_table.parentElement.nextElementSibling.innerHTML)
+               for(let i=1;i<=(market_table.querySelectorAll("tr").length-1)/pageSize;i++){
+                  market_table.parentElement.nextElementSibling.insertAdjacentHTML("beforeend",
+                  `<li class="page-item ${i==1?'active':''}">
+                     <a class="page-link" href="#" data-page="${i}">${i}</a>
+                  </li>`
+                  );
+               }
+               
+               market_table.style.display = "";
+               market_table_loader.style.display = "none";
+               market_table_loader.closest(".table-responsive").style =''
+               market_table.parentElement.nextElementSibling.style.display = "";
+               
+               if (currentPage2 == 0) currentPage2 = 1;
+
+               function showPage(pageNumber) {
+                  table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+                  [...table.querySelectorAll("tbody tr")].filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+                  currentPage2 = pageNumber;
+               }
+
+               table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                  link.addEventListener("click", event => {
+                     event.preventDefault();
+                     table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                        link.parentElement.classList.remove("active");
+                     })
+                     event.target.parentElement.classList.add("active");
+                     const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                     showPage(pageNumber);
+                  });
+               });
+
+               showPage(currentPage2);
+            })
+            .catch(res=>{
+              get_market_table()
+            })
+            .finally(()=>{
+               refresh_market_table.classList.remove("fa-spin")
+               market_table_change.removeAttribute("disabled")
+            })
+        }
+
+        search_filter.addEventListener("input",function(){
+            currentPage2 = 1;
+            let pageSize = assetsTable.getAttribute("data-page-size");
+            assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "");
+            [...assets_table.querySelectorAll("tbody tr")].filter(e=>{
+               (e.querySelectorAll("td")[0].innerHTML.toLowerCase().includes(search_filter.value.toLowerCase()) || search_filter.value == "") ? e.classList.remove("hidden") : e.classList.add("hidden")
+            });
+            assets_table.closest(".card-body").querySelector(".pagination").innerHTML = ''
+            for(let i=1;i<=Math.ceil(([...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden")).length)/pageSize);i++){
+               assets_table.closest(".card-body").querySelector(".pagination").insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            assets_table.closest(".card-body").querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.closest(".card-body").querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+            showPage(currentPage2)
+         })
+
+
+         /************get bot stats*************/
+        let charts = []
+
+         async function get_bot_stats_id(e){
+            await fetch(`/api/v1/get_bot_stats?bot_id=${e.id}`)
+               .then(res=>res.json())
+               .then(async res=>{
+                     /*if(res.buy_price==0){
+                        e.parentElement.classList.add('hidden')
+                     }
+                     else{
+                        e.parentElement.classList.remove('hidden')
+                     }*/
+                     let price_now = res.price_now;
+                     let percentage_progress1 = 0
+                    let percentage_progress2 = 0
+                    if(parseFloat(res.tp_price)>parseFloat(res.buy_price))
+                        percentage_progress1 = parseFloat(res.tp_price) - parseFloat(res.buy_price)
+                    else
+                        percentage_progress1 = parseFloat(res.buy_price) - parseFloat(res.tp_price)
+                    
+                    if(parseFloat(res.buy_price) > parseFloat(res.stop_loss_price))
+                        percentage_progress2 = parseFloat(res.buy_price) - parseFloat(res.stop_loss_price)
+                    else
+                        percentage_progress2 = parseFloat(res.stop_loss_price) - parseFloat(res.buy_price)
+                    let final_progress1 = 0
+                    let final_progress2 = 0
+                    if(percentage_progress1<percentage_progress2){
+                        final_progress1 = percentage_progress1/percentage_progress2
+                        final_progress2 = 1 - final_progress1
+                    }
+                    else{
+                        final_progress2 = percentage_progress2/percentage_progress1
+                        final_progress1 = 1 - final_progress2
+                    }
+
+                    
+
+                    if(final_progress1 < 0.1){
+                        final_progress1 = 0.1
+                        final_progress2 = 0.9
+                    }
+                    else if(final_progress2 < 0.1){
+                        final_progress1 = 0.9
+                        final_progress2 = 0.1
+                    }
+
+                    if(!res.stop_loss && !res.trailing_take_profit){
+                        final_progress1 = 1
+                        final_progress2 = 0
+                    }
+
+                     if(e.querySelector(".smartTradeProgress_bot")){
+                        e.querySelector(".smartTradeProgress_bot").innerHTML = ''
+                        /*e.querySelector(".smartTradeProgress_bot").insertAdjacentHTML(`beforeend`,`
+                           <div class="smartTradeProgress">
+                              <div class="smartTradeCurrentContainer" style="position: relative;">
+                                    <div class="smartTradeCurrent" style="border-color:#FAA938;position: absolute;left: ${Math.min((res.buy_price - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(Math.max(res.tp_price,price_now)) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now)))),200)}px;bottom: 0;width:0;">
+                                       <span style="${(res.buy_price - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(Math.max(res.tp_price,price_now)) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))))==0?'right: unset;left: -5px;':''}">${lang_data_bots[localStorage.getItem("lang")][13]} ${res.buy_price.toFixed(4)}</span>   
+                                    </div>
+                                    <div class="smartTradeCurrent" style="border-color:#3a57e8;position: absolute;left: ${Math.min((price_now - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(res.tp_price) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now)))),200)}px;">
+                                       <span style="${(price_now - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(res.tp_price) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))))==0?'right: unset;left: -5px;':''}">${lang_data_bots[localStorage.getItem("lang")][14]} ${price_now.toFixed(4)}</span>  
+                                    </div>
+                              </div>
+                              <div class="smartTradeLine">
+                              </div>
+                              <div class="smartTradeTPContainer" style="position: relative;">
+                                    <div class="smartTradeTP" style="height:40px;position:absolute;left:0;top:0;border-color: #f23645;width:0;display:${!res.stop_loss?'none':''};"><span>${lang_data_bots[localStorage.getItem("lang")][15]} ${res.stop_loss_price}</span></div>
+                                    <div class="smartTradeTP" style="height:40px;border-color: #23635e;">
+                                       <span>${lang_data_bots[localStorage.getItem("lang")][16]} ${res.tp_price.toFixed(4)}</span>
+                                    </div>
+                              </div>
+                           </div>
+                        `)*/
+                        if(res.buy_price)
+                        e.querySelector(".smartTradeProgress_bot").insertAdjacentHTML("beforeend",`
+                           <div class="col" style="display:flex;align-items: center;position:relative;min-width: 240px;direction: rtl;margin-top: 30px;margin-bottom: 30px;padding: 0;margin-right: 15px;margin-left: 15px;width: calc(100% - 30px);">
+                              <span style="position:absolute;left: 0px;margin-top: 30px;" class="${res.stop_loss || res.trailing_take_profit?'':'hidden'}">${res.trailing_take_profit ? (localStorage.getItem("lang")=='ar'?'ربح مخادع':'Trailing TP') : (localStorage.getItem("lang")=='ar'?'وقف الخسارة':'SL')}</span>
+                              <span style="position:absolute;right: 0px;margin-top: 30px;" class="">${localStorage.getItem("lang")=='ar'?'الربح':'TP'}</span>
+                              <span style="position:absolute;left: 0px;margin-bottom: 30px;" class="${res.stop_loss || res.trailing_take_profit?'':'hidden'}">${res.stop_loss_price}</span>
+                              <span style="position:absolute;right: 0px;margin-bottom: 30px;" class="">${(res.tp_price.toFixed(4))}</span>
+                              <div class="progress bg-soft-success shadow-none w-100" style="height: 6px;display:flex;border-radius: 0;flex-direction: row-reverse;flex:${final_progress1}">
+                                 <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="${(res.strategy.toLowerCase()=='long'?(price_now - res.buy_price):(res.buy_price - price_now))*100/Math.abs(res.buy_price - (res.tp_price))}" aria-valuemin="0" aria-valuemax="100" style="width: ${(res.strategy.toLowerCase()=='long'?(price_now - res.buy_price):(res.buy_price - price_now))*100/Math.abs(res.buy_price - (res.tp_price))}%; transition: width 2s ease 0s;"></div>
+                              </div>
+                              <div class="progress bg-soft-danger shadow-none w-100" style="height: 6px;display:flex;border-radius: 0;flex:${final_progress2}">
+                                 <div class="progress-bar bg-danger" data-toggle="progress-bar" role="progressbar" aria-valuenow="${(res.strategy.toLowerCase()=='long'?(res.buy_price - price_now) : (price_now - res.buy_price))*100/Math.abs(res.buy_price - res.stop_loss_price)}" aria-valuemin="0" aria-valuemax="100" style="width: ${(res.strategy.toLowerCase()=='long'?(res.buy_price - price_now) : (price_now - res.buy_price))*100/Math.abs(res.buy_price - res.stop_loss_price)}%"></div>
+                              </div>
+                              <span style="position:absolute;top:-30px;left:${calculateProgressBarPosition2(res,price_now,final_progress1,final_progress2)}%;display:flex;gap:2px;align-items:flex-start;">
+                                <span style="margin-top:-20px;margin-left:0px;position: absolute;${calculateProgressBarPosition2(res,price_now,final_progress1,final_progress2)<50?'left: 0;':'right:0;'}">${price_now}</span>
+                                <span style="width:0;height:30px;border-left:1px solid #ffffff45;"></span>
+                            </span>
+                           </div>
+                        `)
+                        else{
+                           if(localStorage.getItem("lang") == 'ar')
+                           e.querySelector(".smartTradeProgress_bot").innerHTML = '<h5>'+'لم تبدأ الصفقة بعد'+'</h5>'
+                           else
+                           e.querySelector(".smartTradeProgress_bot").innerHTML = '<h5>'+'Trade not started yet'+'</h5>'
+                        }
+                     }
+                     
+                     
+                     /*e.querySelector(".bot_units").innerHTML = (res.amount - res.units).toFixed(4)
+                     e.querySelector(".bot_buy_price").innerHTML = res.buy_price.toFixed(4)
+                     e.querySelector(".total_profit").innerHTML = '$'+' '+res.total_profit.toFixed(4)
+                     if(res.total_profit>0){
+                        e.querySelector(".total_profit").classList = 'total_profit text-success'
+                     }
+                     else if(res.total_profit<0){
+                        e.querySelector(".total_profit").classList = 'total_profit text-danger'
+                     }
+                     e.querySelector(".sell_price").innerHTML = res.sell_price.toFixed(4)
+                     e.querySelector(".bot_total_trades").innerHTML = res.total_trades
+                     e.querySelector(".progress-bar").style.width = `${(res.amount - res.units)/res.amount}%`
+                     if(res.isActive){
+                        e.querySelector(".toggleBot").checked = true
+                        
+                     }else{
+                        e.querySelector(".toggleBot").checked = false
+                        //e.querySelector(".progress-bar").style.width = `0%`
+                     }
+                     if(res.units <= 0 && res.isActive == false){
+                        e.querySelector(".toggle_bot").classList.add("hidden")
+                        e.querySelector(".run_bot").classList.remove("hidden")
+                     }
+                     else{
+                        e.querySelector(".toggle_bot").classList.remove("hidden")
+                        e.querySelector(".run_bot").classList.add("hidden")
+                     }*/
+               })
+               .finally(()=>{
+                     get_bot_stats_id(e)
+               })
+         }
+
+         function get_bot_stats(){
+            document.querySelectorAll(".botCard2").forEach(async (e,i)=>{
+               get_bot_stats_id(e)
+            })
+         }
+
+
+
+         get_bot_stats()
+
+
+         getSmartTradesHistory()
+
+         function getSmartTradesHistory(){
+            document.querySelectorAll(".smaCard").forEach(async (e,i)=>{
+               getSmartTradesHistory_id(e)
+            })
+         }
+
+         let buy_price_text = {
+            "smart cover":localStorage.getItem("lang")!="ar"?"Buy Price":"سعر الشراء",
+            'smart trade':localStorage.getItem("lang")!="ar"?"Buy Price":"سعر الشراء",
+            'smart sell': localStorage.getItem("lang")!="ar"?'Bought Price':"سعر الشراء",
+            'smart buy': localStorage.getItem("lang")!="ar"?'Sell Price':"سعر البيع",
+        }
+
+
+
+         getSmartTradesHistory()
+
+        async function getSmartTradesHistory_id(element){
+            await fetch(`/api/v1/smart_trades/`)
+            .then(res=>res.json())
+            .then(res=>{
+               
+                  if(res.smart_trades.length==0){
+                     document.querySelector(".no-smas-found")?.parentElement.parentElement.classList.remove("hidden")
+                  }
+                  else{
+                     document.querySelector(".no-smas-found")?.parentElement.parentElement.classList.add("hidden")
+                  }
+
+                res.smart_trades.filter(e=>e.isActive).reverse().forEach(e=>{
+                    TPHTML = ``
+                    
+                    const valuesArray = e.take_profit_quantities.reverse();
+                    element.style=`height:${120+(valuesArray.length*20)}px;`
+                    valuesArray.forEach((elm,i)=>{
+                        TPHTML += `<div class="smartTradeTP" style="height:${20*(valuesArray.length - i+1)}px;border-color: #23635e;"><span>TP ${(parseFloat(elm[0])*e.buy_price/100 + (e.buy_price)).toFixed(3)}</span></div>`
+                    })
+                    /*element.innerHTML = `
+                    <div class="smartTradeProgress">
+                        <div class="smartTradeCurrentContainer" style="position: relative;">
+                           <div class="smartTradeCurrent" style="position: absolute;left: ${Math.min(Math.abs((Math.max(e.buy_price,(e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)) - (e.stop_loss?e.stop_loss_price:Math.min(Math.max(e.buy_price,(e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)),e.last_price))) * 200 / (parseFloat((e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)*Math.max(e.buy_price,(e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)) + Math.max(e.buy_price,(e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0))) - parseFloat((e.stop_loss?e.stop_loss_price:Math.min(Math.max(e.buy_price,(e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)),e.last_price))))),200)}px;bottom: 0;width:0;">
+                                 <span style="${(e.buy_price - (e.stop_loss?e.stop_loss_price:Math.min(e.buy_price,e.last_price))) * 200 / (parseFloat((e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)*e.buy_price + e.buy_price) - parseFloat((e.stop_loss?e.stop_loss_price:Math.min(e.buy_price,e.last_price))))==0?('right: unset;left: -5px;'):''}">
+                                    ${buy_price_text[e.trade_type.toLowerCase()]} ${e.buy_price.toFixed(4)}
+                                 </span>   
+                           </div>
+                           <div class="smartTradeCurrent ${!e.stop_loss && e.units==0 ? 'hidden' : ''}" style="position: absolute;left: ${Math.min(Math.abs((e.last_price - (e.stop_loss?e.stop_loss_price:Math.min(e.buy_price,e.last_price))) * 200 / (parseFloat((e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)*e.buy_price + e.buy_price) - parseFloat((e.stop_loss?e.stop_loss_price:Math.min(e.buy_price,e.last_price))))),200)}px;">
+                                 <span class="${!e.stop_loss && e.units==0 ? 'hidden' : ''}" style="${Math.abs((e.last_price - (e.stop_loss?e.stop_loss_price:Math.min(e.buy_price,e.last_price))) * 200 / (parseFloat((e.take_profit_quantities.length > 0 ? e.take_profit_quantities[e.take_profit_index][0] : 0)*e.buy_price + e.buy_price) - parseFloat((e.stop_loss?e.stop_loss_price:Math.min(e.buy_price,e.last_price)))))==0?(localStorage.getItem('lang'=='ar')?'right:-5px;left:unset;':'right: unset;left: -5px;'):''}">
+                                    ${e.units != 0?localStorage.getItem("lang")!="ar"?"Current":"السعر الحالي":localStorage.getItem("lang")!="ar"?"Sell Price":"سعر البيع"} ${e.last_price.toFixed(4)}
+                                 </span>  
+                           </div>
+
+
+                        </div>
+                        <div class="smartTradeLine">
+                        </div>
+                        <div class="smartTradeTPContainer" style="position: relative;">
+                           ${e.stop_loss?`<div class="smartTradeTP" style="height:40px;position:absolute;left:0;top:0;border-color: #f23645;width:0;"><span>SL ${e.stop_loss_price}</span></div>`:``}
+                           ${TPHTML}
+                        </div>
+                     </div>
+                  `*/
+               
+                  let percentage_progress1 = 0
+                    let percentage_progress2 = 0
+
+                     let tp_price = parseFloat(e.buy_price + (e.buy_price * (e.take_profit_quantities[e.take_profit_index][0]) /100))
+
+                     if(tp_price>parseFloat(e.buy_price))
+                        percentage_progress1 = (parseFloat(e.buy_price) + parseFloat(e.buy_price * (e.take_profit_quantities[e.take_profit_index][0]) /100)) - parseFloat(e.buy_price)
+                     else
+                        percentage_progress1 = parseFloat(e.buy_price) - (tp_price)
+                    
+                     if(parseFloat(e.buy_price) > parseFloat(e.stop_loss_price))
+                        percentage_progress2 = parseFloat(e.buy_price) - parseFloat(e.stop_loss_price)
+                     else
+                        percentage_progress2 = parseFloat(e.stop_loss_price) - parseFloat(e.buy_price)
+
+                     let final_progress1 = 0
+                     let final_progress2 = 0
+                     if(percentage_progress1<percentage_progress2){
+                        final_progress1 = percentage_progress1/percentage_progress2
+                        final_progress2 = 1 - final_progress1
+                     }
+                     else{
+                           final_progress2 = percentage_progress2/percentage_progress1
+                           final_progress1 = 1 - final_progress2
+                     }
+
+                     if(final_progress1 < 0.1){
+                           final_progress1 = 0.1
+                           final_progress2 = 0.9
+                     }
+                     else if(final_progress2 < 0.1){
+                           final_progress1 = 0.9
+                           final_progress2 = 0.1
+                     }
+
+                     if(!e.stop_loss && e.take_profit && (!(e.trailing_take_profit && e.stop_loss_price))){
+                           final_progress1 = 1
+                           final_progress2 = 0
+                     }
+
+                     if(!e.take_profit && e.stop_loss){
+                           final_progress1 = 0
+                           final_progress2 = 1
+                     }
+
+
+                  element.innerHTML = `
+                  <div class="col" style="display:flex;align-items: center;position:relative;min-width: 240px;direction: rtl;margin-top: 30px;margin-bottom: 30px;padding: 0;margin-right: 30px;margin-left: 30px;width: calc(100% - 60px);">
+                     <span style="position:absolute;left: 0px;margin-top: 30px;" class="${e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price)?'':'hidden'}">${e.trailing_take_profit ? (localStorage.getItem("lang")=='ar'?'ربح مخادع':'Trailing TP') : (localStorage.getItem("lang")=='ar'?'وقف الخسارة':'SL') }</span>
+                     <span style="position:absolute;right: 0px;margin-top: 30px;" class="${e.take_profit?'':'hidden'}">${localStorage.getItem("lang")=='ar'?'الربح':'TP'} (${e.take_profit_index+1}/${e.take_profit_quantities.length})</span>
+                     <span style="position:absolute;left: 0px;margin-bottom: 30px;" class="${e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price)?'':'hidden'}">${e.stop_loss_price}</span>
+                     <span style="position:absolute;right: 0px;margin-bottom: 30px;" class="${e.take_profit?'':'hidden'}">${tp_price.toFixed(3)}</span>
+                     <div class="progress bg-soft-success shadow-none w-100" style="height: 6px;display:flex;border-radius: 0;flex-direction: row-reverse;flex:${final_progress1}">
+                           <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="${(e.trade_type.toLowerCase() == 'smart trade' ? (e.last_price - e.buy_price):(e.buy_price - e.last_price))*100/Math.abs(e.buy_price - tp_price)}" aria-valuemin="0" aria-valuemax="100" style="width: ${(e.trade_type.toLowerCase() == 'smart trade' ? (e.last_price - e.buy_price):(e.buy_price - e.last_price))*100/Math.abs(e.buy_price - tp_price)}%; transition: width 2s ease 0s;"></div>
+                     </div>
+                     <div class="progress bg-soft-danger shadow-none w-100" style="height: 6px;display:flex;border-radius: 0;flex:${final_progress2}">
+                           <div class="progress-bar bg-danger" data-toggle="progress-bar" role="progressbar" aria-valuenow="${e.trade_type.toLowerCase() == 'smart trade' ? ((e.buy_price - e.last_price)*100/Math.abs(e.buy_price - e.stop_loss_price)):((e.last_price - e.buy_price)*100/Math.abs(e.buy_price - e.stop_loss_price))}" aria-valuemin="0" aria-valuemax="100" style="width:${(e.trade_type.toLowerCase() == 'smart trade' ?(e.buy_price - e.last_price):(e.last_price - e.buy_price))*100/Math.abs(e.buy_price - e.stop_loss_price)}%; transition: width 2s ease 0s;"></div>
+                     </div>
+                     <!--span style="position:absolute;top:-25px;left:${(e.trade_type.toLowerCase() == 'smart trade'? e.last_price >= tp_price : e.last_price < tp_price)?(100):Math.min(100,Math.max(0,(e.trade_type.toLowerCase() == 'smart trade'?(e.last_price - ((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?(e.stop_loss_price):(e.buy_price))):(((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?(e.stop_loss_price):(e.buy_price)) - e.last_price))*100/Math.abs(tp_price - (e.stop_loss?e.stop_loss_price:e.buy_price)),0))}%;display:flex;gap:2px;align-items:flex-start;${((e.trade_type.toLowerCase() == 'smart trade'? e.last_price >= tp_price : e.last_price < tp_price)?(100):Math.min(100,Math.max(0,(e.trade_type.toLowerCase() == 'smart trade'?(e.last_price - ((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?(e.stop_loss_price):(e.buy_price))):(((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?(e.stop_loss_price):(e.buy_price)) - e.last_price))*100/Math.abs(tp_price - ((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?e.stop_loss_price:e.buy_price)),0)))>=50?(((e.trade_type.toLowerCase() == 'smart trade'? e.last_price >= tp_price : e.last_price < tp_price)?(100):Math.min(100,Math.max(0,(e.trade_type.toLowerCase() == 'smart trade'?(e.last_price - ((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?(e.stop_loss_price):(e.buy_price))):(((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?(e.stop_loss_price):(e.buy_price)) - e.last_price))*100/Math.abs(tp_price - ((e.stop_loss||(e.trailing_take_profit&&e.stop_loss_price))?e.stop_loss_price:e.buy_price)),0)))==100?'flex-direction:row-reverse;right:0;left:auto;':'flex-direction:row-reverse;'):'flex-direction:row;'}">
+                           <span style="margin-top:-20px;margin-left:0px;">${e.last_price}</span>
+                           <span style="width:0;height:25px;border-left:1px solid #ffffff45;"></span>
+                     </span-->
+                     <!--span style="position:absolute;top:-30px;left:${(e.trade_type.toLowerCase() == 'smart trade'? e.last_price >= tp_price : e.last_price <= tp_price)?(100):((e.last_price < e.buy_price)?((100 - ((e.trade_type.toLowerCase() == 'smart trade'?(e.buy_price - e.last_price) : (e.last_price - e.buy_price))*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)):(((e.trade_type.toLowerCase() == 'smart trade'?(e.last_price - e.buy_price):(e.buy_price - e.last_price))*100/Math.abs(e.buy_price - (tp_price)))*final_progress1+(final_progress2*100)))}%;display:flex;gap:2px;align-items:flex-start;">
+                           <span style="margin-top:-20px;margin-left:0px;position: absolute;${((e.trade_type.toLowerCase() == 'smart trade'? e.last_price >= tp_price : e.last_price <= tp_price)?(100):((e.last_price < e.buy_price)?((100 - ((e.trade_type.toLowerCase() == 'smart trade'?(e.buy_price - e.last_price) : (e.last_price - e.buy_price))*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)):(((e.trade_type.toLowerCase() == 'smart trade'?(e.last_price - e.buy_price):(e.buy_price - e.last_price))*100/Math.abs(e.buy_price - (tp_price)))*final_progress1+(final_progress2*100))))<50?'left: 0;':'right:0;'}">${e.last_price}</span>
+                           <span style="width:0;height:30px;border-left:1px solid #ffffff45;"></span>
+                     </span-->
+                     <!--span style="position: absolute; top: -30px; left: ${calculateProgressBarPosition(e,tp_price,final_progress1,final_progress2)}%; display: flex; gap: 2px; align-items: flex-start;">
+                           <span style="margin-top:-20px;margin-left:0px;position: absolute;${((e.trade_type.toLowerCase() == 'smart trade'? e.last_price >= tp_price : e.last_price <= tp_price)?(100):((e.last_price < e.buy_price)?((100 - ((e.trade_type.toLowerCase() == 'smart trade'?(e.buy_price - e.last_price) : (e.last_price - e.buy_price))*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)):(((e.trade_type.toLowerCase() == 'smart trade'?(e.last_price - e.buy_price):(e.buy_price - e.last_price))*100/Math.abs(e.buy_price - (tp_price)))*final_progress1+(final_progress2*100))))<50?'left: 0;':'right:0;'}">${e.last_price}</span>
+                           <span style="width: 0; height: 30px; border-left: 1px solid #ffffff45;"></span>
+                     </span-->
+                     <span style="position: absolute; top: -30px; left: ${calculateProgressBarPosition(e,tp_price,final_progress1,final_progress2)}%; display: flex; gap: 2px; align-items: flex-start;">
+                           <span style="margin-top:-20px;margin-left:0px;position: absolute;${calculateProgressBarPosition(e,tp_price,final_progress1,final_progress2)<50?'left: 0;':'right:0;'}">${e.last_price}</span>
+                           <span style="width: 0; height: 30px; border-left: 1px solid #ffffff45;"></span>
+                     </span>
+                  `
+                  
+               });
+            })
+            .finally(()=>{
+               setTimeout(()=>{
+                  getSmartTradesHistory_id(element)
+               },3000)
+         })
+      }
+
+      market_table_change.addEventListener("change",function(){
+         this.setAttribute("disabled","disabled")
+         market_table.style.display = "none";
+         market_table_loader.style.display = "";
+         refresh_market_table.classList.add("fa-spin")
+         get_market_table(market_table_change.value)
+      })
+
+      refresh_market_table.addEventListener("click",function(){
+         this.classList.add("fa-spin")
+         get_market_table(market_table_change.value)
+      })
+
+      if(document.dir=='rtl' && document.querySelector(".no-bots-found")){
+         document.querySelector(".no-bots-found").innerHTML = 'لا يوجد بوتات نشطة حالياً'
+      }
+
+      if(document.dir=='rtl' && document.querySelector(".no-smas-found")){
+         document.querySelector(".no-smas-found").innerHTML = 'لا يوجد تداولات نشطة حالياً'
+      }
+
+      function calculateProgressBarPosition(e,tp_price,final_progress1,final_progress2) {
+         if (e.trade_type.toLowerCase() == 'smart trade'){
+               if(e.last_price >= tp_price){
+                  return 100
+               }
+               else if(e.last_price <= e.buy_price){
+                  return (100 - ((e.buy_price - e.last_price)*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)
+               }
+               else{
+                  return ((e.last_price - e.buy_price)*100/Math.abs(e.buy_price - (tp_price)))*final_progress1+(final_progress2*100)
+               }
+         }
+         else{
+               if(e.last_price <= tp_price){
+                  return 100
+               }
+               else if(e.last_price >= e.buy_price){
+                  return (100 - ((e.last_price - e.buy_price)*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)
+               }
+               else{
+                  return ((e.buy_price - e.last_price)*100/Math.abs(e.buy_price - (tp_price)))*final_progress1+(final_progress2*100)
+               }
+         }
+      }
+
+      function calculateProgressBarPosition2(e,last_price,final_progress1,final_progress2) {
+        
+        if (e.strategy.toLowerCase() == 'long'){
+            if(last_price >= e.tp_price){
+                return 100
+            }
+            else if(last_price <= e.buy_price){
+                return Math.max(0,((100 - ((e.buy_price - last_price)*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)))
+            }
+            else{
+                return Math.max(0,(((last_price - e.buy_price)*100/Math.abs(e.buy_price - (e.tp_price)))*final_progress1+(final_progress2*100)))
+            }
+        }
+        else{
+            if(last_price <= e.tp_price){
+                return Math.max(0,(100))
+            }
+            else if(last_price >= e.buy_price){
+                return Math.max(0,((100 - ((last_price - e.buy_price)*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)))
+            }
+            else{
+                return Math.max(0,(((e.buy_price - last_price)*100/Math.abs(e.buy_price - (e.tp_price)))*final_progress1+(final_progress2*100)))
+            }
+        }
+    }
+
+     
+    </script>
+  </body>
+</html>
+{% endblock %}

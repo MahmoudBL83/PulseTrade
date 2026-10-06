@@ -1,0 +1,180 @@
+{% extends 'base.html' %}    
+{% block title %}PulseTrade | Trading History{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+            <div class="wrapper">
+                    <!--div class="card card-block card-stretch custom-scroll" style="background: transparent;">
+                        <div class="card-body" style="background: transparent;">
+                            <div class="btn-check-group" style="margin-bottom: 32px;">
+                                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary active rounded-start">Buy/Sell</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Trade</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Buy</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary rounded-end">Smart Sell</label>
+                                 </div>
+                            </div>
+                        </div>
+                     </div-->
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch custom-scroll">
+                   <div class="card-body">
+                      <div class="table-responsive">
+                        <div class="alert alert-danger d-flex align-items-center {% if not_supported_trading_history|count > 0 %}{%else%}hidden{%endif%}" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24">
+                                  <use xlink:href="#exclamation-triangle-fill01"></use>
+                            </svg>
+                            <div>
+                                  <span class="multi-lang-text-trades">These data are shown without the following exchanges:</span>
+                                  {% for x in not_supported_trading_history %}
+                                  {% if loop.last %}{{x}}{% else %}{{x}}, {% endif %}
+                                  {% endfor %}
+                            </div>
+                         </div>
+                        <table class="table data-table mb-0" id="assets_table">
+                            <thead>
+                                <!--tr>
+                                    <th class="col">Time</th>
+                                    <th class="col">Type</th>
+                                    <th class="col">Action</th>
+                                    <th class="col">Taker/Maker</th>
+                                    <th class="col">Token</th>
+                                    <th class="col">Instrument</th>
+                                    <th class="col">Amount</th>
+                                    <th class="col">Fee</th>
+                                    <th class="col">PnL</th>
+                                    <th class="col">Balance change</th>
+                                    <th class="col">Balance</th>
+                                    <th class="col">Notes</th>
+                                </tr-->
+                                <tr>
+                                    <th class="col multi-lang-text-trades">Order Time</th>
+                                    <th class="col multi-lang-text-trades">Exchange</th>
+                                    <th class="col multi-lang-text-trades">Symbol</th>
+                                    <th class="col multi-lang-text-trades">Currency</th>
+                                    <th class="col multi-lang-text-trades">Side</th>
+                                    <th class="col multi-lang-text-trades">Size</th>
+                                    <th class="col multi-lang-text-trades">Order type</th>
+                                    <th class="col multi-lang-text-trades">Fee</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assetsTable">
+                                {% for order in trading_history %}
+                                    <tr class="white-space-no-wrap" idNum="{{order.id}}">
+                                        <td class="pe-2 timestamp">{{order.timestamp}}</td>
+                                        <td class="pe-2 text-center">
+                                            <img src="/static/images/{{order.exchange}}.svg" class="img-fluid avatar avatar-40" alt="img6">
+                                         </td>
+                                        <td class="pe-2">{{order.symbol}}</td>
+                                        <td class="pe-2">{{order.currency}}</td>
+                                        <td class="pe-2 buy_sell_lang">{{order.side}}</td>
+                                        <td class="pe-2">{{order.amount|float|round(4)|abs}} {{order.currency}}</td>
+                                        <td class="pe-2">{{order.order_type}}</td>
+                                        <td class="pe-2">{{order.fee}} {{order.feeCcy}}</td>
+                                    </tr>
+                               {% endfor %}
+                               {% if trading_history|count == 0 %}
+                                <tr class="white-space-no-wrap">
+                                    <td style="padding: 0;" colspan="8">
+                                        <div class="card mb-0" style="background: transparent;
+                                        width: 100%;
+                                        padding: 50px 0;">
+                                            <img src="/static/images/not-found.png" style="max-width: 140px;margin:0 auto;filter:grayscale(1)">
+                                            <span style="display: block;text-align: center;font-size: 20px;" class="no-records-found">No Records Found</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                            
+                      </div>
+                      <ul class="pagination card-header" style="margin:0;"></ul>
+                   </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/trades.js"></script>
+
+    <script>
+        selectedExchangeMain.parentElement.classList.add("hidden")
+        document.querySelectorAll(".multi-lang-text-trades").forEach(function(element,i){
+            element.innerHTML = lang_data_trades[localStorage.getItem('lang')][i]
+        })
+        document.querySelector('#sidebar').querySelectorAll("a.nav-link")[4].classList.add("active")
+        document.querySelector('#sidebar').querySelectorAll("a.nav-link")[7].classList.add("active")
+        
+        document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(e.innerHTML)
+        })
+
+        let currentPage2 = 0
+        const pageSize = 10
+
+        if (!assets_table.parentElement.nextElementSibling.innerHTML)
+            for(let i=1;i<=(assets_table.querySelectorAll("tr").length-1)/pageSize;i++){
+               assets_table.parentElement.nextElementSibling.insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            
+            if (currentPage2 == 0) currentPage2 = 1;
+
+            function showPage(pageNumber) {
+               assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+               [...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+               currentPage2 = pageNumber;
+            }
+
+            assets_table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.parentElement.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+
+            showPage(currentPage2);
+    </script>
+</html>
+{% endblock %}

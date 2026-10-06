@@ -1,0 +1,375 @@
+{% include 'base_admin.html' %}
+      <div class="container-fluid content-inner pb-0">
+<div>
+   <div class="row">
+      <div class="col-sm-12">
+         <div class="card">
+           <div class="card-header" style="display: flex;justify-content: space-between;align-items: center;">
+               <h4 class="card-title text-white">Users Datatable</h4>
+               <div style="display: flex;gap:10px;align-items: center;">
+                <button class="btn btn-sm btn-outline-primary" id="noti_all">Send a Notifiction to all</button>
+                <button class="btn btn-sm btn-outline-primary mail_all_users" id="mail_all" data-bs-toggle="modal" data-bs-target="#exampleModal">Send an Email to all</button>
+               </div>
+            </div>
+            <div class="d-flex mt-3 ms-4 me-4 justify-content-between">
+              <!--select class="form-select-custom" style="padding:10px 15px 10px 15px;color:#fff;background-color:#202022;background-repeat: no-repeat;
+                background-position: right 1rem center;
+                
+                background-size: 16px 12px;
+                border: 1px solid #69697a;
+                border-radius: .5rem;" id="validationDefault04" required>
+                <option selected disabled value="">10</option>
+                <option>20</option>
+                <option>30</option>
+                <option>40</option>
+            </select-->
+               <div class="form-outline w-100">
+                    <input type="search" id="search_filter" class="form-control ms-1" placeholder="Search.." aria-label="Search" />
+                </div>
+            </div>
+             <div class="card-body">
+
+
+                <div class="table-responsive">
+                    <table class="table" id="assets_table">
+                        <thead class="">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Syb Type</th>
+                                <th>last bill</th>
+                                <th>Balance USD</th>
+                                <th>Balance BTC</th>
+                                <th style="text-align: end;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    
+                    <div class="d-flex justify-content-between flex-wrap card-header" style="margin:0;align-items: center;">
+                        <div class="dataTables_info" id="example_info" role="status" aria-live="polite">Showing 1 to {% if users|count <= 10 %} {{users|count}} {% else %} 10 {% endif %} of {{ users|count }} entries</div>
+                           <ul class="pagination" style="margin:0;"></ul>
+                        </div>
+                  </div>
+                
+             </div>
+                
+             </div>
+         </div>
+      </div>
+   </div>
+</div>
+      </div>
+      
+      <div class="modal fade" id="exampleModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <h5 class="modal-title" id="exampleModalLabel1">Sending Email To All</h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                 </button>
+              </div>
+              <div class="modal-body">
+                 <!--send mail (subject - body)-->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="subject_mail" placeholder="Subject">
+                        <label for="floatingInput">Subject</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea class="form-control" placeholder="Leave a comment here" id="body_mail" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Body</label>
+                    </div>
+              </div>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="button" class="btn btn-primary" id="send_mail">Send</button>
+              </div>
+           </div>
+        </div>
+     </div>
+
+          </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+        async function send_custom_notification(id){
+            message = prompt("Enter your message");
+            await fetch("/api/admin/v1/send_custom_notification", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_id: id,
+                    message: message,
+                }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.ok) {
+                    swal("Success", data.message, "success");
+                } else swal("Error", data.message, "error");
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        }
+
+        noti_all.addEventListener('click', async(evt)=>{
+            evt.preventDefault()
+            message = prompt("Enter your message");
+            await fetch("/api/admin/v1/send_custom_notification_all", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: message,
+                }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.ok) {
+                    swal("Success", data.message, "success");
+                } else swal("Error", data.message, "error");
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        })
+    </script>
+    <script>
+        var users = JSON.parse('{{ users|tojson }}'.slice(1,-1));
+        example_info.innerHTML = `Showing 1 to ${(users.length<=10 ? users.length: 10 )} of ${users.length} entries`
+        var itemsPerPage = 10;
+        var totalPages = Math.ceil(users.length / itemsPerPage);
+        var currentPage = 1;
+    
+        function paginateUsers() {
+            // Update the table body with paginated users
+            var tableBody = document.querySelector('tbody');
+            tableBody.innerHTML = '';
+            
+            let last_bill= ''
+            users.forEach(async function (user) {
+                await fetch(`/api/v1/get_subscriptions_and_invoices`)
+                .then((response) => response.json())
+                .then((res) => {
+                    if(res.invoices){
+                        if(res.invoices.length>0){
+                            last_bill = res.invoices[0]['paid']
+                        } else {
+                            last_bill = "No Invoices"
+                        }
+                    }
+                    
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td user_id="${user.id}">${user.email}</td>
+                        <td sub_id="${user.subType.id}" style="display:flex;gap:10px;align-items:center;">
+                            
+                            <select class="form-control form-select edit_sub_user">
+                                {% for sub in subs %}
+                                <option value="{{sub.id}}">{{sub.type}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><i class="fa fa-${last_bill ? 'check' : 'times'}"></i></td>
+                        <td>${parseFloat(user.balance_usd).toFixed(2)}</td>
+                        <td>${parseFloat(user.balance_btc).toFixed(2)}</td>
+                        <td style="direction: rtl;">
+                            <button class="btn btn-sm btn-outline-primary mail_user_id" data-bs-toggle="modal" data-bs-target="#exampleModal">Send an Email</button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="send_custom_notification('${user.id}')">Send Notification</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                    document.querySelectorAll(".edit_sub_user").forEach(e=>{
+                        e.value = e.closest("tr").querySelectorAll("td")[2].getAttribute("sub_id")
+                    })
+
+                    document.querySelectorAll(".mail_user_id").forEach(e=>{ 
+                        e.addEventListener("click",async function(){
+                            exampleModalLabel1.innerHTML = "Sending Email To "+e.closest("tr").querySelectorAll("td")[0].innerHTML
+                            let email = this.closest("tr").querySelectorAll("td")[1].innerHTML
+                            localStorage.setItem("email_user",email)
+                        })
+                    })
+
+                    document.querySelectorAll(".edit_sub_user").forEach(e=>{
+                        e.addEventListener("change",async function(){
+                            swal({
+                                title: "Are you sure?",
+                                text: `you will change the subscription of ${e.closest("tr").querySelectorAll("td")[0].innerHTML} to ${e.querySelector("option:checked").innerHTML}`,
+                                icon: "warning",
+                                buttons: true,
+                                dangerMode: true,
+                            })
+                            .then(async (willDelete) => {
+                                if (willDelete) {
+                                    let user_id = e.closest("tr").querySelectorAll("td")[1].getAttribute("user_id")
+                                    await fetch("/api/admin/v1/subscribtion/edit",{
+                                        method:"POST",
+                                        body:JSON.stringify({
+                                            user_id:user_id,
+                                            sub_type_id: e.value,
+                                        }),
+                                        headers:{
+                                            "Content-Type":"application/json"
+                                        }
+                                    })
+                                }
+                                else {
+                                    e.value = e.closest("tr").querySelectorAll("td")[2].getAttribute("sub_id")
+                                }
+                            });
+
+                            
+                        })
+                    
+                    })
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+                
+            });
+
+            
+        }
+
+        paginateUsers()
+
+        let currentPage2 = 0
+        const pageSize = 10
+
+         if (!assets_table.nextElementSibling.querySelector(".pagination").innerHTML)
+         for(let i=1;i<=Math.ceil((assets_table.querySelectorAll("tr").length-1)/pageSize);i++){
+            assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+            `<li class="page-item ${i==1?'active':''}">
+               <a class="page-link" href="#" data-page="${i}">${i}</a>
+            </li>`
+            );
+         }
+         
+         if (currentPage2 == 0) currentPage2 = 1;
+
+         function showPage(pageNumber) {
+            [...assets_table.querySelectorAll("tbody tr")]
+            .filter(e=>!e.classList.contains("hidden"))
+            .forEach(tr => tr.style.display = "none");
+
+            [...assets_table.querySelectorAll("tbody tr")]
+            .filter(e=>e.classList.contains("hidden"))
+            .forEach(tr => tr.style.display = "");
+
+            [...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden"))
+            .filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize)
+            .forEach(tr => tr.style.display = "");
+
+            currentPage2 = pageNumber;
+         }
+
+         assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+            link.addEventListener("click", event => {
+               event.preventDefault();
+               assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                  link.parentElement.classList.remove("active");
+               })
+               event.target.parentElement.classList.add("active");
+               const pageNumber = parseInt(event.target.getAttribute("data-page"));
+               showPage(pageNumber);
+            });
+         });
+
+         showPage(currentPage2);
+
+         search_filter.addEventListener("input",function(){
+            currentPage2 = 1;
+            assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "");
+            [...assets_table.querySelectorAll("tbody tr")].filter(e=>{
+               (e.querySelectorAll("td")[0].innerHTML.toLowerCase().includes(search_filter.value.toLowerCase()) || search_filter.value == "") ? e.classList.remove("hidden") : e.classList.add("hidden")
+            });
+            assets_table.nextElementSibling.querySelector(".pagination").innerHTML = ''
+            for(let i=1;i<=Math.ceil(([...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden")).length)/pageSize);i++){
+               assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+            showPage(currentPage2)
+         })
+
+         send_mail.addEventListener("click",async function(){
+            let oldHTML = this.innerHTML
+
+            this.setAttribute("disabled","disabled")
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+
+            let subject = subject_mail.value
+            let body = body_mail.value
+            
+            let response = await fetch("/send_mail_from_admin",{
+                method:"POST",
+                body:JSON.stringify(localStorage.getItem("email_user")?{
+                    subject:subject,
+                    body:body,
+                    email:localStorage.getItem("email_user")
+                }:{
+                    subject:subject,
+                    body:body
+                }),
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            })
+            let result = await response.json();
+            if(result.ok){
+                swal("Success","Email Sent","success")
+                this.removeAttribute("disabled")
+                this.innerHTML = oldHTML
+            } else {
+                swal("Error",result.message,"error")
+                this.removeAttribute("disabled")
+                this.innerHTML = oldHTML
+            }
+         })
+
+         document.querySelectorAll(".mail_all_users").forEach(e=>{
+            e.addEventListener("click",function(){
+                exampleModalLabel1.innerHTML = "Sending Email To All"
+                localStorage.removeItem("email_user")
+            })
+         })
+
+
+
+        
+    </script>
+  </body>
+</html>

@@ -1,0 +1,245 @@
+
+
+
+<!doctype html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+      <title>PulseTrade | Sign Up</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100;200;300;400;500;600;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+      <!-- Favicon -->
+      <link rel="shortcut icon" href="/static/images/logo2.png" />
+      <link rel="stylesheet" href="/static/assets/css/libs.min.css">
+      <link rel="stylesheet" href="/static/assets/css/coinex.css?v=1.0.0">  
+      <style>
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: white;
+            transition: background-color 5000s ease-in-out 0s;
+            box-shadow: inset 0 0 20px 20px #23232329;
+            color: white!important;
+        }
+
+        .loader.simple-loader .loader-body {
+            background-image: url(/static/images/logo.gif);
+        }
+
+        .swal-modal{
+            background: #3b3b3b70;
+            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(30px);
+        }
+
+        .swal-text,.swal-title{
+            color:white;
+        }
+
+        .swal-button{
+            color: #fff;
+            background-color: #FF971D;
+            border-color: #FF971D;
+            box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0);
+            box-shadow: 0 0.125rem 0.25rem rgba(255, 151, 29, 0.3);
+        }
+
+        .swal-button:not([disabled]):hover{
+            background-color: transparent!important;
+            border-color: #FF971D;
+        }
+
+        input{
+            background: transparent!important;
+        }
+
+        html[dir="rtl"] .form-floating label {
+            right: 0;
+            left: auto;
+        }
+      </style>
+    </head>
+  <body class="" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+    <!-- loader Start -->
+    <div id="loading">
+      <div class="loader simple-loader">
+          <div class="loader-body"></div>
+      </div>    </div>
+    <!-- loader END -->
+    <div style="background-repeat: no-repeat;background-size: cover;" >  
+        <img src="/static/images/Hexagon.png" style="position: fixed;top:0;
+        left: 0;width: fit-content;height: 100%;filter: grayscale(1);min-height: 100%;min-width: 100%;opacity: 0.2;">
+        <div class="wrapper">
+<section class="vh-100 bg-image">
+    <div class="container h-100">
+        
+        <div class="row justify-content-center h-100 align-items-center">
+            <div class="col-md-6 mt-5">
+                <div class="card" style="background: #20202296;-webkit-backdrop-filter:blur(2px);backdrop-filter: blur(2px);">
+                    <div class="card-body">
+                        <div class="auth-form">
+                                <h2 class="mb-4 card-header multi-lang-text-register" style="background: transparent;padding-left: 0;padding-right: 0;">Sign Up</h2>
+                                <p></p>
+                                <form method="POST" action="{{ url_for('register') }}">
+                                    <div class="form-floating mb-3">            
+                                       <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                       <label for="firstName" class="multi-lang-text-register">First Name</label>
+                                   </div>
+                                    <div class="form-floating mb-3">            
+                                       <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                       <label for="lastName" class="multi-lang-text-register">Last Name</label>
+                                    </div>
+                                    <div class="form-floating mb-3">            
+                                       <input type="email" class="form-control" id="email" name="email" required>
+                                       <label for="email" class="multi-lang-text-register">Email</label>
+                                   </div>
+                                     <div class="form-floating mb-2">
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <label for="password" class="multi-lang-text-register">Password</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                       <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                       <label for="password" class="multi-lang-text-register">Confirm Password</label>
+                                   </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary multi-lang-text-register" style="width: 100%;">Create Account</button>
+                                    </div>
+
+                                    <!--div class="text-center mt-3">
+                                        <p>or sign in with others account?</p>
+                                    </div>
+                                     <div class="d-flex justify-content-center ">
+                                        <ul class="list-group list-group-horizontal   list-group-flush">
+                                            <li class="list-group-item bg-transparent border-0">
+                                            <a href="#"><img src="/static/assets/images/brands/01.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img60"></a>
+                                            </li>
+                                            <li class="list-group-item bg-transparent border-0">
+                                            <a href="#"><img src="/static/assets/images/brands/02.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="gm"></a>
+                                            </li>
+                                            <li class="list-group-item bg-transparent border-0">
+                                            <a href="#"><img src="/static/assets/images/brands/03.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="im"></a>
+                                            </li>
+                                            <li class="list-group-item bg-transparent border-0">
+                                            <a href="#"><img src="/static/assets/images/brands/04.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="li"></a>
+                                            </li>
+                                        </ul>
+                                    </div-->
+                                </form>
+                                <div class="new-account mt-3 text-center">
+                                    <p><span class="multi-lang-text-register">Already have an account?</span> <a class="multi-lang-text-register" href="{{ url_for('login') }}">Click
+                                            here to sign in</a></p>
+                                </div>
+                                <!--div class="new-account mt-3 text-center">
+                                    <p>Admin Login 
+                                        <a class="" href="{{ url_for('admin_home') }}">Click Here To Enter</a>
+                                    </p>
+                                </div-->
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+        </div>
+      </div>
+      
+    
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/register.js"></script>
+    <script>
+        if(localStorage.getItem('lang') == null){
+            localStorage.setItem('lang','en')
+        }
+        
+
+        document.querySelector("html").setAttribute("lang", localStorage.getItem('lang'))
+
+        if(localStorage.getItem('lang') == 'ar'){
+            document.dir = 'rtl' 
+            document.body.style.fontFamily = 'Rubik'
+        }
+        else{
+            document.dir = 'ltr'
+        }
+
+        document.querySelectorAll(".multi-lang-text-register").forEach(function(element,i){
+            element.innerHTML = lang_data_register[localStorage.getItem('lang')][i]
+        })
+
+        document.querySelector("form").addEventListener("submit",async function(e) {
+            e.preventDefault();
+            let oldHTML = this.querySelector("button").innerHTML
+            this.querySelector("button").setAttribute("disabled","disabled")
+            this.querySelector("button").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+            let email = this.elements["email"].value;
+            let firstName = this.elements["firstName"].value;
+            let lastName = this.elements["lastName"].value;
+            let password = this.elements["password"].value;
+            let confirm_password = this.elements["confirm_password"].value;
+            console.log({
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    password: password,
+                    confirm_password: confirm_password
+                })
+            await fetch("{{ url_for('register') }}", {
+                method: "POST",
+                body: JSON.stringify({
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    password: password,
+                    confirm_password: confirm_password
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.ok) {
+                    swal({
+                        title: "Error",
+                        text: data.message,
+                        icon: "error",
+                        button: "OK",
+                    });
+                    this.querySelector("button").innerHTML = oldHTML
+                    this.querySelector("button").removeAttribute("disabled")
+                } else {
+                    swal({
+                        title: "Success",
+                        text: data.message,
+                        icon: "success",
+                        button: "OK",
+                    })
+                    .then(() => {
+                        window.location.href = "{{ url_for('login') }}";
+                    });
+                }
+            })
+            .catch(() => {
+                this.querySelector("button").innerHTML = oldHTML
+                this.querySelector("button").removeAttribute("disabled")
+            })
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,215 @@
+{% extends 'base.html' %}    
+{% block title %}Coinex | Settings{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-sm-12 col-lg-4">
+                    <div class="card" style="height: 100%;">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                            <div class="header-title">
+                                <h4 class="card-title mb-2 multi-lang-text-settings">Personal data</h4>       
+                            </div>
+                        </div>
+
+                        <div class="card-body">   
+                            <div class="form-group">
+                                <div class="profile-img-edit position-relative">
+                                   <img class="img-fluid avatar avatar-100 avatar-rounded" src="{{current_user.img}}" alt="profile-pic">
+                                   <div class="upload-icone bg-primary">
+                                      <svg class="upload-button" width="14" height="14" viewBox="0 0 24 24">
+                                         <path fill="#ffffff" d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"></path>
+                                      </svg>
+                                      <input class="file-upload" type="file" accept="image/*">
+                                   </div>
+                                </div>
+                                <div class="img-extension mt-3">
+                                   <div class="d-inline-block align-items-center">
+                                      <span class=" multi-lang-text-settings">Only</span>
+                                      <a href="javascript:void();">.jpg</a>
+                                      <a href="javascript:void();">.png</a>
+                                      <a href="javascript:void();">.jpeg</a>
+                                      <span class=" multi-lang-text-settings">allowed</span>
+                                   </div>
+                                </div>
+                             </div>
+
+                            <div>
+                                <strong class="multi-lang-text-settings">ID: </strong>
+                                <span>{{current_user.id}}</span>
+                            </div>      
+                            <div>
+                                <strong class="multi-lang-text-settings">Name: </strong>
+                                <span>{{current_user.firstName}} {{current_user.lastName}}</span>
+                            </div>  
+                            <div>
+                                <strong class="multi-lang-text-settings">Email: </strong>
+                                <span>{{current_user.email}}</span>
+                            </div>         
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-lg-4">
+                    <div class="card" style="height: 100%;">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                            <div class="header-title">
+                                <h4 class="card-title mb-2 multi-lang-text-settings">Security</h4>       
+                            </div>
+                        </div>
+
+                        <div class="card-body">   
+                            <div class="form-check form-switch form-check-inline">
+                                {% if current_user.ip_check %}
+                                <input class="form-check-input" type="checkbox" id="ip-switch" checked="">
+                                {% else %}
+                                <input class="form-check-input" type="checkbox" id="ip-switch">
+                                {% endif %}
+                                <label class="form-check-label pl-2 multi-lang-text-settings" for="ip-switch">IP-address check</label>
+                            </div>    
+                            
+                            <br>
+                            <br>
+                            <div>
+                                <div class="form-floating mb-3">
+                                    <select name="order_type" class="form-control" id="lang">
+                                        <option value="ar">العربية</option>
+                                        <option value="en" selected>English</option>
+                                    </select>
+                                    <label for="floatingInput" class=" multi-lang-text-settings">Language</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-lg-4">
+                    <div class="card" style="height: 100%;">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                            <div class="header-title">
+                                <h4 class="card-title mb-2 multi-lang-text-settings">Billing</h4>       
+                            </div>
+                        </div>
+
+                        <div class="card-body">   
+                            <div>
+                                <strong class=" multi-lang-text-settings">Subscription Type: </strong>
+                                <span id="sub_type_ar" type_ar="{{current_user.subType.type_ar}}">({{current_user.subType.type}})</span>
+                            </div>      
+                            <br>
+                            <div>
+                                <a href="/subscription">
+                                    <button class="btn btn-primary multi-lang-text-settings">Manage Subscription</button>
+                                </a>
+                            </div>           
+                        </div>
+                    </div>
+                </div>
+
+                <!--div class="col-sm-12 col-lg-4">
+                    <div class="card" style="height: 100%;">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                            <div class="header-title">
+                                <h4 class="card-title mb-2">Notifications</h4>       
+                            </div>
+                        </div>
+
+                        <div class="card-body">   
+                            <div class="form-check form-switch form-check-inline">
+                                {% if True %}
+                                <input class="form-check-input" type="checkbox" id="notify-switch" checked="">
+                                {% else %}
+                                <input class="form-check-input" type="checkbox" id="notify-switch">
+                                {% endif %}
+                                <label class="form-check-label pl-2" for="notify-switch">All Notifications</label>
+                            </div>             
+                        </div>
+                    </div>
+                </div-->
+
+            </div>
+        </div>
+    </div>  
+    </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/settings.js"></script>
+
+      
+      
+
+    <script>
+      document.querySelectorAll(".multi-lang-text-settings").forEach(function(element,i){
+         element.innerHTML = lang_data_settings[localStorage.getItem('lang')][i]
+     })
+        async function toggle_ip_check(){
+            await fetch(`/api/v1/user_settings/ip_check`,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    isActive: document.getElementById('ip-switch').checked
+                })
+            })
+        }
+
+        document.getElementById('ip-switch').addEventListener('change', toggle_ip_check)
+
+        document.querySelector(".file-upload").addEventListener("input",async function(){
+            console.log("1")
+            this.parentElement.parentElement.querySelector('img').src='/static/images/loading-gif.gif'
+            let fileInput = this;
+            let file = fileInput.files[0];
+            let imageType = /image.*/;
+            if (file?.type.match(imageType)) {
+                let reader = new FileReader();
+                console.log("2")
+                reader.onload = async function(e) {
+                    await fetch(`/api/v1/edit_user_info/`,
+                    {
+                    "method": "POST",
+                    "headers": {"Content-Type": "application/json"},
+                    "body": reader.result,
+                    })
+                    .then(()=>{
+                        fileInput.parentElement.parentElement.querySelector('img').src = reader.result
+                        user_profile.src = reader.result
+                    })
+                }
+                reader.readAsDataURL(file);	
+            }
+        })
+
+        if(localStorage.getItem('lang') == null){
+            localStorage.setItem('lang', 'en')
+        }
+        lang.value = localStorage.getItem('lang')
+
+        lang.addEventListener('change',()=>{
+            localStorage.setItem('lang', lang.value)
+            location.reload()
+        })
+
+        if(localStorage.getItem('lang') == 'ar'){
+            sub_type_ar.innerHTML = "("+sub_type_ar.getAttribute('type_ar')+")"
+        }
+        
+        
+    </script>
+  </body>
+</html>
+{% endblock %}

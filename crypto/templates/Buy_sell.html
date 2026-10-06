@@ -1,0 +1,307 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+        <div style="background-image: url('/static/assets/images/auth/01.png')" >  
+            <div class="wrapper">
+                <div class="d-grid grid-1-auto gap-card" style="overflow: scroll;">
+                    <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px;text-align: center;padding: 31px;justify-content: center;">
+                        <a href="{{ url_for('crypto_convert') }}" class="btn btn-secondary">Convert</a>
+                        <a href="{{ url_for('crypto_transfer') }}" class="btn btn-secondary">Transfer</a>
+                        <a href="{{ url_for('crypto_withdraw') }}" class="btn btn-secondary">Withdraw</a>
+                        <a href="{{ url_for('crypto_deposit') }}" class="btn btn-secondary">Deposit</a>
+                        <a href="{{ url_for('crypto_buy') }}" class="btn btn-primary">Buy/Sell</a>
+                    </div>                 
+                 </div>
+                <section class="vh-100 bg-image">
+                    <div class="container h-100">
+                        <div class="row justify-content-center h-100 align-items-start">
+                            <div class="col-md-5 mt-5">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form id="convert">
+                                        <div class="auth-form">
+                                            <div class="text-center">
+                                                <h2>Buy/Sell Crypto</h2>
+                                            </div>
+                                            <br>
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <select class="form-select form-select-lg mb-3" name="exchange">
+                                                            {% for exchange in exchanges %}
+                                                            <option value="{{exchange.name}}">{{exchange.name}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <select class="form-select form-select-lg mb-3" id="side" name="side">
+                                                            <option value="Buy">Buy</option>
+                                                            <option value="Sell">Sell</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" class="form-control" id="price_input1" name="amount" placeholder="0.00">
+                                                            <label for="floatingInput">You'll pay</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select class="form-control mb-3" name="market">
+                                                                <option value ="AED">AED</option>
+                                                                <option value ="AFN">AFN</option>
+                                                                <option value ="AMD">AMD</option>
+                                                                <option value ="ARS">ARS</option>
+                                                                <option value ="AUD">AUD</option>
+                                                                <option value ="AZN">AZN</option>
+                                                                <option value ="BGN">BGN</option>
+                                                                <option value ="BHD">BHD</option>
+                                                                <option value ="BND">BND</option>
+                                                                <option value ="BOB">BOB</option>
+                                                                <option value ="BRL">BRL</option>
+                                                                <option value ="BYN">BYN</option>
+                                                                <option value ="CAD">CAD</option>
+                                                                <option value ="CHF">CHF</option>
+                                                                <option value ="CLP">CLP</option>
+                                                                <option value ="CNY">CNY</option>
+                                                                <option value ="COP">COP</option>
+                                                                <option value ="CRC">CRC</option>
+                                                                <option value ="CZK">CZK</option>
+                                                                <option value ="DKK">DKK</option>
+                                                                <option value ="DOP">DOP</option>
+                                                                <option value ="DZD">DZD</option>
+                                                                <option value ="EGP">EGP</option>
+                                                                <option value ="ETB">ETB</option>
+                                                                <option value ="EUR">EUR</option>
+                                                                <option value ="GBP">GBP</option>
+                                                                <option value ="GEL">GEL</option>
+                                                                <option value ="GHS">GHS</option>
+                                                                <option value ="HKD">HKD</option>
+                                                                <option value ="HUF">HUF</option>
+                                                                <option value ="IDR">IDR</option>
+                                                                <option value ="ILS">ILS</option>
+                                                                <option value ="INR">INR</option>
+                                                                <option value ="ISK">ISK</option>
+                                                                <option value ="JOD">JOD</option>
+                                                                <option value ="JPY">JPY</option>
+                                                                <option value ="KES">KES</option>
+                                                                <option value ="KGS">KGS</option>
+                                                                <option value ="KHR">KHR</option>
+                                                                <option value ="KWD">KWD</option>
+                                                                <option value ="KZT">KZT</option>
+                                                                <option value ="LAK">LAK</option>
+                                                                <option value ="LBP">LBP</option>
+                                                                <option value ="LKR">LKR</option>
+                                                                <option value ="LYD">LYD</option>
+                                                                <option value ="MAD">MAD</option>
+                                                                <option value ="MDL">MDL</option>
+                                                                <option value ="MMK">MMK</option>
+                                                                <option value ="MNT">MNT</option>
+                                                                <option value ="MXN">MXN</option>
+                                                                <option value ="NGN">NGN</option>
+                                                                <option value ="NOK">NOK</option>
+                                                                <option value ="NZD">NZD</option>
+                                                                <option value ="OMR">OMR</option>
+                                                                <option value ="PAB">PAB</option>
+                                                                <option value ="PEN">PEN</option>
+                                                                <option value ="PHP">PHP</option>
+                                                                <option value ="PKR">PKR</option>
+                                                                <option value ="PLN">PLN</option>
+                                                                <option value ="PYG">PYG</option>
+                                                                <option value ="QAR">QAR</option>
+                                                                <option value ="RON">RON</option>
+                                                                <option value ="RUB">RUB</option>
+                                                                <option value ="SAR">SAR</option>
+                                                                <option value ="SDG">SDG</option>
+                                                                <option value ="SEK">SEK</option>
+                                                                <option value ="THB">THB</option>
+                                                                <option value ="TJS">TJS</option>
+                                                                <option value ="TMT">TMT</option>
+                                                                <option value ="TND">TND</option>
+                                                                <option value ="TRY">TRY</option>
+                                                                <option value ="TWD">TWD</option>
+                                                                <option value ="TZS">TZS</option>
+                                                                <option value ="UAH">UAH</option>
+                                                                <option value ="UGX">UGX</option>
+                                                                <option value ="USD">USD</option>
+                                                                <option value ="UYU">UYU</option>
+                                                                <option value ="UZS">UZS</option>
+                                                                <option value ="VES">VES</option>
+                                                                <option value ="VND">VND</option>
+                                                                <option value ="XAF">XAF</option>
+                                                                <option value ="XOF">XOF</option>
+                                                                <option value ="ZAR">ZAR</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+                                                
+                                                 <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" class="form-control" id="price_input2" name="amount2" placeholder="0.00">
+                                                            <label for="floatingInput">You'll receive</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                        <select class="form-control mb-3" name="pair">
+                                                            <option value="USDT">USDT</option>
+                                                            <option value="BTC">BTC</option>
+                                                            <option value="ETH">ETH</option>
+                                                            <option value="LTC">LTC</option>
+                                                            <option value="BCH">BCH</option>
+                                                            <option value="XRP">XRP</option>
+                                                            <option value="TRX">TRX</option>
+                                                            <option value="DASH">DASH</option>
+                                                            <option value="ZEC">ZEC</option>
+                                                            <option value="XMR">XMR</option>
+                                                            <option value="XLM">XLM</option>
+                                                            <option value="ADA">ADA</option>
+                                                            <option value="EOS">EOS</option>
+                                                            <option value="BNB">BNB</option>
+                                                            <option value="USDC">USDC</option>
+                                                            <option value="BSV">BSV</option>
+                                                            <option value="XTZ">XTZ</option>
+                                                            <option value="ATOM">ATOM</option>
+                                                            <option value="NEO">NEO</option>
+                                                            <option value="LEO">LEO</option>
+                                                            <option value="HT">HT</option>
+                                                            <option value="LINK">LINK</option>
+                                                            <option value="MIOTA">MIOTA</option>
+                                                            <option value="MKR">MKR</option>
+                                                            <option value="CRO">CRO</option>
+                                                            <option value="ETC">ETC</option>
+                                                            <option value="ONT">ONT</option>
+                                                            <option value="XEM">XEM</option>
+                                                            <option value="BAT">BAT</option>
+                                                            <option value="DOGE">DOGE</option>
+                                                            <option value="VET">VET</option>
+                                                            <option value="USDK">USDK</option>
+                                                            <option value="DCR">DCR</option>
+                                                            <option value="QTUM">QTUM</option>
+                                                            <option value="HEDG">HEDG</option>
+                                                            <option value="PAX">PAX</option>
+                                                            <option value="TUSD">TUSD</option>
+                                                            <option value="ZRX">ZRX</option>
+                                                            <option value="REP">REP</option>
+                                                            <option value="BTG">BTG</option>
+                                                            <option value="ALGO">ALGO</option>
+                                                            <option value="DGB">DGB</option>
+                                                            <option value="ICX">ICX</option>
+                                                            <option value="NANO">NANO</option>
+                                                            <option value="OMG">OMG</option>
+                                                            <option value="BCD">BCD</option>
+                                                            <option value="SC">SC</option>
+                                                            <option value="BTT">BTT</option>
+                                                            <option value="RVN">RVN</option>
+                                                            <option value="LSK">LSK</option>
+                                                        </select>
+                                                    </div>
+                                                    </div>
+                                                 </div>
+
+                                                
+                                            </div>
+                                            <div class="">
+                                                <div class="d-grid gap-card grid-cols-1">
+                                                    <button class="btn btn-success" type="submit">
+                                                       <span>Convert</span>
+                                                       <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                                    </button>
+                                                    <button class="btn btn-success hidden" type="button" disabled="">
+                                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </button>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+          </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+        document.querySelector("#convert").addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = event.target;
+            form.querySelectorAll("button")[0].classList.add("hidden");
+            form.querySelectorAll("button")[1].classList.remove("hidden");
+            const data = {
+                "exchange": form.elements.exchange.value,
+                "amount": form.elements.amount2.value,
+                "market": form.elements.market.value,
+                "pair": form.elements.pair.value,
+            };
+
+            fetch('/crypto/buy/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show a success message with SweetAlert
+                swal('Success', data.message, 'success');
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal('Error', error.message, 'error');
+            })
+            .finally(() => {
+                form.querySelectorAll("button")[0].classList.remove("hidden");
+                form.querySelectorAll("button")[1].classList.add("hidden");
+            });
+        });
+
+        /****************************************************************/
+
+        /*setInterval(function(){
+            getPrice()
+        },1000);
+        async function getPrice(){
+            let form = document.querySelector("#convert")
+            await fetch(`/getPrice/?symbol=${form.elements.market.value}${form.elements.pair.value}&exchange=${form.elements.exchange.value}&interval=15m`)
+            .then(res=>res.json())
+            .then(res=>{
+                form.elements.amount2.value = res.price*form.elements.amount.value
+            })
+        }*/
+
+        price_input1.addEventListener("input",function(){
+            price_input2.value = this.value * 1526
+        })
+
+        price_input2.addEventListener("input",function(){
+            price_input1.value = this.value / 1526
+        })
+        
+    </script>
+</html>

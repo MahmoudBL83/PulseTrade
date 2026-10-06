@@ -1,0 +1,87 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+            <div class="wrapper">
+                    <!--div class="card card-block card-stretch custom-scroll" style="background: transparent;">
+                        <div class="card-body" style="background: transparent;">
+                            <div class="btn-check-group" style="margin-bottom: 32px;">
+                                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary active rounded-start">Buy/Sell</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Trade</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Buy</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary rounded-end">Smart Sell</label>
+                                 </div>
+                            </div>
+                        </div>
+                     </div-->
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch custom-scroll">
+                   <div class="card-body">
+                      <div class="table-responsive">
+                         <table class="table data-table mb-0">
+                            <thead>
+                               <tr>
+                                  <th class="col">Time Opened</th>
+                                    <th class="col">Instrument</th>
+                                    <th class="col">Pair</th>
+                                    <th class="col">Isolated/Cross</th>
+                                    <th class="col">Entry Price</th>
+                                    <th class="col">Close Price</th>
+                                    <th class="col">PnL | PnL%</th>
+                                    <th class="col">Max Open Interest</th>
+                                    <th class="col">Closed</th>
+                                    <th class="col">Time Closed</th>
+                                    <th class="col">Status</th>
+                               </tr>
+                            </thead>
+                               <tbody id="assetsTable">
+                                {% for order in positions_history %}
+                                  <tr class="white-space-no-wrap">
+                                    <td class="col">{{ order.info.cTime }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.insdtId }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }} | {{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                    <td class="col">{{ order.info.instType }}</td>
+                                  </tr>
+                               </tbody>
+                               {% endfor %}
+                         </table>
+                      </div>
+                   </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+    <script>
+      document.querySelector('#sidebar').querySelectorAll("a.nav-link")[4].classList.add("active")
+    </script>
+</html>

@@ -1,0 +1,563 @@
+{% extends 'base.html' %}    
+{% block title %}PulseTrade | Convert Crypto{% endblock %}
+{% block head %}
+<style>
+select,input{
+    background: #ffffff08!important;
+    border-color: #36363869!important;
+}
+</style>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid content-inner pb-0" style="padding:0">
+        <div style="position: relative;" >  
+            <img src="/static/images/Hexagon.png" style="position: fixed;top:0;
+        left: 0;width: fit-content;height: 100%;filter: grayscale(1);min-height: 100%;min-width: 100%;opacity: 0.08;"> 
+            <div class="wrapper">
+                <div class="d-grid grid-1-auto gap-card" style="overflow: scroll;">
+                    <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px;text-align: center;padding: 31px;justify-content: center;">
+                        <a href="{{ url_for('crypto_convert') }}" id="walletOverview_transaction_history_aLink" class="btn btn-primary">
+                            <span class="remove_on_mobile">Convert</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M13.1406 6.90042H19.4413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>                              
+                        </a>
+                        <a href="{{ url_for('crypto_transfer') }}" id="walletOverview_top_transfer" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Transfer</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>                            
+                        </a>
+                        <a href="{{ url_for('crypto_withdraw') }}" id="walletOverview_top_withdrawal" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Withdraw</span>
+                            <svg style="transform:rotate(180deg)" width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </a>
+                        <a href="{{ url_for('crypto_deposit') }}" id="walletOverview_top_deposit" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Deposit</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </a>
+                    </div>                 
+                </div>
+                <section class="vh-100 bg-image">
+                    <div class="container h-100">
+                        <div class="row justify-content-start h-100 align-items-start">
+                            <div class="col-lg-5 mt-5">
+                                
+                                <div class="card" style="background-color: #202022;background: transparent!important;box-shadow: unset;">
+                                    <div style="position: absolute;
+                                    top:0;
+                                    z-index: -2;
+                                    right: 0;
+                                    /*background-image: url('/static/assets/images/auth/01.png');*/
+                                    filter: blur(122px);
+                                    width: 100%;
+                                    height: 100%;"></div>
+                                    <div class="card-body" style="border-radius: 8px;">
+                                        <form id="convert">
+                                        <div class="auth-form">
+                                            <div class="" style="margin:0;display: flex;justify-content: space-between;align-items: center;">
+                                                <div class="" style="margin:0">
+                                                    <h2 class="multi-lang-text-convert">Convert</h2>
+                                                </div>
+                                                <span id="convert_svg" style="cursor: pointer;">
+                                                    <svg width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                    </svg> 
+                                                </span>                           
+                                            </div>
+                                            <br>
+                                            <span class="card-header" style="margin:0;margin-bottom:15px;width: 100%;display: flex;justify-content: space-between;align-items: center;text-align: center;">
+                                                <span class="multi-lang-text-convert">Pecentage From Balance</span>
+                                                <span id="bal_percentage">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </span>
+                                            </span>
+                                            <div>
+                                                <div class="row hidden">
+                                                    <div class="col-md-12">
+                                                        <select class="form-select form-select-lg mb-3" id="order_type" name="order_type">
+                                                            <option value="market">market</option>
+                                                            <option value="limit">limit</option>
+                                                            
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" style="background: transparent!important;" class="form-control" id="amount_input" name="amount" placeholder="0.00" step="0.00001">
+                                                            <label for="floatingInput" class="multi-lang-text-convert">From</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select style="background: transparent!important;" class="form-control mb-3 currencies" id="source_asset" name="source_asset">
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12 hidden">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="number" style="background: transparent!important;" class="form-control" id="price_input" name="price" value="0">
+                                                            <label for="floatingInput" class="multi-lang-text-convert">Price</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input disabled type="text" style="background: transparent!important;" class="form-control" id="amount_input2" name="amount2" placeholder="0.00">
+                                                            <label for="floatingInput" class="multi-lang-text-convert">To</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select style="background: transparent!important;" class="form-control mb-3 currencies" id="target_asset" name="target_asset"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="">
+                                                <div class="d-grid gap-card grid-cols-1">
+                                                    <button class="btn btn-success" disabled type="submit">
+                                                        <span>Convert</span>
+                                                        <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                                    </button>
+                                                    <button class="btn btn-success hidden" type="button" disabled="">
+                                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="side" value="1" id="side_input">
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    </script>
+</body>
+<!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/convert.js"></script>
+
+    <script>
+        pairs = JSON.parse('{{pairs|tojson}}')
+        console.log(pairs)
+        document.querySelectorAll(".multi-lang-text-convert").forEach(function(element,i){
+            element.innerHTML = lang_data_convert[localStorage.getItem('lang')][i]
+        })
+        selectedExchangeMain.parentElement.classList.remove("hidden")
+        let canConvert = false
+        document.querySelector("#convert").addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = event.target;
+            form.querySelectorAll("button")[0].classList.add("hidden");
+            form.querySelectorAll("button")[1].classList.remove("hidden");
+            const data = {
+                "exchange": selectedExchangeMain.value,
+                "amount": form.elements.amount.value,
+                "order_type": form.elements.order_type.value,
+                "source_asset": form.elements.source_asset.value,
+                "target_asset": form.elements.target_asset.value,
+                "price": form.elements.price.value,
+                "side": form.elements.side.value,
+            };
+
+            fetch('/api/v1/convert/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                
+                if(data.ok){
+                    // Show a success message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?"Success":"تم", data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", error.message, 'error');
+            })
+            .finally(() => {
+                form.querySelectorAll("button")[0].classList.remove("hidden");
+                form.querySelectorAll("button")[1].classList.add("hidden");
+            });
+        });
+
+        /****************************************************************/
+        getPrice()
+        async function getPrice(){
+            let form = document.querySelector("#convert")
+            side_input.value=="1"
+            await fetch(`/api/v1/live_price?pair=${form.elements.source_asset.value}&market=${form.elements.target_asset.value}&exchange=${selectedExchangeMain.value.toUpperCase()}&stream=false`)
+            .then(res => res.json())
+            .then(res=>{
+                if(form.elements.order_type.value == 'market'){
+                    if(side_input.value=="1")
+                    form.elements.amount2.value = res*parseFloat(form.elements.amount.value)
+
+                    else
+                    form.elements.amount.value = (parseFloat(form.elements.amount2.value)/res)
+
+                    set_precision()
+                }
+                if(form.elements.price.value==""){
+                    form.elements.price.value = res.toFixed(6)
+                }
+                //document.querySelector("form").querySelector("button").removeAttribute("disabled")
+            })
+            .catch(err=>{
+                //document.querySelector("form").querySelector("button").setAttribute("disabled","disabled")
+                form.elements.amount2.value = ''
+                form.elements.amount.value = ''
+            })
+            .finally(()=>{
+                getPrice()
+            })
+        }
+
+        async function get_precisions(x){
+            await fetch(`/api/v1/currencies/${x}`)
+            .then(res=>res.json())
+            .then(res=>{
+                localStorage.setItem("precisions",JSON.stringify(res))
+            })
+        }
+
+        get_precisions(selectedExchangeMain.value)
+
+        async function get_precision2(x){
+            await fetch(`/api/v1/precision/${selectedExchangeMain.value}`,{
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"symbol":x}),
+            })
+            .then(res=>res.json())
+            .then(res=>{
+                localStorage.setItem("precision_json",JSON.stringify(res))
+            })
+        }
+
+        function get_precision(x){
+            return JSON.parse(localStorage.getItem("precision_json"))
+        }
+        /*async function get_currecies(x){
+            document.querySelectorAll(".currencies").forEach(async (element,i) => {
+                element.innerHTML = '<option value=""></option>'
+                await fetch(`/api/v1/markets/${x}`)
+                .then(res=>res.json())
+                .then(res=>{
+                    element.removeAttribute("disabled")
+                    if(i==0)
+                    Object.keys(res.quote).forEach(symbol => {
+                        element.insertAdjacentHTML("beforeend",`
+                            <option ${symbol == 'USDT'?"selected":""} value="${symbol}">${symbol}</option>
+                        `)
+                    });
+                    if(i==1)
+                    Object.keys(res.base).forEach(symbol => {
+                        element.insertAdjacentHTML("beforeend",`
+                            <option ${symbol == selectedPair?"selected":""} value="${symbol}">${symbol}</option>
+                        `)
+                    });
+                })
+                .finally(()=>{
+                    order_book_history()
+                    last_trades_history()
+                    live_price_history()
+                    indicators()
+                })
+            });
+        }*/
+
+        document.querySelector("#order_type").addEventListener("change",function(){
+            let form = document.querySelector("#convert")
+            if(this.value=="market"){
+                price_input.closest(".col-md-12").classList.add("hidden")
+                getPrice()
+            }else{
+                price_input.closest(".col-md-12").classList.remove("hidden")
+                form.elements.amount2.value = price_input.value*form.elements.amount.value
+            }
+            get_bal2()
+        })
+
+        amount_input.addEventListener("input",function(){
+            let form = document.querySelector("#convert")
+            if(form.elements.order_type.value == 'limit'){
+                form.elements.amount2.value = price_input.value*form.elements.amount.value
+            }
+            
+            
+        })
+
+        price_input.addEventListener("input",function(){
+            let form = document.querySelector("#convert")
+            if(form.elements.order_type.value == 'limit'){
+                form.elements.amount2.value = this.value*form.elements.amount.value
+            }
+        })
+
+        /**************************************************/
+
+        selectedExchangeMain.addEventListener("change",async function(){
+            get_currecies(this.value)
+        })
+
+        async function get_currecies(x){
+            document.querySelectorAll(".currencies").forEach(async (element,i) => {
+                element.innerHTML = '<option value=""></option>'
+                element.setAttribute("disabled","disabled")
+                await fetch(`/api/v1/markets/${x}`)
+                .then(res=>res.json())
+                .then(res=>{
+                    element.removeAttribute("disabled")
+                    console.log(res)
+                    if(i==1)
+                    Object.keys(res.quote).forEach(symbol => {
+                                element.insertAdjacentHTML("beforeend",`
+                                    <option value="${symbol}">${symbol}</option>
+                                `)
+                    });
+                    if(i==0)
+                    Object.keys(res.base).forEach(symbol => {
+                                element.insertAdjacentHTML("beforeend",`
+                                    <option value="${symbol}">${symbol}</option>
+                                `)
+                    });
+                    canConvert = true
+                })
+            });
+            
+        }
+
+        get_currecies(selectedExchangeMain.value)
+        
+
+
+        document.querySelector("#convert").querySelector("#convert_svg").addEventListener("click",function(){
+            if(canConvert)
+            if(side_input.value == "2"){
+                let oldValue = source_asset.value
+                side_input.value = "1"
+                let x = price_input.closest(".row").cloneNode(true)
+                let y = source_asset.closest(".row").cloneNode(true)
+                price_input.closest(".row").remove()
+                source_asset.closest(".row").remove()
+                order_type.closest(".row").insertAdjacentElement("afterend",y)
+                y.closest(".row").insertAdjacentElement("afterend",x)
+                amount_input.parentElement.querySelector("label").innerHTML = "From"
+                amount_input2.parentElement.querySelector("label").innerHTML = "To"
+                amount_input.removeAttribute("disabled")
+                amount_input2.setAttribute("disabled","disabled")
+                source_asset.value = oldValue
+            }
+            else{
+                let oldValue = target_asset.value
+                side_input.value = "2"
+                let x = target_asset.closest(".row").cloneNode(true)
+                let y = price_input.closest(".row").cloneNode(true)
+                price_input.closest(".row").remove()
+                target_asset.closest(".row").remove()
+                order_type.closest(".row").insertAdjacentElement("afterend",x)
+                x.closest(".row").insertAdjacentElement("afterend",y)
+                amount_input.parentElement.querySelector("label").innerHTML = "To"
+                amount_input2.parentElement.querySelector("label").innerHTML = "From"
+                amount_input.setAttribute("disabled","disabled")
+                amount_input2.removeAttribute("disabled")
+                target_asset.value = oldValue
+            }
+            get_bal2()
+            set_precision()
+        })
+
+        source_asset.addEventListener("change",function(){
+            let filtered = pairs.filter(pair => pair.startsWith(this.value+'/'))
+            let oldValue = target_asset.value
+            target_asset.innerHTML = '<option value=""></option>'
+            filtered.forEach(pair => {
+                target_asset.insertAdjacentHTML("beforeend",`
+                    <option value="${pair.split('/')[1]}">${pair.split('/')[1]}</option>
+                `)
+            });
+            target_asset.value = oldValue
+            get_bal2()
+            let form = document.querySelector("#convert")
+            if(form.elements.target_asset.value && form.elements.source_asset.value)
+            get_precision2(form.elements.source_asset.value+"/"+form.elements.target_asset.value)
+            set_precision()
+        })
+
+        target_asset.addEventListener("change",function(){
+            //find pairs that ends with '/this.value'
+            let filtered = pairs.filter(pair => pair.endsWith('/'+this.value))
+            let oldValue = source_asset.value
+            source_asset.innerHTML = '<option value=""></option>'
+            filtered.forEach(pair => {
+                source_asset.insertAdjacentHTML("beforeend",`
+                    <option value="${pair.split('/')[0]}">${pair.split('/')[0]}</option>
+                `)
+            });
+            source_asset.value = oldValue
+            get_bal2()
+            let form = document.querySelector("#convert")
+            if(form.elements.target_asset.value && form.elements.source_asset.value)
+            get_precision2(form.elements.source_asset.value+"/"+form.elements.target_asset.value)
+            set_precision()
+            
+        })
+
+        function get_bal2(){
+            let symbol = document.querySelector("#convert").elements.side.value=='2'?target_asset.value:source_asset.value
+            bal = parseFloat(JSON.parse(localStorage.getItem("balance_json"))[symbol])
+            if (bal>0){
+                document.querySelector("#bal_percentage").previousElementSibling.classList.remove("hidden")
+                document.querySelector("#bal_percentage").innerHTML = `${(parseFloat((side_input.value=='1'? document.querySelector("#convert").elements.amount.value:document.querySelector("#convert").elements.amount2.value)||0)/bal*100).toFixed(12)}%`
+            }
+            else{
+                document.querySelector("#bal_percentage").previousElementSibling.classList.add("hidden")
+                document.querySelector("#bal_percentage").innerHTML = localStorage.getItem("lang")!="ar"?'You have 0 of':' لديك 0 من' + ` ${symbol}`
+            } 
+            
+        }
+
+
+        let bal = null
+        async function get_bal(){
+            await fetch(`/api/v1/live_balance_json?exchange=${selectedExchangeMain.value}`)
+            .then(res=>res.json())
+            .then(res=>{
+                localStorage.setItem("balance_json",JSON.stringify(res))
+                
+            })
+            .finally(()=>{
+                get_bal()
+            })
+        }
+        
+        get_bal()
+
+        setInterval(()=>{
+            get_bal2()
+            if(parseFloat(document.querySelector("#bal_percentage").innerHTML)<=100 && parseFloat(document.querySelector("#bal_percentage").innerHTML)>0 && bal!=null && !document.querySelector("#bal_percentage").previousElementSibling.classList.contains("hidden")){
+                //document.querySelector("#convert").querySelectorAll("button")[0].removeAttribute("disabled");
+                document.querySelector("#bal_percentage").parentElement.classList.remove("error-card")
+            }
+            else{
+                
+                //document.querySelector("#convert").querySelectorAll("button")[0].setAttribute("disabled","disabled");
+                document.querySelector("#bal_percentage").parentElement.classList.add("error-card")
+            }
+            if(!document.querySelector("#bal_percentage").previousElementSibling.classList.contains("hidden")&&side_input.value=="2"){
+                document.querySelector("#bal_percentage").innerHTML = `${(parseFloat(document.querySelector("#convert").elements.amount2.value||0)/bal*100).toFixed(12)}%`
+            }
+            if(!document.querySelector("#bal_percentage").previousElementSibling.classList.contains("hidden")&&side_input.value=="1"){
+                document.querySelector("#bal_percentage").innerHTML = `${(parseFloat(document.querySelector("#convert").elements.amount.value||0)/bal*100).toFixed(12)}%`
+            }
+
+            if(parseFloat(amount_input.value) > 0 && parseFloat(amount_input2.value) > 0 && source_asset.value && target_asset.value && localStorage.getItem("wrong_precision")=="false"&& localStorage.getItem("wrong_precision2")=="false" &&document.querySelector("#bal_percentage").parentElement.classList.contains("error-card") == false){
+                document.querySelector("#convert").querySelectorAll("button")[0].removeAttribute("disabled");
+            }
+            else{
+                
+                document.querySelector("#convert").querySelectorAll("button")[0].setAttribute("disabled","disabled");
+            }
+                
+        },100)
+
+        let form = document.querySelector("#convert")
+        document.querySelector("#convert").elements.amount.addEventListener("input",function(){
+            set_precision()
+        })
+
+        document.querySelector("#convert").elements.amount2.addEventListener("input",function(){
+            set_precision()
+        })
+
+        //make the same when value of amount2 changed from code
+
+        function set_precision(){
+            if(JSON.parse(localStorage.getItem("precision_json"))&&form.elements.target_asset.value && form.elements.source_asset.value && form.elements.amount.value && form.elements.amount2.value){
+                //let percision_target = JSON.parse(localStorage.getItem("precisions")).filter(x=>x.code==form.elements.target_asset.value)[0].precision
+                let percision_target = get_precision(form.elements.source_asset.value+"/"+form.elements.target_asset.value)['amount']
+                if(percision_target >= 1){
+                    if(parseFloat(parseFloat(form.elements.amount.value).toFixed(percision_target)) == 0){
+                        localStorage.setItem("wrong_precision2","true")
+                    }
+                    else{
+                        localStorage.setItem("wrong_precision2","false")
+                    }
+                }
+                else{
+                    if(parseFloat(form.elements.amount.value) < percision_target * 10){
+                        localStorage.setItem("wrong_precision2","true")
+                    }
+                    else{
+                        localStorage.setItem("wrong_precision2","false")
+                    }
+                }
+                    
+                //check price precision
+                let percision_price = get_precision(form.elements.source_asset.value+"/"+form.elements.target_asset.value)['price']
+                //check if after make the precision the price will be zero or not if it will be zero that is wrong
+                if(percision_price >= 1){
+                    if(parseFloat(parseFloat(parseFloat(form.elements.amount2.value)).toFixed(percision_price)) == 0){
+                        localStorage.setItem("wrong_precision","true")
+                    }
+                    else{
+                        localStorage.setItem("wrong_precision","false")
+                    }
+                }
+                else{
+                    if(parseFloat(form.elements.amount2.value) < percision_price * 10){
+                        localStorage.setItem("wrong_precision","true")
+                    }
+                    else{
+                        localStorage.setItem("wrong_precision","false")
+                    }
+                }
+            }
+        }
+    </script>
+</html>
+{% endblock %}

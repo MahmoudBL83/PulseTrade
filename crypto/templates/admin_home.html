@@ -1,0 +1,338 @@
+{% include 'base_admin.html' %}
+      <div class="container-fluid content-inner pb-0">
+        <div class="row">
+            <div class="col-lg-12">
+               <div class="row">
+                  <div class="col-lg-3 col-md-6">
+                     <div class="card">
+                        <div class="card-body">
+                           <div class="d-flex justify-content-between align-items-center">
+                              <div class="bg-primary text-white rounded p-3">
+                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                </svg>                            
+                              </div>
+                              <div class="text-end">
+                                 Last 24h Transactions
+                                    <h2 class="counter" style="visibility: visible;">$ {{transactions_volume_24h}}</h2>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6" style="cursor: pointer;" onclick="location.href='/admin/support'">
+                     <div class="card">
+                        <div class="card-body">
+                           <div class="d-flex justify-content-between align-items-center">
+                              <div class="bg-danger text-white rounded p-3">
+                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    <path d="M13.8496 4.25024V6.67024" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M13.8496 17.76V19.784" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M13.8496 14.3247V9.50366" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M18.7021 20C20.5242 20 22 18.5426 22 16.7431V14.1506C20.7943 14.1506 19.8233 13.1917 19.8233 12.001C19.8233 10.8104 20.7943 9.85039 22 9.85039L21.999 7.25686C21.999 5.45745 20.5221 4 18.7011 4H5.29892C3.47789 4 2.00104 5.45745 2.00104 7.25686L2 9.93485C3.20567 9.93485 4.17668 10.8104 4.17668 12.001C4.17668 13.1917 3.20567 14.1506 2 14.1506V16.7431C2 18.5426 3.4758 20 5.29787 20H18.7021Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                </svg>                            
+                              </div>
+                              <div class="text-end">
+                                 Opened Tickets
+                                    <h2 class="counter" style="visibility: visible;">{{tickets_opened}}</h2>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6">
+                     <div class="card">
+                        <div class="card-body">
+                           <div class="d-flex justify-content-between align-items-center">
+                              <div class="bg-success text-white rounded p-3">
+                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    <path d="M7.24512 14.7815L10.2383 10.8914L13.6524 13.5733L16.5815 9.79297" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <circle cx="19.9954" cy="4.20027" r="1.9222" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>                                    <path d="M14.9248 3.12012H7.65704C4.6456 3.12012 2.77832 5.25284 2.77832 8.26428V16.3467C2.77832 19.3581 4.60898 21.4817 7.65704 21.4817H16.2612C19.2726 21.4817 21.1399 19.3581 21.1399 16.3467V9.30776" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                </svg>                            
+                              </div>
+                              <div class="text-end">
+                                 Active Bots
+                                    <h2 class="counter" style="visibility: visible;">{{bots_count}}</h2>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-3 col-md-6" style="cursor: pointer;" onclick="location.href='/admin/list'">
+                     <div class="card">
+                        <div class="card-body">
+                           <div class="d-flex justify-content-between align-items-center">
+                              <div class="bg-info text-white rounded p-3">
+                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    <path d="M17.8877 10.8967C19.2827 10.7007 20.3567 9.50473 20.3597 8.05573C20.3597 6.62773 19.3187 5.44373 17.9537 5.21973" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M19.7285 14.2505C21.0795 14.4525 22.0225 14.9255 22.0225 15.9005C22.0225 16.5715 21.5785 17.0075 20.8605 17.2815" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8867 14.6638C8.67273 14.6638 5.92773 15.1508 5.92773 17.0958C5.92773 19.0398 8.65573 19.5408 11.8867 19.5408C15.1007 19.5408 17.8447 19.0588 17.8447 17.1128C17.8447 15.1668 15.1177 14.6638 11.8867 14.6638Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8869 11.888C13.9959 11.888 15.7059 10.179 15.7059 8.069C15.7059 5.96 13.9959 4.25 11.8869 4.25C9.7779 4.25 8.0679 5.96 8.0679 8.069C8.0599 10.171 9.7569 11.881 11.8589 11.888H11.8869Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M5.88509 10.8967C4.48909 10.7007 3.41609 9.50473 3.41309 8.05573C3.41309 6.62773 4.45409 5.44373 5.81909 5.21973" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M4.044 14.2505C2.693 14.4525 1.75 14.9255 1.75 15.9005C1.75 16.5715 2.194 17.0075 2.912 17.2815" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                </svg>                            
+                              </div>
+                              <div class="text-end">
+                                 Total Users
+                                    <h2 class="counter" style="visibility: visible;">{{users_count}}</h2>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!--div class="col-lg-3">
+                     <a href="/admin/support" style="color: inherit;text-decoration: none;">
+                        <div class="card shining-card">
+                           <div class="card-body">                           
+                              <span class="fs-5 me-2">Opened Tickets</span>
+                              <svg width="36" height="35" viewBox="0 0 36 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M3.86124 21.6224L11.2734 16.8577C11.6095 16.6417 12.041 16.6447 12.3718 16.8655L18.9661 21.2663C19.2968 21.4871 19.7283 21.4901 20.0644 21.2741L27.875 16.2534" stroke="#BFBFBF" stroke-linecap="round" stroke-linejoin="round"></path>
+                              <path d="M26.7847 13.3246L31.6677 14.0197L30.4485 18.7565L26.7847 13.3246ZM30.2822 19.4024C30.2823 19.4023 30.2823 19.4021 30.2824 19.402L30.2822 19.4024ZM31.9991 14.0669L31.9995 14.0669L32.0418 13.7699L31.9995 14.0669C31.9994 14.0669 31.9993 14.0669 31.9991 14.0669Z" fill="#BFBFBF" stroke="#BFBFBF"></path>
+                              </svg>
+                              <div class="progress-detail pt-3">
+                                 <h4 class="counter" style="visibility: visible;"></h4>
+                                 <div class="pt-3">
+                                 </div>
+                              </div>
+                           </div>            
+                        </div>
+                     </a>
+                  </div-->
+                  
+                 
+                  <div class="col-lg-6 hidden">
+
+                     <div class="card">
+                        <h2 class="card-header counter mb-3" style="visibility: visible;">Summary</h2>
+                        <div class="card-body">
+                           
+                           <div class="mt-3">
+                              <div class="pb-3">
+                                 <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Buy Transactions</p>
+                                    <h4>{{transactions_buy_count}}</h4>
+                                 </div>
+                                 <div class="progress bg-soft-success shadow-none w-100" style="height: 10px">
+                                    <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%; transition: width 2s ease 0s;"></div>
+                                 </div>
+                              </div>
+                              <div class="pb-3">
+                                 <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Sell Transactions</p>
+                                    <h4>{{transactions_sell_count}}</h4>
+                                 </div>
+                                 <div class="progress bg-soft-danger shadow-none w-100" style="height: 10px">
+                                    <div class="progress-bar bg-danger" data-toggle="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%; transition: width 2s ease 0s;"></div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-6">
+                     <div class="card">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                           <div class="header-title">
+                              <h4 class="card-title">Transactions Volume Chart</h4>        
+                           </div>
+                           
+                        </div>
+                        <div class="card-body">
+                           <canvas id="TransChart"></canvas>
+                        </div>                                          
+                     </div>
+                  </div>
+                  <div class="col-lg-6">
+                     <div class="card">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                           <div class="header-title">
+                              <h4 class="card-title">Bot - User Chart</h4>        
+                           </div>
+                           
+                        </div>
+                        <div class="card-body">
+                           <canvas id="userChart"></canvas>
+                        </div>                                          
+                     </div>
+                  </div>
+                  <div class="col-lg-6">
+                     <div class="card"> 
+                        <h4 class="counter mb-3 card-header" style="visibility: visible;">Total Subscriptions</h4>
+                        <div class="card-body">
+                           
+                           <a href="/admin/pricing" class="mt-4 btn btn-danger d-block rounded">Edit Pricing</a>
+                           <div class="mt-3">
+                              <div class="pb-3">
+                                 <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Free</p>
+                                    <h4>{{free_count}}</h4>
+                                 </div>
+                                 <div class="progress bg-soft-info shadow-none w-100" style="height: 10px">
+                                    <div class="progress-bar bg-info" data-toggle="progress-bar" role="progressbar" aria-valuenow="{{free_count / users_count * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{free_count / users_count * 100}}%; transition: width 2s ease 0s;"></div>
+                                 </div>
+                              </div>
+                              <div class="pb-3">
+                                 <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Advanced</p>
+                                    <h4>{{advanced_count}}</h4>
+                                 </div>
+                                 <div class="progress bg-soft-success shadow-none w-100" style="height: 10px">
+                                    <div class="progress-bar bg-primary" data-toggle="progress-bar" role="progressbar" aria-valuenow="{{advanced_count / users_count * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{advanced_count / users_count * 100}}%; transition: width 2s ease 0s;"></div>
+                                 </div>
+                              </div>
+                              <div class="pb-3">
+                                 <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <p class="mb-0">Pro</p>
+                                    <h4>{{pro_count}}</h4>
+                                 </div>
+                                 <div class="progress bg-soft-primary shadow-none w-100" style="height: 10px">
+                                    <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="{{pro_count / users_count * 100}}" aria-valuemin="0" aria-valuemax="100" style="width: {{pro_count / users_count * 100}}%; transition: width 2s ease 0s;"></div>
+                                 </div>
+                              </div>
+                              
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+</div>
+      </div>
+      </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+         let users_history = JSON.parse('{{ users_history|tojson }}'.slice(1,-1));
+         let bots_history = JSON.parse('{{ bots_history|tojson }}'.slice(1,-1));
+
+         let transactions_history = JSON.parse('{{ transactions_history|tojson }}'.slice(1,-1));
+
+
+         const timestamps2 = transactions_history.map(entry => Intl.DateTimeFormat('en-us',{
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(new Date(entry.timestamp)));
+
+         const timestamps = users_history.map(entry => Intl.DateTimeFormat('en-us',{
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(new Date(entry.timestamp)));
+         if (timestamps.length > 30){
+            timestamps.splice(0,timestamps.length-30)
+            users_history.splice(0,users_history.length-30)    
+         }
+         if (timestamps2.length > 30){
+            timestamps2.splice(0,timestamps2.length-30)
+            transactions_history.splice(0,transactions_history.length-30)    
+         }
+         users_history = users_history.map(entry => entry.count)
+         bots_history = bots_history.map(entry => entry.count)
+         transactions_history = transactions_history.map(entry => entry.value)
+         const userChart = new Chart(document.getElementById('userChart').getContext('2d'), {
+            type: 'line',
+            options: {
+               responsive: true,
+               interaction: {
+                  mode: 'index',
+                  intersect: false,
+               },
+               stacked: false,
+               plugins: {
+                  title: {
+                  display: false,
+                  text: ''
+                  }
+               },
+               scales: {
+                  y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  },
+                  y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+
+                  // grid line settings
+                  grid: {
+                     drawOnChartArea: false, // only want the grid lines for one axis to show up
+                  },
+                  },
+               }
+            },
+            data:{
+            labels: timestamps,
+            datasets: [
+                  {
+                     label: 'Users',
+                     data: users_history,
+                     borderColor: "#c2771f",
+                     backgroundColor: "#c2771f",
+                     tension: 0.2,
+                  },
+                  {
+                     label: 'Bots',
+                     data: bots_history,
+                     borderColor: "#1aa053",
+                     backgroundColor: "#1aa053",
+                     tension: 0.2,
+                  }
+               ]
+            }
+         })
+
+         const TransChart = new Chart(document.getElementById('TransChart').getContext('2d'), {
+            type: 'line',
+            options: {
+               responsive: true,
+               interaction: {
+                  mode: 'index',
+                  intersect: false,
+               },
+               stacked: false,
+               plugins: {
+                  title: {
+                  display: false,
+                  text: ''
+                  }
+               },
+               scales: {
+                  y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  },
+                  y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+
+                  // grid line settings
+                  grid: {
+                     drawOnChartArea: false, // only want the grid lines for one axis to show up
+                  },
+                  },
+               }
+            },
+            data:{
+            labels: timestamps2,
+            datasets: [
+                  {
+                     label: 'Transactions',
+                     data: transactions_history,
+                     borderColor: "#c2771f",
+                     backgroundColor: "#c2771f",
+                     tension: 0.2,
+                  }
+               ]
+            }
+         })
+    </script>
+  </body>
+</html>

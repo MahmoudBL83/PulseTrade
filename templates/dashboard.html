@@ -1,0 +1,1027 @@
+{% include 'base.html' %}    
+<main class="main-content">
+      <div class="container-fluid content-inner pb-0">
+         <div class="row">
+            <div class="col-xl-12" style="overflow: scroll;">
+               <div class="d-grid grid-1-auto gap-card">
+                  <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px">
+                     <a href="{{ url_for('crypto_convert') }}" id="walletOverview_transaction_history_aLink" class="btn btn-secondary">Convert</a>
+                     <a href="{{ url_for('crypto_transfer') }}" id="walletOverview_top_transfer" class="btn btn-secondary">Transfer</a>
+                     <a href="{{ url_for('crypto_withdraw') }}" id="walletOverview_top_withdrawal" class="btn btn-secondary">Withdraw</a>
+                     <a href="{{ url_for('crypto_deposit') }}" id="walletOverview_top_deposit" class="btn btn-primary">Deposit</a>
+                     <a href="{{ url_for('crypto_buy') }}" class="btn btn-secondary">Buy/Sell</a>
+                  </div>                 
+               </div>
+            </div>
+         </div>
+         <br>
+         <!--div class="row">
+            <div class="col-lg-12">
+                  <div class="row align-items-start mb-4">
+                     <div class="col-xl-4 d-md-block">
+                        <div class="card shining-card mb-xl-0">
+                           <div class="card-body" style="height: 182.8px;">
+                              <div class="d-flex justify-content-between flex-wrap">
+                                 <div class="d-flex smartTradeHeader row">
+                                    
+                                 </div>
+                              </div>
+                           </div>
+                        </div>     
+                     </div>  
+                     <div class="col-lg-8 d-md-block d-none">
+                        <div class="row" id="top3Currencies">
+                        </div>
+                     </div>    
+                  </div>
+            </div>
+         </div-->
+         <div class="row">
+            <div class="col-lg-12 col-xl-8">
+               <div class="row">
+                  <div class="col-lg-12 hidden">
+                     <div class="row" id="top3Currencies">
+                     </div>
+                  </div>
+                  <div class="col-lg-12">
+                     <div class="card">
+                        <div class="card-header d-flex justify-content-between flex-wrap">
+                           <div class="header-title">
+                              <h4 class="card-title mb-2">My Balance</h4>       
+                           </div>
+                        </div>
+                        <hr>
+                        <div class="card-body">
+                           <div class="flexbox">
+                              <div class="mainstats account-balances-stats">
+                                 <div class="piechart-place">
+                                    <div width="120px" height="120px" class="sc-bXdNzS cLukBA" _echarts_instance_="ec_1690934248903" style="position: relative;">
+                                          <div style="position: relative; overflow: hidden; width: 120px; height: 120px;">
+                                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" width="120" height="120" style="position: absolute; left: 0; top: 0; user-select: none;">
+                                                <rect width="120" height="120" x="0" y="0" id="0" fill="none"></rect>
+                                                <g>
+                                                      <path d="M60 5.4A54.6 54.6 0 0 1 77.9129 111.578L60 60Z" fill="#23c6c8"></path>
+                                                      <path d="M77.9129 111.578A54.6 54.6 0 0 1 8.201 42.7366L60 60Z" fill="#1c84c6"></path>
+                                                      <path d="M8.201 42.7366A54.6 54.6 0 0 1 40.7966 8.8885L60 60Z" fill="#f8ac59"></path>
+                                                      <path d="M40.7966 8.8885A54.6 54.6 0 0 1 60 5.4L60 60Z" fill="#ed5565"></path>
+                                                </g>
+                                             </svg>
+                                          </div>
+                                          <div class=""></div>
+                                    </div>
+                                 </div>
+                                 <div class="flexbox">
+                                    <div>
+                                          <div class="stat-string xsmall">Balance</div>
+                                          <div class="stat-string stat-string_icon-no-margin large"><span class="can-hidden-balance" id="balance_BTC"></span></div>
+                                          <div class="stat-string stat-string_icon-no-margin small"><span class="can-hidden-balance" id="balance_USD">$ <span>{{total_balance|float|round(2)}} </span></span></div>
+                                    </div>
+                                    <div>
+                                          <div class="stat-string xsmall">
+                                             <span class="tooltip-btn">
+                                                Overall profit
+                                                <svg width="16px" height="16px" class="svg-icon svg-icon_issue undefined svg-icon_black" viewBox="0 0 16 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M8 16C3.5816 16 0 12.4184 0 8C0 3.5816 3.5816 0 8 0C12.4184 0 16 3.5816 16 8C16 12.4184 12.4184 16 8 16ZM7.2 10.4V12H8.8V10.4H7.2ZM8.8 9.084C9.44294 8.89022 9.99488 8.47196 10.3553 7.90539C10.7158 7.33883 10.8607 6.66164 10.7638 5.99717C10.6669 5.3327 10.3345 4.72515 9.82721 4.28517C9.31993 3.84518 8.6715 3.60203 8 3.6C7.35268 3.59995 6.72533 3.82412 6.22463 4.23439C5.72394 4.64467 5.38081 5.2157 5.2536 5.8504L6.8232 6.1648C6.86774 5.94195 6.97465 5.73632 7.13149 5.57185C7.28833 5.40738 7.48865 5.29083 7.70914 5.23576C7.92963 5.18069 8.16122 5.18937 8.37698 5.26078C8.59273 5.33218 8.78377 5.46339 8.92787 5.63913C9.07196 5.81487 9.1632 6.02791 9.19095 6.25347C9.2187 6.47904 9.18182 6.70784 9.08462 6.91327C8.98741 7.11869 8.83387 7.29229 8.64186 7.41386C8.44985 7.53544 8.22726 7.59999 8 7.6C7.78783 7.6 7.58434 7.68429 7.43431 7.83431C7.28429 7.98434 7.2 8.18783 7.2 8.4V9.6H8.8V9.084Z"
+                                                      ></path>
+                                                </svg>
+                                             </span>
+                                          </div>
+                                          <div class="stat-string stat-string_icon-no-margin large">
+                                             <span class="can-hidden-balance plus">
+                                                {{overall_profit|round(5)}} BTC
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                             </span>
+                                          </div>
+                                          <div class="stat-string stat-string_icon-no-margin small">
+                                             <span class="can-hidden-balance plus">
+                                                $ {{overall_profit|round(5)}}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                             </span>
+                                          </div>
+                                    </div>
+                                    <div class="hidden-xs">
+                                          <div class="stat-string xsmall">Latest 30 days profit, BTC / $</div>
+                                          <div class="stat-string stat-string_icon-no-margin large">
+                                             <span class="can-hidden-balance plus">
+                                                {{latest_30_days_profit_btc|round(3)}} BTC
+                                                <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                             </span>
+                                          </div>
+                                          <div class="stat-string stat-string_icon-no-margin small">
+                                             <span class="can-hidden-balance plus">
+                                                $ {{latest_30_days_profit_usd|round(1)}}
+                                                <svg width="8px" height="16px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                      <path
+                                                         fill="currentColor"
+                                                         d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                      ></path>
+                                                </svg>
+                                             </span>
+                                          </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="detailstats flexbox">
+                                 <div class="title-with-padding">
+                                    <div class="stat-string xsmall">Profit, % Month</div>
+                                    <div class="stat-string stat-string_icon-no-margin large">
+                                          <span class="can-hidden-balance plus">
+                                             {{profit_percent_month|round(2)}} %
+                                             <svg width="16px" height="33px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                <path
+                                                      fill="currentColor"
+                                                      d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                ></path>
+                                             </svg>
+                                          </span>
+                                    </div>
+                                    <div class="stat-string stat-string_icon-no-margin small">
+                                          <span class="can-hidden-balance plus">
+                                             {{profit_percent_month|round(2)}} %
+                                             <svg width="8px" height="16px" class="svg-icon svg-icon_primary" viewBox="0 0 8 16" fill="none">
+                                                <path
+                                                      fill="currentColor"
+                                                      d="M3.37879 14V4.79828C2.99495 5.1073 2.53535 5.3877 2 5.63948V4.3176C2.37374 3.9628 2.69697 3.59084 2.9697 3.20172C3.25253 2.81259 3.4899 2.41202 3.68182 2H4.33333C4.70707 2.84692 5.26263 3.61946 6 4.3176V5.63948C5.73737 5.52504 5.4899 5.39914 5.25757 5.2618C5.03535 5.12446 4.82828 4.97568 4.63637 4.81545V14H3.37879Z"
+                                                ></path>
+                                             </svg>
+                                          </span>
+                                    </div>
+                                 </div>
+                                 <div class="title-with-padding">
+                                    <div class="stat-string xsmall">Profit, % Day</div>
+                                    <div class="stat-string stat-string_icon-no-margin large"><span class="can-hidden-balance">{{profit_percent_day|round(2)}}% </span></div>
+                                    <div class="stat-string stat-string_icon-no-margin small"><span class="can-hidden-balance">{{profit_percent_day|round(2)}} %</span></div>
+                                 </div>
+                                 <div>
+                                    <div class="stat-string xsmall">Sharpe ratio</div>
+                                    <div class="stat-string small">{{sharpe_ratio|round(5)}}</div>
+                                    <div class="stat-string xsmall">Deviation</div>
+                                    <div class="stat-string small">{{deviation|round(2)}}</div>
+                                    <div class="stat-string xsmall">Sortino ratio</div>
+                                    <div class="stat-string small">{{sortino_ratio|round(4)}}</div>
+                                 </div>
+                              </div>
+                        </div>                 
+                        </div>
+                     </div>
+                  </div>
+
+                  <div class="col-lg-12">
+                     <div class="card card-block card-stretch custom-scroll">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                           <div class="caption">
+                              <h4 class="font-weight-bold mb-2">Assets</h4>
+                           </div>
+                        </div>
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <div class="spinner-border text-light" id="assets_table_loader" role="status">
+                                 <span class="visually-hidden">Loading...</span>
+                             </div>
+                              <table class="table data-table mb-0" id="assets_table" data-page-size="5" style="display: none;">
+                                 <thead>
+                                    <tr>
+                                       <th scope="col">Token</th>
+                                       <th scope="col">Amount (Free)</th>
+                                       <th scope="col">Amount (Used)</th>
+                                       <th scope="col">Amount (Total)</th>
+                                       <th scope="col">% Portfolio</th>
+                                       <th scope="col">eqUSD</th>
+                                       <!--th scope="col">Change (24h)</th-->
+                                       <th scope="col">Action</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="assetsTable">
+                                       {% set balance_data = balance_formatted %}
+                                       {% for data in balance_data %}
+                                       <tr class="white-space-no-wrap">
+                                          <td>
+                                             <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{data['currency']}}--big.svg" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                                             <span>{{ data['currency'] }}</span>
+                                          </td>
+                                          <td class="pe-2">{{ data['free'] }}</td>
+                                          <td class="pe-2">{{ data['used'] }}</td>
+                                          <td class="pe-2">{{ data['total'] }}</td>
+                                          <td class="pe-2">
+                                             <div>
+                                                <div class="AssetRecord_allocation__VX-e1">64.15%</div>
+                                                <div class="AssetRecord_allocationBar__Sh1do">
+                                                    <div class="okui-loader okui-loader-line"><div class="okui-loader-mark" style="width: 64.15%;"></div></div>
+                                                </div>
+                                            </div>                                            
+                                          </td>
+                                          <td class="">{{ data['eq']|float|round(2) }}</td>
+                                          <!--td class="text-success"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 0.5L7.4641 5H0.535898L4 0.5Z" fill="#00EC42"/>
+                                             </svg>
+                                             4.58%
+                                          </td-->
+                                          <td>
+                                             <div class="d-flex justify-content-between">          
+                                                <div class="dropdown ms-4">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                   </svg>
+                                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                                      <li><a class="dropdown-item" href="#">Buy / Sell</a></li>
+                                                      <li><a class="dropdown-item" href="#">Deposit</a></li>
+                                                      <li><a class="dropdown-item" href="#">Receive</a></li>
+                                                      <li><a class="dropdown-item" href="#">Convert</a></li>
+                                                      <li><a class="dropdown-item" href="#">Send</a></li>
+                                                      <li><a class="dropdown-item" href="#">Withdraw</a></li>
+                                                      <li><a class="dropdown-item" href="#">Transfer</a></li>
+                                                   </ul>
+                                                </div>
+                                             </div>
+                                          </td>
+                                       </tr>
+                                       {% endfor %}
+                                    </tbody>
+                                    
+                              </table>
+                              <ul class="pagination"></ul>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Pop-up div with input fields -->
+                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                                 <h5 class="modal-title" id="myModalLabel">API Credentials</h5>
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                 </button>
+                           </div>
+                           <div class="modal-body">
+                                 <form method="POST">
+                                    <div class="form-group">
+                                       <label for="apiKey">API Key</label>
+                                       <input type="text" class="form-control" id="apiKey" name="api_key" placeholder="Enter API Key">
+                                    </div>
+                                    <div class="form-group">
+                                       <label for="apiSecret">API Secret</label>
+                                       <input type="text" class="form-control" id="apiSecret" name="api_secret" placeholder="Enter API Secret">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                 </form>
+                           </div>
+                           <div class="modal-footer">
+                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                           </div>
+                        </div>
+                     </div>
+               </div>
+               
+               <!-- Pop-up div for success message -->
+               <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                     <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                        Your API credentials have been saved successfully.
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                     </div>
+               </div>
+
+                  <div class="col-lg-12">
+                     <div class="card card-block card-stretch custom-scroll">
+                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                           <div class="caption">
+                              <h4 class="font-weight-bold mb-2">Top Tokens by Market Capitalization</h4>
+                              <p class="mb-0">Get a comprehensive snapshot of all cryptocurrencies available on Binance. This page displays the latest prices, 24-hour trading volume, price changes, and market capitalizations for all cryptocurrencies on Binance. Users can quickly access key information about these digital assets and access the trade page from here.</p>
+                           </div>
+                        </div>
+                        <div class="card-body">
+                           <div class="table-responsive">
+                              <div class="spinner-border text-light" id="market_info_loader" role="status">
+                                 <span class="visually-hidden">Loading...</span>
+                             </div>
+                              <table class="table data-table mb-0"  data-page-size="5" id="market_info" style="display:none">
+                                 <thead>
+                                    <tr>
+                                       <th>Symbol</th>
+                                       <th>Rank</th>
+                                       <th>Price</th>
+                                       <th>Volume (24h)</th>
+                                       <th>Dominance</th>
+                                       <th>Price Change (24h)</th>
+                                       <th>MarketCap</th>
+                                       <th>circulating Supply</th>
+                                       <th>Action</th>
+                                    </tr>
+                                 </thead>
+                                    <tbody>
+                                       <!--tr class="white-space-no-wrap">
+                                          <td>
+                                             <img src="/static/assets/images/coins/02.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                                             Bitcoin BTC<a class="button btn-primary badge ms-2" type="button">Buy</a>
+                                          </td>
+                                          <td class="pe-2">$40,501.87</td>
+                                          <td class="text-danger"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 4.5L0.535898 0L7.4641 0L4 4.5Z" fill="#FF2E2E"/>
+                                             </svg>
+                                             6.93%
+                                          </td>
+                                          <td class="text-success"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 0.5L7.4641 5H0.535898L4 0.5Z" fill="#00EC42"/>
+                                             </svg>
+                                             4.58%
+                                          </td>
+                                          <td>$123,456,789,159</td>
+                                          <td>$373,359,580,155<br>
+                                             <small class="ms-5">635,237 BTC</small>
+                                          </td>
+                                          <td class="ms-5">18,777,768 BTC</td>
+                                          <td>
+                                             <div class="d-flex justify-content-between">
+                                                <div id="sparklinechart-1"></div>             
+                                                <div class="dropdown ms-4">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                   </svg>
+                                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                                      <li><a class="dropdown-item" href="#">View Charts</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Markets</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Historical Data</a></li>
+                                                   </ul>
+                                                </div>
+                                             </div>
+                                          </td>
+                                       </tr>
+                                       <tr class="white-space-no-wrap">
+                                          <td>
+                                                <img src="/static/assets/images/coins/02.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                                                Ethereum ETH<a class="button btn-primary badge ms-2" type="button">Buy</a>
+                                          </td>
+                                          <td class="pe-2">$2,796.60</td>
+                                          <td class="text-danger"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 4.5L0.535898 0L7.4641 0L4 4.5Z" fill="#FF2E2E"/>
+                                             </svg>
+                                             3.33%
+                                          </td>
+                                          <td class="text-success"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 0.5L7.4641 5H0.535898L4 0.5Z" fill="#00EC42"/>
+                                             </svg>
+                                             15.45%
+                                          </td>
+                                          <td>$123,456,789,159</td>
+                                          <td>$373,359,580,155<br>
+                                             <small class="ms-5">635,237 BTC</small>
+                                          </td>
+                                          <td class="ms-5">18,777,768 BTC</td>
+                                          <td>
+                                             <div class="d-flex justify-content-between">
+                                                <div id="sparklinechart-2"></div>             
+                                                <div class="dropdown ms-4">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                   </svg>
+                                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                                      <li><a class="dropdown-item" href="#">View Charts</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Markets</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Historical Data</a></li>
+                                                   </ul>
+                                                </div>
+                                             </div>
+                                          </td>
+                                       </tr>
+                                       <tr class="white-space-no-wrap">
+                                          <td>
+                                                <img src="/static/assets/images/coins/02.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                                                Monero XMR<a class="button btn-primary badge ms-2" type="button">Buy</a>
+                                          </td>
+                                          <td class="pe-2">$1.00</td>
+                                          <td class="text-success"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 0.5L7.4641 5H0.535898L4 0.5Z" fill="#00EC42"/>
+                                             </svg>
+                                             0.01%
+                                          </td>
+                                          <td class="text-danger"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 4.5L0.535898 0L7.4641 0L4 4.5Z" fill="#FF2E2E"/>
+                                             </svg>
+                                             0.02%
+                                          </td>
+                                          <td>$123,456,789,159</td>
+                                          <td>$373,359,580,155<br>
+                                             <small class="ms-5">635,237 BTC</small>
+                                          </td>
+                                          <td class="ms-5">18,777,768 BTC</td>
+                                          <td>
+                                             <div class="d-flex justify-content-between">
+                                                <div id="sparklinechart-3"></div>             
+                                                <div class="dropdown ms-4">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                   </svg>
+                                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                                      <li><a class="dropdown-item" href="#">View Charts</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Markets</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Historical Data</a></li>
+                                                   </ul>
+                                                </div>
+                                             </div>
+                                          </td>
+                                       </tr>
+                                       <tr class="white-space-no-wrap">
+                                          <td>
+                                                <img src="/static/assets/images/coins/02.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                                                Litecoin LTC<a class="button btn-primary badge ms-2" type="button">Buy</a>
+                                          </td>
+                                          <td class="pe-2">$40,501.87</td>
+                                          <td class="text-danger"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 4.5L0.535898 0L7.4641 0L4 4.5Z" fill="#FF2E2E"/>
+                                             </svg>
+                                             6.93%
+                                          </td>
+                                          <td class="text-success"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 0.5L7.4641 5H0.535898L4 0.5Z" fill="#00EC42"/>
+                                             </svg>
+                                             4.58%
+                                          </td>
+                                          <td>$123,456,789,159</td>
+                                          <td>$373,359,580,155<br>
+                                             <small class="ms-5">635,237 BTC</small>
+                                          </td>
+                                          <td class="ms-5">18,777,768 BTC</td>
+                                          <td>
+                                             <div class="d-flex justify-content-between">
+                                                <div id="sparklinechart-4"></div>             
+                                                <div class="dropdown ms-4">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                   </svg>
+                                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                                      <li><a class="dropdown-item" href="#">View Charts</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Markets</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Historical Data</a></li>
+                                                   </ul>
+                                                </div>
+                                             </div>
+                                          </td>
+                                       </tr>
+                                       <tr class="white-space-no-wrap">
+                                          <td>
+                                                <img src="/static/assets/images/coins/02.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                                                Bitcoin BTC<a class="button btn-primary badge ms-2" type="button">Buy</a>
+                                          </td>
+                                          <td class="pe-2">$40,501.87</td>
+                                          <td class="text-success"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 0.5L7.4641 5H0.535898L4 0.5Z" fill="#00EC42"/>
+                                             </svg>
+                                             6.93%
+                                          </td>
+                                          <td class="text-danger"><svg width="10" height="8" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                             <path d="M4 4.5L0.535898 0L7.4641 0L4 4.5Z" fill="#FF2E2E"/>
+                                             </svg>
+                                             4.58%
+                                          </td>
+                                          <td>$123,456,789,159</td>
+                                          <td>$373,359,580,155<br>
+                                             <small class="ms-5">635,237 BTC</small>
+                                          </td>
+                                          <td class="ms-5">18,777,768 BTC</td>
+                                          <td>
+                                             <div class="d-flex justify-content-between">
+                                                <div id="sparklinechart-5"></div>             
+                                                <div class="dropdown ms-4">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" id="dropdownMenuButton10" data-bs-toggle="dropdown" aria-expanded="false" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                   </svg>
+                                                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton10">
+                                                      <li><a class="dropdown-item" href="#">View Charts</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Markets</a></li>
+                                                      <li><a class="dropdown-item" href="#">View Historical Data</a></li>
+                                                   </ul>
+                                                </div>
+                                             </div>
+                                          </td>
+                                       </tr-->
+                                    </tbody>
+                              </table>
+                              <ul class="pagination"></ul>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-12 col-xl-4">
+               <div class="row">
+                  <!--div class="col-lg-12">
+                        <div class="card">
+                           <div class="card-header">
+                              <div class="input-group search-input">
+                           <input type="search" class="form-control form-control-lg" placeholder="Search BTS/ETH">
+                        </div>
+                           </div>
+                           <div class="card-body d-flex align-items-center justify-content-center">
+                              <img src="/static/assets/images/coins/14.png" class="img-fluid p-0 w-75" alt="img60">
+                           </div>
+                        </div>
+                  </div-->
+                  <div class="col-lg-12">
+                     <div class="card">
+                         <div class="card-header d-flex justify-content-between flex-wrap">
+                             <div class="header-title ">
+                                 <h4 class="card-title">Quick Trading (BTC/USDT)</h4>        
+                             </div>
+                             <div class="d-flex">
+                                 wallet
+                             </div>
+                         </div>
+                         <div class="card-body">
+                             <form class="col-lg-12">
+                                 <div class="form-floating mb-3">
+                                     <select name="order_type" class="form-control" id="order_type">
+                                         <option value="limit">limit</option>
+                                         <option value="market">market</option>
+                                     </select>
+                                     <label for="floatingInput">Order Type</label>
+                                 </div>
+                                 <div class="form-floating mb-3">
+                                     <input type="number" class="form-control units_input" id="floatingInput" name="amount">
+                                     <label for="floatingInput">Units</label>
+                                 </div>
+                                 <div class="form-floating mb-3">
+                                     <input type="number" class="form-control price_val price_input" id="price_input" name="price">
+                                     <label for="floatingInput">Price</label>
+                                 </div>
+                                 <div class="form-floating mb-3">
+                                     <input type="number" class="form-control total_input" id="floatingInput">
+                                     <label for="floatingInput">Total</label>
+                                 </div>
+                                 <div class="">
+                                     <div class="d-grid gap-card grid-cols-2">
+                                         <button class="btn btn-success" id="quickBuy">
+                                             <span>BUY</span>
+                                             <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                         </button>
+                                         <button class="btn btn-danger" id="quickSell">
+                                             <span>SELL</span>
+                                             <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                         </button>
+                                      </div>
+                                 </div>
+                             </form>
+                         </div>                                          
+                     </div>
+                 </div>
+
+                  <div class="col-lg-12">
+                     <div class="card">
+                        <div class="card-header">
+                           <div class="header-title">
+                                 <h4 class="card-title">Recent transactions</h4>
+                           </div>
+                        </div>
+                        <hr>
+                        <div class="card-body">
+                           <ul class="list-inline m-0 p-0">
+                              {% for transaction in transactions|reverse %}
+                              {% if loop.index < 10 %}
+                              <li class="d-flex align-items-center pt-3">
+                                 <div style="width: 100%;" class="d-flex justify-content-between rounded-pill"><img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{transaction.info.ccy}}--big.svg" class="img-fluid avatar avatar-40 avatar-rounded" alt="img6">
+                                    <div class="ms-3 flex-grow-1">
+                                    <h5 class="mb-2">{{transaction.type}}</h5>
+                                    <p class="fs-6" style="text-align:start">{{transaction.datetime}}</p>
+                                    </div>
+                                    <div class="">
+                                       <p><span class="text-{% if transaction.amount >=0 %}success{%else%}danger{%endif%}">{{transaction.amount}}</span> {{transaction.info.ccy}}</p>
+                                    </div>
+                                 </div>
+                              </li>
+                              <hr>
+                              {% endif %}
+                              {% endfor %}
+                              <li style="text-align: end;">
+                                 <div class="okui-hyperlink okui-hyperlink-primary okui-hyperlink-no-hover-underline okui-hyperlink-sm okui-hyperlink-medium">
+                                    <span class="okui-hyperlink-text">
+                                       <a href="{{url_for('history_trades_history',exchange_name='okex')}}">Go to all</a>
+                                    </span>
+                                    <i class="icon iconfont okds-arrow-chevron-right-centered-md icon-arrow"></i>
+                                 </div>
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+      </div>
+      <footer class="footer">
+          <div class="footer-body">
+              <ul class="left-panel list-inline mb-0 p-0">
+                  <li class="list-inline-item"><a href="../dashboard/extra/privacy-policy.html" class="text-white">Privacy Policy</a></li>
+                  <li class="list-inline-item"><a href="../dashboard/extra/terms-of-service.html" class="text-white">Terms of Use</a></li>
+              </ul>
+              <div class="right-panel">
+                  ©<script>document.write(new Date().getFullYear())</script> COINEX, Made with
+                  <span class="text-gray">
+                      <svg width="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M15.85 2.50065C16.481 2.50065 17.111 2.58965 17.71 2.79065C21.401 3.99065 22.731 8.04065 21.62 11.5806C20.99 13.3896 19.96 15.0406 18.611 16.3896C16.68 18.2596 14.561 19.9196 12.28 21.3496L12.03 21.5006L11.77 21.3396C9.48102 19.9196 7.35002 18.2596 5.40102 16.3796C4.06102 15.0306 3.03002 13.3896 2.39002 11.5806C1.26002 8.04065 2.59002 3.99065 6.32102 2.76965C6.61102 2.66965 6.91002 2.59965 7.21002 2.56065H7.33002C7.61102 2.51965 7.89002 2.50065 8.17002 2.50065H8.28002C8.91002 2.51965 9.52002 2.62965 10.111 2.83065H10.17C10.21 2.84965 10.24 2.87065 10.26 2.88965C10.481 2.96065 10.69 3.04065 10.89 3.15065L11.27 3.32065C11.3618 3.36962 11.4649 3.44445 11.554 3.50912C11.6104 3.55009 11.6612 3.58699 11.7 3.61065C11.7163 3.62028 11.7329 3.62996 11.7496 3.63972C11.8354 3.68977 11.9247 3.74191 12 3.79965C13.111 2.95065 14.46 2.49065 15.85 2.50065ZM18.51 9.70065C18.92 9.68965 19.27 9.36065 19.3 8.93965V8.82065C19.33 7.41965 18.481 6.15065 17.19 5.66065C16.78 5.51965 16.33 5.74065 16.18 6.16065C16.04 6.58065 16.26 7.04065 16.68 7.18965C17.321 7.42965 17.75 8.06065 17.75 8.75965V8.79065C17.731 9.01965 17.8 9.24065 17.94 9.41065C18.08 9.58065 18.29 9.67965 18.51 9.70065Z" fill="currentColor"></path>
+                      </svg>
+                  </span> by <a href="https://iqonic.design/">IQONIC Design</a>.
+              </div>
+          </div>
+      </footer>    </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+    <!-- JavaScript code to handle Save Changes button click -->
+    <script>
+         document.querySelector('#sidebar').querySelectorAll("a.nav-link")[0].classList.add("active")
+
+        $(document).ready(function() {
+        $("#saveChangesBtn").click(function() {
+            // Perform API key and API secret validation here
+            
+            // Show success message
+            $("#successModal").modal("show");
+        });
+        });
+
+        document.querySelector("#quickBuy").addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = this.closest("form");
+            const data = {
+                amount: form.elements.amount.value,
+                price: form.elements.price.value,
+                type: form.elements.order_type.value,
+                side: "buy",
+                symbol: selectedPair.value+"/"+selectedMarket.value,
+                exchange: selectedExchangeMain.value,
+            };
+            fetch('/api/v1/order/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.ok){
+                    // Show a success message with SweetAlert
+                    swal('Success', data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal('Error', error.message, 'error');
+            });
+        });
+
+        document.querySelector("#quickSell").addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = this.closest("form");
+            const data = {
+                amount: form.elements.amount.value,
+                price: form.elements.price.value,
+                type: form.elements.order_type.value,
+                side: "sell",
+                symbol: "BTC/USDT",
+                exchange: selectedExchangeMain.value,
+            };
+            fetch('/api/v1/order/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.ok){
+                    // Show a success message with SweetAlert
+                    swal('Success', data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal('Error', error.message, 'error');
+            });
+        });
+        
+
+        /*tradingViewWidget = new TradingView.widget({
+            "width": "100%",
+            "height": 610,
+            "symbol": "OKX:BTCUSDT",
+            "interval": "1",
+            "timezone": "Asia/Riyadh",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": false,
+            "container_id": "chart-container",
+            "background":"#202022"
+        });*/
+
+         /*****************Market Info*********************/
+         fetch(`/getData/?exchange=${selectedExchangeMain.value}`)
+         .then(res => res.json())
+         .then(res => {
+            allSymbols = res;
+            setInterval(getPrice, 3000);
+            setInterval(getPriceAssets, 3000);
+         })
+         .catch(error => {
+            // Handle error
+            console.error("Error during fetch:", error);
+            // Display an error message to the user, or retry the fetch
+         });
+
+         let currentPage2 = 0
+         async function getPriceAssets() {
+            try {
+               let total = 0;
+               assetsTable.querySelectorAll("tr").forEach(async e=>{
+                  const res = await fetch(`/getPrice/?symbol=${e.querySelector("td").querySelector("span").innerHTML}USDT&exchange=${selectedExchangeMain.value.toUpperCase()}&interval="15m"`);
+                  const data = await res.json();
+                  /*if (data.price) {
+                     //e.querySelectorAll("td")[5].textContent = data.price + " USDT";
+                     e.querySelectorAll("td")[6].textContent = data.price_change.toFixed(2) + "%";
+                     if (data.price_change >= 0) {
+                        e.querySelectorAll("td")[6].classList.add("text-success");
+                        e.querySelectorAll("td")[6].classList.remove("text-danger");
+                     } else {
+                        e.querySelectorAll("td")[6].classList.add("text-danger");
+                        e.querySelectorAll("td")[6].classList.remove("text-success");
+                     }
+                  }*/
+               })
+               assetsTable.querySelectorAll("tr").forEach(elm=>{
+                  if (parseFloat(elm.querySelectorAll("td")[5].innerHTML.replace(" USDT",""))) 
+                  total += parseFloat(elm.querySelectorAll("td")[5].innerHTML.replace(" USDT",""));
+               })
+               assetsTable.querySelectorAll("tr").forEach(elm=>{
+                  elm.querySelectorAll("td")[4].innerHTML = (parseFloat(elm.querySelectorAll("td")[5].textContent.replace(" USDT",""))/total*100).toFixed(2) + "%";
+               })
+            } catch (error) {
+            // Handle error
+            console.error("Error during fetch:", error);
+            // Display an error message to the user, or retry the fetch
+            }
+            const table = document.getElementById("assets_table");
+            const pageSize = parseInt(table.getAttribute("data-page-size"));
+
+            if (!assets_table.nextElementSibling.innerHTML)
+            for(let i=1;i<=(assets_table.querySelectorAll("tr").length-1)/pageSize;i++){
+               assets_table.nextElementSibling.insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            
+            assets_table.style.display = "";
+            assets_table_loader.style.display = "none";
+            
+            if (currentPage2 == 0) currentPage2 = 1;
+
+            function showPage(pageNumber) {
+               table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+               [...table.querySelectorAll("tbody tr")].filter((e,i)=>i<=pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+               currentPage2 = pageNumber;
+            }
+
+            table.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  table.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+
+            showPage(currentPage2);
+         }
+
+         let currentPage = 0;
+
+         async function getPrice() {
+         if (allSymbols.length > 0) {
+            for (const e of allSymbols) {
+               try {
+               const res = await fetch(`/getPrice/?symbol=${e.symbol}&exchange=${e.exchange}&interval="15m"`);
+               const data = await res.json();
+               if (data.price) {
+                  if (e.symbol == 'BTCUSDT')
+                  document.querySelectorAll(".price_val").forEach(e=>{
+                    if(!e.value || e.value == 0 || order_type.value == "market")
+                    e.value = data.price
+                })
+                  let existingRow = document.querySelector(`tr[data-symbol="${data.symbol}"]`);
+                  const market_cap = calcMarketCap_dominance(data.circulating_supply, data.price, data.full_market_cap)[0];
+                  const dominance = (calcMarketCap_dominance(data.circulating_supply, data.price, data.full_market_cap)[1] * 1000000).toFixed(2);
+                  if (existingRow) {
+                     existingRow.cells[1].textContent = data.cmc_rank;
+                     existingRow.cells[2].textContent = data.price;
+                     existingRow.cells[3].textContent = parseFloat(data.volume).toFixed(2);
+                     existingRow.cells[4].textContent = dominance + "%";
+                     existingRow.cells[5].textContent = data.price_change.toFixed(2) + "%";
+                     existingRow.cells[6].textContent = parseFloat(market_cap).toFixed(2);
+                     existingRow.cells[7].textContent = data.circulating_supply;
+                     /*existingRow.cells[8].querySelector("button").setAttribute("ma", data.ma);
+                     existingRow.cells[8].querySelector("button").setAttribute("rsi", data.rsi);
+                     existingRow.cells[8].querySelector("button").setAttribute("stoch", data.stoch);
+                     existingRow.cells[8].querySelector("button").setAttribute("macd", data.macd);
+                     existingRow.cells[8].querySelector("button").setAttribute("bb_upper", data.bb_upper);
+                     existingRow.cells[8].querySelector("button").setAttribute("bb_middle", data.bb_middle);
+                     existingRow.cells[8].querySelector("button").setAttribute("bb_lower", data.bb_lower);*/
+                  } else {
+                     document.querySelector("#market_info").querySelector("tbody").insertAdjacentHTML("beforeend", `
+                     <tr data-symbol="${data.symbol}" style="display:none;">
+                        <td>${data.symbol}</td>
+                        <td>${data.rank}</td>
+                        <td class='price'>${data.price}</td>
+                        <td>${parseFloat(data.volume).toFixed(2)}</td>
+                        <td>${dominance}%</td>
+                        <td>${data.price_change.toFixed(2) + "%"}</td>
+                        <td>${market_cap}</td>
+                        <td>${data.circulating_supply}</td>
+                        <td><a target="_blank" href="/trade/?symbol=${data.symbol.replace("USDT","")}&exchange=${selectedExchangeMain.value}">Trade</a></td>
+                     </tr>
+                     `);
+                  }
+               }
+               top3Currencies.innerHTML = '';
+               [...document.querySelector("#market_info").querySelectorAll("tr")].filter((_,i)=>i>0&&i<3).forEach(e=>{
+                  top3Currencies.insertAdjacentHTML("beforeend",`
+                     <div class="col-lg-6">
+                        <div class="card shining-card">
+                           <div class="card-body">                    
+                              <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${e.querySelector("td").innerHTML.replace("USDT",'')}--big.svg" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                              <span class="fs-5 me-2">${e.querySelector("td").innerHTML}</span>
+                              <svg width="36" height="35" viewBox="0 0 36 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M3.86124 21.6224L11.2734 16.8577C11.6095 16.6417 12.041 16.6447 12.3718 16.8655L18.9661 21.2663C19.2968 21.4871 19.7283 21.4901 20.0644 21.2741L27.875 16.2534" stroke="#BFBFBF" stroke-linecap="round" stroke-linejoin="round"/>
+                              <path d="M26.7847 13.3246L31.6677 14.0197L30.4485 18.7565L26.7847 13.3246ZM30.2822 19.4024C30.2823 19.4023 30.2823 19.4021 30.2824 19.402L30.2822 19.4024ZM31.9991 14.0669L31.9995 14.0669L32.0418 13.7699L31.9995 14.0669C31.9994 14.0669 31.9993 14.0669 31.9991 14.0669Z" fill="#BFBFBF" stroke="#BFBFBF"/>
+                              </svg>
+                              <div class="pt-3">
+                                 <h4 class="counter" style="visibility: visible;">${e.querySelectorAll("td")[2].innerHTML} $</h4>
+                                 <div class="pt-3">
+                                    <small>${e.querySelectorAll("td")[5].innerHTML}</small>
+                                 </div>
+                              </div>
+                           </div>            
+                        </div>
+                     </div>
+                  `)
+               })
+
+               balance_BTC.innerHTML = parseFloat(balance_USD.querySelector("span").innerHTML) / parseFloat([...document.querySelector("#market_info").querySelectorAll("tr")].find(e=>e.getAttribute("data-symbol")=="BTCUSDT").querySelector(".price").innerHTML);
+               
+               } catch (error) {
+               // Handle error
+               console.error("Error during fetch:", error);
+               // Display an error message to the user, or retry the fetch
+               }
+            }  
+            const table = document.getElementById("market_info");
+            const pageSize = parseInt(table.getAttribute("data-page-size"));
+
+            if (!market_info.nextElementSibling.innerHTML)
+            for(let i=1;i<=(market_info.querySelectorAll("tr").length-1)/pageSize;i++){
+               market_info.nextElementSibling.insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            market_info.style.display = "";
+            market_info_loader.style.display = "none";
+            
+            if (currentPage == 0) currentPage = 1;
+
+            function showPage(pageNumber) {
+               table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "none");
+               [...table.querySelectorAll("tbody tr")].filter((e,i)=>i<=pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize).forEach(tr => tr.style.display = "");
+               currentPage = pageNumber;
+            }
+
+            table.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  table.nextElementSibling.querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+
+            showPage(currentPage);
+         }
+         }
+            let table = document.querySelector("#market_info");
+            let rows = Array.from(table.rows).slice(1);  // Exclude the header row
+            rows.sort(function(a, b) {
+                let aText = parseInt(a.cells[1].textContent);
+                let bText = parseInt(b.cells[1].textContent);
+                if (aText < bText) {
+                    return -1;
+                } else if (aText > bText) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+            rows.forEach(function(row) {
+                table.appendChild(row);
+            });
+
+        
+        function calcMarketCap_dominance(circulating_supply, price,full_market_cap){
+            let market_cap = parseFloat(circulating_supply) * parseFloat(price)
+            let dominance = (parseFloat(market_cap) / parseFloat(full_market_cap)) * 100
+            return [market_cap, dominance]
+        }
+
+        /**************************************************/
+        document.querySelector("#order_type").addEventListener("change",function(){
+            if(this.value=="market"){
+                document.querySelector('#price_input').setAttribute("disabled","disabled")
+            }else{
+                document.querySelector('#price_input').removeAttribute("disabled")
+            }
+        })
+
+        /*if(localStorage.getItem("fav_exchange")){
+         selectedExchangeMain.value = localStorage.getItem("fav_exchange")
+        }
+        
+        if(location.href.split('dashboard/')[1])
+            localStorage.setItem("fav_exchange",location.href.split('dashboard/')[1])
+        else
+            location.href = '/dashboard/'+selectedExchangeMain.value
+        if(localStorage.getItem("fav_exchange")){
+         selectedExchangeMain.value = localStorage.getItem("fav_exchange")
+        }
+
+        selectedExchangeMain.addEventListener("change",function(){
+            localStorage.setItem("fav_exchange",this.value)
+            location.href = '/dashboard/'+this.value
+        })
+
+        document.querySelectorAll(".replaceExchange").forEach(e=>{
+            e.href = e.href.replace("okex",localStorage.getItem("fav_exchange"))
+        })*/
+    </script>
+  </body>
+</html>

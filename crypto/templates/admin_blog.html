@@ -1,0 +1,604 @@
+{% include 'base_admin.html' %}
+        <div class="container-fluid content-inner pb-0">
+
+            <div class="modal note-modal edit_cats hide" tabindex="-1" role="dialog" aria-label="Categories Edit" aria-modal="true" style="">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Categories Edit</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" aria-hidden="true">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="display:flex;flex-direction: column;gap:5px;max-height: 250px;overflow: scroll;" id="cats_list">
+                                {% for cat in cats %}
+                                <div cat_id="{{cat.id}}" style="display:flex;justify-content: space-between;align-items: center;padding: 10px;background-color: rgba(255, 255, 255, 0.087);">
+                                    <span>{{cat.title}}</span>
+                                    <span>
+                                        <span class="del_cat" style="cursor: pointer;"><i class="fa fa-trash"></i></span>
+                                        <span class="edit_cat" style="cursor: pointer;" img-data="{{cat.img}}"><i class="fa fa-edit"></i></span>
+                                    </span>
+                                    
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group note-form-group">
+                                <label for="note-dialog-link-txt-16966863907621" class="note-form-label">Category Name (en)</label>
+                                <input id="new_cat_title" class="note-link-text form-control note-form-control note-input" type="text" />
+                                <label for="note-dialog-link-txt-16966863907621" class="note-form-label">Category Name (ar)</label>
+                                <input id="new_cat_title_ar" class="note-link-text form-control note-form-control note-input" type="text" />
+                                <label for="note-dialog-link-txt-169668639076222" class="note-form-label">Picture</label>
+                                <input type="file" id="cat_pic" autocomplete="off" class="form-control"/>
+                                <div>
+                                    <picture>
+                                        <source srcset="" type="image/svg+xml">
+                                        <img src="" style="border:0;" class="img-fluid img-thumbnail" id="cat_pic_img" alt="...">
+                                    </picture>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" href="#" class="btn btn-primary note-btn note-btn-primary note-link-btn" id="new_cat_btn" value="Add New Category"/>
+                            <input type="button" href="#" class="btn btn-primary note-btn note-btn-primary note-link-btn hidden" id="edit_cat_btn" value="Edit Category"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="header-title" style="">
+                                <h4 class="card-title">Posts</h4>
+                            </div>
+                        </div>
+                        <div class="card-body" id="posts_list" style="max-height: 310px;overflow-y: scroll;margin-top: 14px;padding:0;">
+                            <div class="btn-group btn-check-group takeProfitGroup" post_lang="all" role="group" aria-label="Basic checkbox toggle button group">
+                                <input type="checkbox" class="btn-check" id="">
+                                <label class="btn btn-sm btn-secondary  rounded-start" for="">Arabic</label>
+                    
+                                <input type="checkbox" class="btn-check" id="">
+                                <label class="btn btn-sm btn-secondary active" for="">English</label>
+                            </div>
+                            {% for post in posts %}
+                            <div post_id="{{post.id}}" user_id="{{post.category_id}}" post_lang="{{post.lang}}" data-testid="conversation-list-item" class="ez972386 intercom-1x83fso e13m0kgk1 alert alert-none d-flex align-items-center post_card" role="button" tabindex="0" onclick="openPost(this,'{{post.id}}')" style="border-radius: 5px;">
+                                <div class="intercom-1ya2i8a e13m0kgk0">
+                                    <div class="intercom-1gb1rig ez972381">
+                                        <div class="intercom-dv934d ez972380">
+                                        <span class="intercom-13impe">{{post.title}}</span>
+                                        </div>
+                                        <div class="intercom-t6mohh ez972384">
+                                        <div class="intercom-sv4aw ez972385" style="white-space: nowrap;">{{post.writer}} | </div>
+                                        <div style="white-space: nowrap;">{{post.created_at}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="intercom-t3a5jf e13m0kgk5">
+                                    <i class="fa fa-trash-o deletePost" style="background: #ffffff11;
+                                    padding: 8px;
+                                    border-radius: 200px;"></i>
+                                        <i color="linkColor" size="16" class="intercom-1c2cktu e1fransm0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M5.42773 4.70898C5.46387 4.85254 5.53809 4.98828 5.65039 5.10059L8.54932 8L5.64893 10.9004C5.31689 11.2324 5.31689 11.7705 5.64893 12.1025C5.98096 12.4336 6.51904 12.4336 6.85107 12.1025L10.3516 8.60059C10.5591 8.39355 10.6367 8.10449 10.585 7.83691C10.5537 7.67578 10.4761 7.52246 10.3516 7.39844L6.85254 3.89941C6.52051 3.56738 5.98242 3.56738 5.65039 3.89941C5.43066 4.11816 5.35645 4.42871 5.42773 4.70898Z" fill="#ffffff"></path>
+                                            </svg>
+                                        </i>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <button type="button" style="width:100%;margin-bottom: 10px;" id="new_post" class="btn btn-outline-primary hidden">New Post</button>
+                    <div class="card">
+                        <div class="card-body">
+                            
+                            <form th:object="${post}" id="post_form">
+        
+                                <div class="form-group">
+                                    <label for="title">Title:</label>
+                                    <input type="text" id="post_title" placeholder="Title" autocomplete="off" class="form-control"
+                                           th:field="*{title}"/>
+                                </div>
+
+                                <div>
+                                    <picture>
+                                        <source srcset="" type="image/svg+xml">
+                                        <img src="" style="border:0;" class="img-fluid img-thumbnail" id="post_pic_img" alt="...">
+                                    </picture>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="pic">Picture:</label>
+                                    <input type="file" id="post_pic" autocomplete="off" class="form-control"/>
+                                </div>
+        
+                                <div class="form-group">
+                                    <label for="title">Writer:</label>
+                                    <input type="text"  id="post_writer" placeholder="Title" autocomplete="off" class="form-control"
+                                           th:field="*{writer}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="title">Language:</label>
+                                    <select class="form-control form-select" name="" id="post_lang">
+                                        <option value="en">English</option>
+                                        <option value="ar">Arabic</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="title">Category:</label>
+                                    <button class="btn btn-outline-secondary btn-sm" style="position: absolute;right: 0;" id="edit_cats">Edit Categories</button>
+                                    <select class="form-select" id="post_category">
+                                        {% for cat in cats %}
+                                        <option value="{{cat.id}}">{{cat.title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+
+
+                
+                                <div class="form-group">
+                                    <label for="content">Content:</label>
+                                    <textarea type="text" id="post_content" rows="4" id="content" placeholder="Content" class="form-control"
+                                              th:field="*{content}" autocomplete="off"></textarea>
+                                </div>
+                
+                                <button class="btn btn-primary" id="publish_btn">Publish</button>
+                                <button class="btn btn-primary hidden" id="edit_btn">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        
+        
+    </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#post_content').summernote({
+                height: 200
+            });
+        });
+    </script>
+
+    <script>
+        publish_btn.addEventListener("click",async function(evt){
+            evt.preventDefault();
+            validData = true;
+            [...[post_title,post_writer,post_lang]].forEach(e=>{
+                if(e.value == ""){
+                    e.classList.add("is-invalid")
+                    validData = false
+                }
+                else{
+                    e.classList.remove("is-invalid")
+                }
+            })
+            let oldHTML = this.innerHTML
+            if(validData){
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+                await fetch(`/admin/blog/posts`,{
+                    'method':'POST',
+                    'headers':{
+                        'Content-Type':'application/json'
+                    },
+                    'body':JSON.stringify({
+                        'title':post_title.value,
+                        'content':post_content.value,
+                        'writer':post_writer.value,
+                        'lang':post_lang.value, // 'en' or 'ar
+                        'category_id':post_category.value,
+                        'img':post_pic.getAttribute('data-img')
+                    })
+
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res['ok']){
+                        swal("Success", res['message'], "success")
+                        posts_list.insertAdjacentHTML('beforeend',`
+                        <div post_id="1" user_id="1" data-testid="conversation-list-item" post_lang="${post.lang}" class="ez972386 intercom-1x83fso e13m0kgk1 alert alert-none d-flex align-items-center post_card" role="button" tabindex="0" onclick="openPost(this,${res['id']})" style="border-radius: 5px;">
+                                <div class="intercom-1ya2i8a e13m0kgk0">
+                                        <div class="intercom-1gb1rig ez972381">
+                                            <div class="intercom-dv934d ez972380">
+                                            <span class="intercom-13impe">${post_title.value}</span>
+                                            </div>
+                                            <div class="intercom-t6mohh ez972384">
+                                            <div class="intercom-sv4aw ez972385">${post_writer.value} | </div>
+                                            <div>None</div>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="intercom-t3a5jf e13m0kgk5">
+                                        <i color="linkColor" size="16" class="intercom-1c2cktu e1fransm0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M5.42773 4.70898C5.46387 4.85254 5.53809 4.98828 5.65039 5.10059L8.54932 8L5.64893 10.9004C5.31689 11.2324 5.31689 11.7705 5.64893 12.1025C5.98096 12.4336 6.51904 12.4336 6.85107 12.1025L10.3516 8.60059C10.5591 8.39355 10.6367 8.10449 10.585 7.83691C10.5537 7.67578 10.4761 7.52246 10.3516 7.39844L6.85254 3.89941C6.52051 3.56738 5.98242 3.56738 5.65039 3.89941C5.43066 4.11816 5.35645 4.42871 5.42773 4.70898Z" fill="#ffffff"></path>
+                                            </svg>
+                                        </i>
+                                </div>
+                            </div>
+                        `)
+                    }
+                    else{
+                        swal("Error", res['message'], "error")
+                    }
+                })
+                .finally(()=>{
+                    this.innerHTML = oldHTML
+                })
+            }
+            
+        })
+
+        edit_btn.addEventListener("click",async function(evt){
+            evt.preventDefault();
+            validData = true;
+            [...[post_title,post_writer,post_lang]].forEach(e=>{
+                if(e.value == ""){
+                    e.classList.add("is-invalid")
+                    validData = false
+                }
+                else{
+                    e.classList.remove("is-invalid")
+                }
+            })
+            console.log(validData)
+            let oldHTML = this.innerHTML
+            if(validData){
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+                await fetch(`/admin/blog/posts/${localStorage.getItem("post_to_edit")}`,{
+                    'method':'PUT',
+                    'headers':{
+                        'Content-Type':'application/json'
+                    },
+                    'body':JSON.stringify({
+                        'title':post_title.value,
+                        'content':document.querySelector(".note-editable.card-block").innerHTML,
+                        'writer':post_writer.value,
+                        'img':post_pic.getAttribute('data-img')
+                    })
+
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res['ok']){
+                        swal("Success", res['message'], "success")
+                    }
+                    else{
+                        swal("Error", res['message'], "error")
+                    }
+                })
+                .finally(()=>{
+                    this.innerHTML = oldHTML
+                })
+            }
+            
+        })
+
+        async function openPost(self,post_id){
+            new_post.classList.remove('hidden')
+            publish_btn.classList.add('hidden')
+            document.querySelectorAll(".post_card").forEach(e=>{
+                e.style = ""
+            })
+            self.style = 'background: #ffffff0d;'
+            edit_btn.classList.remove('hidden')
+            localStorage.setItem("post_to_edit",post_id)
+            await fetch(`/admin/blog/posts?post_id=${post_id}`,{
+                'method':'GET',
+                'headers':{
+                    'Content-Type':'application/json'
+                }
+            })
+            .then(res=>res.json())
+            .then(res=>{
+                console.log(res)
+                post_title.value = res['title']
+                document.querySelector('.note-editable.card-block').innerHTML = res['content']
+                post_writer.value = res['writer']
+                post_lang.value = res['lang']
+                post_pic.setAttribute('data-img',res['img'])
+                post_pic_img.src = res['img']
+            })
+        }
+
+        new_post.addEventListener("click",function(){
+            this.classList.remove('hidden')
+            document.querySelectorAll(".post_card").forEach(e=>{
+                e.style = ""
+            })
+            publish_btn.classList.remove('hidden')
+            edit_btn.classList.add('hidden')
+            post_title.value = ""
+            document.querySelector('.note-editable.card-block').innerHTML = ""
+            post_writer.value = ""
+            this.parentElement.querySelector("img").src = ""
+            post_pic.setAttribute('data-img',"")
+        });
+
+        [...[post_title,post_writer,post_lang]].forEach(e=>{
+            e.addEventListener("input",function(){
+                if(this.value != ""){
+                    this.classList.remove("is-invalid")
+                }
+            })
+        })
+
+        document.querySelectorAll(".deletePost").forEach(e=>{
+            e.addEventListener("click",async function(evt){
+                evt.stopPropagation()
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover it!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then(async (willDelete) => {
+                    if (willDelete) {
+                        await fetch(`/admin/blog/posts/${this.parentElement.parentElement.getAttribute("post_id")}`,{
+                            'method':'DELETE',
+                            'headers':{
+                                'Content-Type':'application/json'
+                            }
+                        })
+                        .then(res=>res.json())
+                        .then(res=>{
+                            if(res['ok']){
+                                swal("Success", res['message'], "success")
+                                this.parentElement.parentElement.remove()
+                            }
+                            else{
+                                swal("Error", res['message'], "error")
+                            }
+                        })
+                    }
+                })
+            
+            })
+        })
+
+        post_pic.addEventListener("input",async function(){
+            post_pic_img.src='/static/images/loading-gif.gif'
+            let fileInput = this;
+            let file = fileInput.files[0];
+            let imageType = /image.*/;
+            if (file?.type.match(imageType)) {
+                let reader = new FileReader();
+                reader.onload = async function(e) {
+                    post_pic.setAttribute('data-img',reader.result)
+                    post_pic_img.src = reader.result
+                }
+                reader.readAsDataURL(file);	
+            }
+        })
+
+        cat_pic.addEventListener("input",async function(){
+            cat_pic_img.src='/static/images/loading-gif.gif'
+            let fileInput = this;
+            let file = fileInput.files[0];
+            let imageType = /image.*/;
+            if (file?.type.match(imageType)) {
+                let reader = new FileReader();
+                reader.onload = async function(e) {
+                    cat_pic.setAttribute('data-img',reader.result)
+                    cat_pic_img.src = reader.result
+                }
+                reader.readAsDataURL(file);	
+            }
+        })
+
+        edit_cats.addEventListener("click",function(evt){
+            evt.preventDefault()
+            $('.edit_cats').modal('show')
+        })
+
+        new_cat_btn.addEventListener("click",async function(evt){
+            await fetch(`/admin/blog/cats`,{
+                'method':'POST',
+                'headers':{
+                    'Content-Type':'application/json'
+                },
+                'body':JSON.stringify({
+                    'title':document.querySelector('#new_cat_title').value,
+                    'title_ar':new_cat_title_ar.value,
+                    'img':cat_pic.getAttribute('data-img')
+                })
+            })
+            .then(res=>res.json())
+            .then(res=>{
+                if(res['ok']){
+                    swal("Success", res['message'], "success")
+                    $('.edit_cats').modal('hide')
+                }
+                else{
+                    swal("Error", res['message'], "error")
+                }
+                cats_list.insertAdjacentHTML('beforeend',`
+                        <div cat_id="${res['id']}" style="display:flex;justify-content: space-between;align-items: center;padding: 10px;background-color: rgba(255, 255, 255, 0.087);">
+                            <span>${document.querySelector('#new_cat_title').value}</span>
+                            <span>
+                                <span class="del_cat" style="cursor: pointer;"><i class="fa fa-trash"></i></span>
+                                <span class="edit_cat" style="cursor: pointer;"><i class="fa fa-edit"></i></span>
+                            </span>
+                        </div>
+                `)
+                document.querySelectorAll(".del_cat").forEach(e=>{
+                    e.addEventListener("click",async function(evt){
+                        await fetch(`/admin/blog/cats/${this.parentElement.parentElement.getAttribute("cat_id")}`,{
+                            'method':'DELETE',
+                            'headers':{
+                                'Content-Type':'application/json'
+                            }
+                        })
+                        .then(res=>res.json())
+                        .then(res=>{
+                            if(res['ok']){
+                                swal("Success", res['message'], "success")
+                                this.parentElement.parentElement.remove()
+                            }
+                            else{
+                                swal("Error", res['message'], "error")
+                            }
+                        })
+                    })
+                })
+            })
+            .finally(()=>{
+                cat_pic_img.src = ""
+                cat_pic.setAttribute('data-img',"")
+                document.querySelector('#new_cat_title').value = ""
+            })
+        })
+
+        document.querySelectorAll(".del_cat").forEach(e=>{
+            e.addEventListener("click",async function(evt){
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover it or the posts under it!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then(async (willDelete) => {
+                    if (willDelete) {
+                        await fetch(`/admin/blog/cats/${this.parentElement.parentElement.getAttribute("cat_id")}`,{
+                            'method':'DELETE',
+                            'headers':{
+                                'Content-Type':'application/json'
+                            }
+                        })
+                        .then(res=>res.json())
+                        .then(res=>{
+                            if(res['ok']){
+                                swal("Success", res['message'], "success")
+                                this.parentElement.parentElement.remove()
+                            }
+                            else{
+                                swal("Error", res['message'], "error")
+                            }
+                        })
+                    }
+                }) 
+            })
+        })
+
+        document.querySelectorAll(".edit_cat").forEach(e=>{
+            e.addEventListener("click",async function(evt){
+                new_cat_btn.classList.add('hidden')
+                edit_cat_btn.classList.remove('hidden')
+                edit_cat_btn.setAttribute('cat_id',this.parentElement.parentElement.getAttribute("cat_id"))
+                cat_pic_img.src = this.getAttribute('img-data')
+                cat_pic.setAttribute('data-img',this.getAttribute('img-data'))
+                document.querySelector('#new_cat_title').value = this.parentElement.parentElement.querySelector('span').innerHTML
+            })
+        })
+
+            edit_cat_btn.addEventListener("click",async function(evt){
+                await fetch(`/admin/blog/cats/edit/${this.getAttribute("cat_id")}`,{
+                    'method':'POST',
+                    'headers':{
+                        'Content-Type':'application/json'
+                    },
+                    'body':JSON.stringify({
+                        'title':document.querySelector('#new_cat_title').value,
+                        'img':cat_pic.getAttribute('data-img'),
+                    })
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res['ok']){
+                        swal("Success", res['message'], "success")
+                        this.parentElement.parentElement.remove()
+                    }
+                    else{
+                        swal("Error", res['message'], "error")
+                    }
+                })
+                .finally(()=>{
+                    new_cat_btn.classList.remove('hidden')
+                    edit_cat_btn.classList.add('hidden')
+                    cat_pic_img.src = ""
+                    cat_pic.setAttribute('data-img',"")
+                    document.querySelector('#new_cat_title').value = ""
+                    //location.reload()
+                })
+            })
+
+            localStorage.setItem("post_lang", "en");
+            document.querySelectorAll(".intercom-1x83fso").forEach((post)=>{
+                post.classList.add("hidden")
+            });
+            [...document.querySelectorAll(".intercom-1x83fso")].forEach(e=>{
+                if(e.getAttribute("post_lang") == localStorage.getItem("post_lang")){
+                    e.classList.remove("hidden")
+                }
+            })
+            
+
+            document.querySelectorAll(".btn-check-group").forEach(elm=>{
+                elm.querySelectorAll(".btn-check").forEach(e=>{  
+                    e.nextElementSibling.addEventListener("click", function(){
+                        document.querySelector(".card-skeleton")?.classList.remove("hidden")
+                        document.querySelectorAll(".intercom-1x83fso").forEach((post)=>{
+                            post.classList.add("hidden")
+                        });
+
+                        
+
+                        if(this.innerHTML.toLowerCase() == "ar"){
+                            document.querySelectorAll(".intercom-1x83fso").forEach((post)=>{
+                                if(post.getAttribute("post_lang") == "ar"){
+                                    post.classList.remove("hidden")
+                                }
+                            })
+                        }else if(this.innerHTML.toLowerCase() == "ar"){
+                            document.querySelectorAll(".intercom-1x83fso").forEach((post)=>{
+                                if(post.getAttribute("post_lang") == "ar"){
+                                    post.classList.remove("hidden")
+                                }
+                            })
+                        }
+                        elm.querySelectorAll("label").forEach(e=>{
+                            e.classList.remove("active")
+                        })
+                        e.nextElementSibling.classList.add("active")
+                        elm.setAttribute("post_lang",this.innerHTML.toLowerCase())
+                        if(this.innerHTML.toLowerCase() == "arabic"){
+                            localStorage.setItem("post_lang", "ar")
+                        }else if(this.innerHTML.toLowerCase() == "english"){
+                            localStorage.setItem("post_lang", "en")
+                        }
+
+                        [...document.querySelectorAll(".intercom-1x83fso")].forEach(e=>{
+                            if(e.getAttribute("post_lang") == localStorage.getItem("post_lang")){
+                                e.classList.remove("hidden")
+                            }
+                        })
+                    })
+                })
+            })
+        </script>
+    </body>
+</html>

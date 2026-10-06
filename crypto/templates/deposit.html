@@ -1,0 +1,469 @@
+{% extends 'base.html' %}    
+{% block title %}PulseTrade | Deposit Crypto{% endblock %}
+{% block head %}
+<style>
+select,input{
+    background: #ffffff08!important;
+    border-color: #36363869!important;
+}
+</style>
+{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+        <div style="position: relative;" > 
+            <img src="/static/images/Hexagon.png" style="position: fixed;top:0;
+        left: 0;width: fit-content;height: 100%;filter: grayscale(1);min-height: 100%;min-width: 100%;opacity: 0.08;"> 
+            <div class="wrapper">
+                <div class="d-grid grid-1-auto gap-card" style="overflow: scroll;">
+                    <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px;text-align: center;padding: 31px;justify-content: center;">
+                        <a href="{{ url_for('crypto_convert') }}" id="walletOverview_transaction_history_aLink" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Convert</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M13.1406 6.90042H19.4413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>                              
+                         </a>
+                         <a href="{{ url_for('crypto_transfer') }}" id="walletOverview_top_transfer" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Transfer</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>                            
+                         </a>
+                         <a href="{{ url_for('crypto_withdraw') }}" id="walletOverview_top_withdrawal" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Withdraw</span>
+                            <svg style="transform:rotate(180deg)" width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                         </a>
+                         <a href="{{ url_for('crypto_deposit') }}" id="walletOverview_top_deposit" class="btn btn-primary">
+                            <span class="remove_on_mobile">Deposit</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                         </a>
+                    </div>                 
+                 </div>
+                <section class="vh-100 bg-image">
+                    <div class="container h-100">
+                        <div class="row justify-content-start align-items-start">
+                            <div class="col-lg-5 mt-5">
+                                <div class="card" style="background-color: #202022;background-color: transparent;box-shadow: unset;">
+                                    <div style="position: absolute;
+                                    top:0;
+                                    z-index: -2;
+                                    right: 0;
+                                    /*background-image: url('/static/assets/images/auth/01.png');*/
+                                    filter: blur(122px);
+                                    width: 100%;
+                                    height: 100%;"></div>
+                                    <div class="card-body" style="border-radius: 8px;">
+                                        <form id="convert">
+                                        <div class="auth-form">
+                                            <div class="" style="margin:0">
+                                                <h2 class="multi-lang-text-deposit">Deposit</h2>
+                                            </div>
+                                            <br>
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-floating mb-3">
+                                                            <select style="background: transparent!important;" class="form-control mb-3" name="symbol" id="currencies">
+
+                                                            </select>
+                                                            <label for="floatingInput" class="multi-lang-text-deposit">Coin</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="form-floating mb-3">
+                                                            <select style="background: transparent!important;" class="form-control mb-3" name="network" id="networks">
+
+                                                            </select>
+                                                            <label for="floatingInput" class="multi-lang-text-deposit">Network</label>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+
+                                                 
+
+                                                
+                                            </div>
+                                            
+
+                                            <div class="">
+                                                <div class="d-grid gap-card grid-cols-1">
+                                                    <button disabled class="btn btn-success" type="submit">
+                                                       <span class="multi-lang-text-deposit">Confirm</span>
+                                                       <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                                    </button>
+                                                    <button class="btn btn-success hidden" type="button" disabled="">
+                                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </button>
+                                                 </div>
+                                            </div>
+
+                                            <div class="hidden" style="margin-top: 10px;">
+                                                <div class="d-grid gap-card grid-cols-1">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" disabled class="form-control" id="address_value">
+                                                        <label for="floatingInput" class="multi-lang-text-deposit">Address</label>
+                                                    </div>
+                                                 </div>
+                                                 <svg style="width: 22px;" id="copy_address" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="white" d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <ul class="hidden" style="padding: 20px 1px;" id="deposit_inst">
+                                        <li>أرسل فقط USDT إلى عنوان الإيداع هذا. سيتم فقدان الأصول الأُخرى ولا يمكن استردادها.</li>
+                                        <li>الرجاء التحقق والتأكد من أن الشبكة التي تحددها هي Ethereum (ERC20).</li>
+                                        <li>الحد الأدنى لمبلغ الإيداع هو 1.00000000 USDT. أي إيداع أقل من هذا المبلغ لا يمكن أن يُحرر أو يُسترد.</li>
+                                    </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-start align-items-start">
+                            <div class="col-lg-12 col-12 mt-5">
+                                <div class="card card-block card-stretch custom-scroll" style="background-color: #20202200;box-shadow: unset;">
+                                    <div style="position: absolute;
+                                    top:0;
+                                    z-index: -2;
+                                    right: 0;
+                                    /*background-image: url('/static/assets/images/auth/01.png');*/
+                                    filter: blur(122px);
+                                    width: 100%;
+                                    height: 100%;"></div>
+                                    <div class="card-body" style="border-radius: 8px;">
+                                        <div class="table-responsive noScroll-webkit" style="overflow: scroll;height: 293px!important;position: relative;">
+                                          <table class="table data-table mb-0">
+                                             <thead class="{% if deposits|count == 0 and False %}hidden{% endif %}">
+                                                <tr>
+                                                    <th class="col multi-lang-text-deposit">Time</th>
+                                                    <th class="col multi-lang-text-deposit">Type</th>
+                                                    <th class="col multi-lang-text-deposit">Deposit wallet</th>
+                                                    <th class="col multi-lang-text-deposit">Asset</th>
+                                                    <th class="col multi-lang-text-deposit">Amount</th>
+                                                    <th class="col multi-lang-text-deposit">Destination</th>
+                                                    <th class="col multi-lang-text-deposit">TxID</th>
+                                                    <th class="col multi-lang-text-deposit">Status</th>
+                                                 </tr>
+                                             </thead>
+                                                <tbody id="assetsTable">
+                                                
+                                                 {% for deposit in deposits %}
+                                                   <tr class="white-space-no-wrap">
+                                                        <td class="pe-2 timestamp">{{deposit.timestamp}}</td>
+                                                        <td class="pe-2">{{deposit.type}}</td>
+                                                        <td class="pe-2">{{deposit.address}}</td>
+                                                        <td class="pe-2">{{deposit.currency}}</td>
+                                                        <td class="pe-2">{{deposit.amount}}</td>
+                                                        <td class="pe-2">{{deposit.addressTo}}</td>
+                                                        <td class="pe-2">{{deposit.txid}}</td>
+                                                        <td class="pe-2">{{deposit.status}}</td>
+                                                   </tr>
+                                                {% endfor %}
+                                                {% if deposits|count == 0 %}
+                                                <tr class="white-space-no-wrap">
+                                                    <td style="padding: 0;" colspan="8">
+                                                        <div class="card mb-0" style="background: transparent;
+                                                        width: 100%;
+                                                        padding: 50px 0;">
+                                                            <img src="/static/images/not-found.png" style="max-width: 140px;margin:0 auto;filter:grayscale(1)">
+                                                            <span style="display: block;text-align: center;font-size: 20px;" class="no-records-found">No Records Found</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
+                                             </tbody>
+                                          </table>
+                                       </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                        </div>
+
+                        <!--div class="row" style="margin-bottom: 115px;">
+                            <h1 style="margin-bottom:35px;text-align: center;">Any questions?</h1>
+                            <div class="bd-example">
+                                <div class="accordion" id="accordionExample">
+                                    <div class="accordion-item">
+                                        <h4 class="accordion-header" id="headingOne">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                Is it possible to upgrade my plan after payment?
+                                            </button>
+                                        </h4>
+                                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+        
+                                                <p>Yes and you won't lose any remaining time when you upgrade. All remaining time on your current active subscription will be converted to a partial credit towards the new payment.</p>
+                                                <p>Our system treats the upgrade in two steps:</p>
+                                                <ul class="sc-gsDKAQ sc-hKwDye gaGvLq">
+                                                    <li>The system will see the price you paid for your current plan, it will then divide this by the number of days in the plan length you purchased and then multiply it by the remaining unused days - this sum will be used as a partial credit against the cost of the new plan you have chosen</li>
+                                                    <li class="sc-pVTFL gKWdxa">When you select the new plan level and length, this partial credit from p.1 will be applied. This may mean you will not pay anything for the new plan as the credit on your 3Commas account will fully cover the payment cost.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h4 class="accordion-header" id="headingTwo">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                Is it possible to upgrade my plan after payment?
+                                            </button>
+                                        </h4>
+                                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+        
+                                                <p>Yes and you won't lose any remaining time when you upgrade. All remaining time on your current active subscription will be converted to a partial credit towards the new payment.</p>
+                                                <p>Our system treats the upgrade in two steps:</p>
+                                                <ul class="sc-gsDKAQ sc-hKwDye gaGvLq">
+                                                    <li>The system will see the price you paid for your current plan, it will then divide this by the number of days in the plan length you purchased and then multiply it by the remaining unused days - this sum will be used as a partial credit against the cost of the new plan you have chosen</li>
+                                                    <li class="sc-pVTFL gKWdxa">When you select the new plan level and length, this partial credit from p.1 will be applied. This may mean you will not pay anything for the new plan as the credit on your 3Commas account will fully cover the payment cost.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h4 class="accordion-header" id="headingThree">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                Is it possible to upgrade my plan after payment?
+                                            </button>
+                                        </h4>
+                                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+        
+                                                <p>Yes and you won't lose any remaining time when you upgrade. All remaining time on your current active subscription will be converted to a partial credit towards the new payment.</p>
+                                                <p>Our system treats the upgrade in two steps:</p>
+                                                <ul class="sc-gsDKAQ sc-hKwDye gaGvLq">
+                                                    <li>The system will see the price you paid for your current plan, it will then divide this by the number of days in the plan length you purchased and then multiply it by the remaining unused days - this sum will be used as a partial credit against the cost of the new plan you have chosen</li>
+                                                    <li class="sc-pVTFL gKWdxa">When you select the new plan level and length, this partial credit from p.1 will be applied. This may mean you will not pay anything for the new plan as the credit on your 3Commas account will fully cover the payment cost.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h4 class="accordion-header" id="headingFour">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                Is it possible to upgrade my plan after payment?
+                                            </button>
+                                        </h4>
+                                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+        
+                                                <p>Yes and you won't lose any remaining time when you upgrade. All remaining time on your current active subscription will be converted to a partial credit towards the new payment.</p>
+                                                <p>Our system treats the upgrade in two steps:</p>
+                                                <ul class="sc-gsDKAQ sc-hKwDye gaGvLq">
+                                                    <li>The system will see the price you paid for your current plan, it will then divide this by the number of days in the plan length you purchased and then multiply it by the remaining unused days - this sum will be used as a partial credit against the cost of the new plan you have chosen</li>
+                                                    <li class="sc-pVTFL gKWdxa">When you select the new plan level and length, this partial credit from p.1 will be applied. This may mean you will not pay anything for the new plan as the credit on your 3Commas account will fully cover the payment cost.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h4 class="accordion-header" id="headingFive">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                                Is it possible to upgrade my plan after payment?
+                                            </button>
+                                        </h4>
+                                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+        
+                                                <p>Yes and you won't lose any remaining time when you upgrade. All remaining time on your current active subscription will be converted to a partial credit towards the new payment.</p>
+                                                <p>Our system treats the upgrade in two steps:</p>
+                                                <ul class="sc-gsDKAQ sc-hKwDye gaGvLq">
+                                                    <li>The system will see the price you paid for your current plan, it will then divide this by the number of days in the plan length you purchased and then multiply it by the remaining unused days - this sum will be used as a partial credit against the cost of the new plan you have chosen</li>
+                                                    <li class="sc-pVTFL gKWdxa">When you select the new plan level and length, this partial credit from p.1 will be applied. This may mean you will not pay anything for the new plan as the credit on your 3Commas account will fully cover the payment cost.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div-->
+
+                    </div>
+                </section>
+            </div>
+          </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/deposit.js"></script>
+
+    <script>
+      document.querySelectorAll(".multi-lang-text-deposit").forEach(function(element,i){
+         element.innerHTML = lang_data_deposit[localStorage.getItem('lang')][i]
+     })
+
+     if(localStorage.getItem('lang')=="ar" && document.querySelector(".no-records-found")){
+        document.querySelector(".no-records-found").innerHTML = "لا توجد سجلات"
+    }
+     
+        selectedExchangeMain.parentElement.classList.remove("hidden")
+        document.querySelector("#convert").addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = event.target;
+            form.querySelectorAll("button")[0].classList.add("hidden");
+            form.querySelectorAll("button")[1].classList.remove("hidden");
+            const data = {
+                "exchange": selectedExchangeMain.value,
+                "network": form.elements.network.value,
+                "symbol": form.elements.symbol.value
+            };
+
+            console.log(data);
+    
+            fetch('/api/v1/deposit/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if(data.ok || true){
+                    address_value.value = data.address
+                    address_value.parentElement.parentElement.parentElement.classList.remove("hidden")
+                    deposit_inst.classList.remove("hidden")
+                    deposit_inst.innerHTML = ""
+                    currency = JSON.parse(localStorage.getItem("currencies_deposit")).filter(x=>x["code"]==form.elements.symbol.value)[0]
+                    console.log(currency)
+                    if(localStorage.getItem("lang")=='ar')
+                    deposit_inst.insertAdjacentHTML('beforeend',`
+                            <li>أرسل فقط ${form.elements.symbol.value} إلى عنوان الإيداع هذا. سيتم فقدان الأصول الأُخرى ولا يمكن استردادها.</li>
+                            <li>الرجاء التحقق والتأكد من أن الشبكة التي تحددها هي <span style="color: #bb6358;">${form.elements.network.value}</span>.</li>
+                            <li>الحد الأدنى لمبلغ الإيداع هو <span style="color: #bb6358;">${Object.values(currency['networks']).filter(e=>e.network==form.elements.network.value)[0]?.limits?.deposit?.min} ${form.elements.symbol.value}</span> . أي إيداع أقل من هذا المبلغ لا يمكن أن يُحرر أو يُسترد.</li>
+                            <li>الحد الأقصى لمبلغ الإيداع هو <span style="color: var(--bs-success);">${Object.values(currency['networks']).filter(e=>e.network==form.elements.network.value)[0]?.limits?.deposit?.max}</span> ${form.elements.symbol.value}. أي إيداع أكبر من هذا المبلغ لا يمكن أن يُحرر أو يُسترد.</li>
+                    `)
+                    else
+                    deposit_inst.insertAdjacentHTML('beforeend',`
+                            <li>Send only ${form.elements.symbol.value} to this deposit address. Other assets will be lost and cannot be recovered.</li>
+                            <li>Please check and make sure the network you specify is <span style="color: #bb6358;">${form.elements.network.value}</span>.</li>
+                            <li>The minimum deposit amount is <span style="color: #bb6358;">${Object.values(currency['networks']).filter(e=>e.network==form.elements.network.value)[0]?.limits?.deposit?.min}</span> ${form.elements.symbol.value}. Any deposit less than this amount cannot be released or refunded.</li>
+                            <li>The maximum deposit amount is <span style="color: var(--bs-success);">${Object.values(currency['networks']).filter(e=>e.network==form.elements.network.value)[0]?.limits?.deposit?.max}</span> ${form.elements.symbol.value}. Any deposit greater than this amount cannot be released or refunded.</li>
+                    `)
+                    
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", data.message, 'error');
+                }
+                
+            })
+            .catch(error => {
+                swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", error.message, 'error');
+            })
+            .finally(() => {
+                form.querySelectorAll("button")[0].classList.remove("hidden");
+                form.querySelectorAll("button")[1].classList.add("hidden");
+            });
+        });
+
+        /**********************************************/$
+
+        selectedExchangeMain.addEventListener("change",async function(){
+            get_currecies(this.value)
+        })
+
+        async function get_currecies(x){
+            let currencies = document.querySelector("#currencies")
+            currencies.innerHTML = '<option value=""></option>'
+            networks.innerHTML = '<option value=""></option>'
+            currencies.setAttribute("disabled","disabled")
+            await fetch(`/api/v1/currencies/${x}`)
+            .then(res=>res.json())
+            .then(res=>{
+                console.log(res)
+                localStorage.setItem("currencies_deposit",JSON.stringify(res))
+                currencies.removeAttribute("disabled")
+                console.log("currencies")
+                console.log(res)
+                res.forEach(symbol => {
+                    console.log(symbol)
+                    if (symbol["active"] && symbol["deposit"]){
+                        currencies.insertAdjacentHTML("beforeend",`
+                            <option value="${symbol["code"]}">${symbol["code"]}</option>
+                        `)
+                        console.log(Object.entries(symbol["networks"]))
+                        //get the values only of the netwrosk array of objects
+                        for (const [key, value] of Object.entries(symbol["networks"])) {
+                            if(symbol["active"] && symbol["deposit"]){
+                                networks.insertAdjacentHTML("beforeend",`
+                                    <option class="hidden" parentCcy="${symbol["code"]}" value="${value['network']}" fee="${value["fee"]}">${value['network']} ${value['name'] ? '[' + value['name'] + ']' : ''}</option>
+                                `)
+                            }
+                        }
+                    }
+                });
+            })
+        }
+
+        get_currecies(selectedExchangeMain.value)
+
+        currencies.addEventListener("change",async function(){
+            console.log(this.value)
+            networks.querySelectorAll("option").forEach(x=>{
+                x.classList.add("hidden")
+            });
+            console.log("available")
+            console.log([...networks.querySelectorAll("option")].filter(x=>x.getAttribute("parentCcy")==this.value));
+            [...networks.querySelectorAll("option")].filter(x=>x.getAttribute("parentCcy")==this.value).forEach((x,i)=>{
+                if(i==0){
+                    x.selected = true
+                }
+                x.classList.remove("hidden")
+            })
+            //document.querySelector("#convert").elements.amount.min = this.selectedOptions[0].getAttribute("min_val")
+        })
+        
+        document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(e.innerHTML)
+        })
+        setInterval(()=>{
+            if(currencies.value){
+                document.querySelector("#convert").querySelectorAll("button")[0].removeAttribute("disabled")
+            }
+            else{
+                document.querySelector("#convert").querySelectorAll("button")[0].setAttribute("disabled","disabled")
+            }
+        },100)
+
+        //document.querySelector(".row.justify-content-center.h-100").style="align-items: center!important;margin-top: -115px;"
+
+        copy_address.addEventListener("click",function(){
+            navigator.clipboard.writeText(address_value.value)
+            .then(() => {
+                swal(localStorage.getItem("lang")!="ar"?"Success":"نجاح", "Address copied to clipboard", 'success');
+            })
+            .catch(err => {
+                swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", "Failed to copy address to clipboard", 'error');
+            });
+        })
+    </script>
+</html>
+{% endblock %}

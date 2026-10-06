@@ -1,0 +1,59 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+            <div class="wrapper">
+                <div class="container-fluid content-inner pb-0">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <a href="/bot_create"><button type="button" class="btn btn-outline-primary" style="width:100%">Create Bot</button></a>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-0 botCard" id="{{bot.id}}">
+                            <div class="symbol-imgs">
+                                <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.quote_currency}}--big.svg" style="position: absolute;right: -8px;bottom: -8px;" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                                <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.base_currency}}--big.svg" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{bot.name}}</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff59!important">Exchange: {{bot.exchange}}</li>
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff59!important">Amount: {{bot.units}} {{bot.base_currency}}</li>
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff59!important">Buy Price: {{bot.buy_price}} {{bot.quote_currency}}</li>
+                                <li class="list-group-item">Take Profit: {{bot.take_profit_details}}</li>
+                            </ul>
+                            <div class="card-footer text-muted" style="display: flex;justify-content: space-between;">
+                                <span>2 days ago</span>
+                                <div class="form-check form-switch form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="switch1">
+                                    <label class="form-check-label pl-2" for="switch1">Off Switch</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+    <script>
+
+    </script>
+</html>

@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Table</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <style>
+        :root {
+            --v-rhythm-header-1-space-phone: 56px;
+            --v-rhythm-header-1-space-tablet: 80px;
+            --v-rhythm-header-1-space-laptop: 100px;
+            --v-rhythm-header-1-space-desktop: 120px;
+            --v-rhythm-header-2-space-phone: 16px;
+            --v-rhythm-header-2-space-tablet: 24px;
+            --v-rhythm-header-2-space-laptop: 32px;
+            --v-rhythm-header-2-space-desktop: 40px;
+            --v-rhythm-header-3-space-phone: 16px;
+            --v-rhythm-header-3-space-tablet: 16px;
+            --v-rhythm-header-3-space-laptop: 24px;
+            --v-rhythm-header-3-space-desktop: 24px;
+            --v-rhythm-footer-1-space-phone: 56px;
+            --v-rhythm-footer-1-space-tablet: 80px;
+            --v-rhythm-footer-1-space-laptop: 100px;
+            --v-rhythm-footer-1-space-desktop: 120px;
+            --v-rhythm-footer-2-space-phone: 16px;
+            --v-rhythm-footer-2-space-tablet: 24px;
+            --v-rhythm-footer-2-space-laptop: 32px;
+            --v-rhythm-footer-2-space-desktop: 40px;
+            --v-rhythm-footer-3-space-phone: 16px;
+            --v-rhythm-footer-3-space-tablet: 16px;
+            --v-rhythm-footer-3-space-laptop: 24px;
+            --v-rhythm-footer-3-space-desktop: 24px;
+            --v-rhythm-spacing-1-phone: 80px;
+            --v-rhythm-spacing-1-tablet: 120px;
+            --v-rhythm-spacing-1-laptop: 160px;
+            --v-rhythm-spacing-1-desktop: 200px;
+            --v-rhythm-spacing-2-phone: 64px;
+            --v-rhythm-spacing-2-tablet: 88px;
+            --v-rhythm-spacing-2-laptop: 120px;
+            --v-rhythm-spacing-2-desktop: 160px;
+            --v-rhythm-spacing-3-phone: 48px;
+            --v-rhythm-spacing-3-tablet: 64px;
+            --v-rhythm-spacing-3-laptop: 88px;
+            --v-rhythm-spacing-3-desktop: 120px;
+            --v-rhythm-spacing-4-phone: 48px;
+            --v-rhythm-spacing-4-tablet: 48px;
+            --v-rhythm-spacing-4-laptop: 64px;
+            --v-rhythm-spacing-4-desktop: 80px;
+            --v-rhythm-spacing-5-phone: 32px;
+            --v-rhythm-spacing-5-tablet: 32px;
+            --v-rhythm-spacing-5-laptop: 40px;
+            --v-rhythm-spacing-5-desktop: 48px;
+            --v-rhythm-header-1-space: var(--v-rhythm-header-1-space-phone);
+            --v-rhythm-header-2-space: var(--v-rhythm-header-2-space-phone);
+            --v-rhythm-header-3-space: var(--v-rhythm-header-3-space-phone);
+            --v-rhythm-footer-1-space: var(--v-rhythm-footer-1-space-phone);
+            --v-rhythm-footer-2-space: var(--v-rhythm-footer-2-space-phone);
+            --v-rhythm-footer-3-space: var(--v-rhythm-footer-3-space-phone);
+        }
+        
+        
+        @media screen and (min-width: 768px){
+            :root {
+                --v-rhythm-header-1-space: var(--v-rhythm-header-1-space-tablet);
+                --v-rhythm-header-2-space: var(--v-rhythm-header-2-space-tablet);
+                --v-rhythm-header-3-space: var(--v-rhythm-header-3-space-tablet);
+                --v-rhythm-footer-1-space: var(--v-rhythm-footer-1-space-tablet);
+                --v-rhythm-footer-2-space: var(--v-rhythm-footer-2-space-tablet);
+                --v-rhythm-footer-3-space: var(--v-rhythm-footer-3-space-tablet);
+                --v-rhythm-spacing-1: var(--v-rhythm-spacing-1-tablet);
+                --v-rhythm-spacing-2: var(--v-rhythm-spacing-2-tablet);
+                --v-rhythm-spacing-3: var(--v-rhythm-spacing-3-tablet);
+                --v-rhythm-spacing-4: var(--v-rhythm-spacing-4-tablet);
+                --v-rhythm-spacing-5: var(--v-rhythm-spacing-5-tablet);
+            }
+        }
+        
+        @media screen and (min-width: 1280px){
+            :root {
+                --v-rhythm-header-1-space: var(--v-rhythm-header-1-space-laptop);
+                --v-rhythm-header-2-space: var(--v-rhythm-header-2-space-laptop);
+                --v-rhythm-header-3-space: var(--v-rhythm-header-3-space-laptop);
+                --v-rhythm-footer-1-space: var(--v-rhythm-footer-1-space-laptop);
+                --v-rhythm-footer-2-space: var(--v-rhythm-footer-2-space-laptop);
+                --v-rhythm-footer-3-space: var(--v-rhythm-footer-3-space-laptop);
+                --v-rhythm-spacing-1: var(--v-rhythm-spacing-1-laptop);
+                --v-rhythm-spacing-2: var(--v-rhythm-spacing-2-laptop);
+                --v-rhythm-spacing-3: var(--v-rhythm-spacing-3-laptop);
+                --v-rhythm-spacing-4: var(--v-rhythm-spacing-4-laptop);
+                --v-rhythm-spacing-5: var(--v-rhythm-spacing-5-laptop);
+            }
+        }
+        
+
+        .dark-mode {
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .dark-mode table {
+            border-color: #444;
+            color: #fff;
+        }
+
+        .dark-mode .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255,255,255,.05);
+        }
+
+        .dark-mode .table-hover tbody tr:hover {
+            background-color: rgba(255,255,255,.075);
+        }
+
+        /* Set the width of the chart container to 100% */
+        #chart-container {
+            width: 100%;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table th, table td {
+            text-align: center;
+        }
+
+        table th {
+            background-color: rgba(255,255,255,0.2);
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 0px;
+        }
+        button {
+            background-color: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        h1:not(#settings-container h1) {
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: white;
+        }
+        
+
+            /*******************************/
+
+            #settings-info> div{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-right: 40px;
+            }
+
+            #settings-info h3{
+            margin-bottom:0;
+            }
+
+            /***********************/
+            ::-webkit-scrollbar {
+                width: 5px;
+                height: 14px;
+            }
+            ::-webkit-scrollbar-track {
+                background: rgba(15,20,25,0.4);
+                border-left: 0;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: rgba(255,255,255,0.2);
+                border-left: 0;
+            }
+
+            .setting fieldset input,.cusInput{
+                background: rgba(255,255,255,0.5);
+                border-radius: 6px;
+                padding: 5px;
+                color: white;
+                border: 0;
+            }
+
+            .intervals{
+                display: flex;
+                gap: 5px;
+                width: fit-content;
+                justify-content: flex-start;
+            }
+
+            .interval{
+                padding: 8px;
+                background-color: transparent;
+                border-radius: 4px;
+                color:black;
+                cursor: pointer;
+            }
+
+            .interval.active{
+                background-color: #f0f3fa;
+            }
+
+            /***********************/
+
+            
+            
+            .containerWithButton-pAUXADuj {
+                grid-template-areas:
+                    "logo title"
+                    "buttonsRow buttonsRow"
+                    "quotesRow quotesRow";
+            }
+
+            .container-pAUXADuj {
+                align-items: center;
+                color: #131722;
+                display: grid;
+                gap: 16px 12px;
+                grid-template-areas:
+                    "logo title"
+                    "buttonsRow buttonsRow"
+                    "quotesRow quotesRow";
+                grid-template-columns: -webkit-min-content 1fr;
+                grid-template-columns: min-content 1fr;
+                width: 100%;
+            }
+
+            .containerWithButton-pAUXADuj .logo-pAUXADuj {
+                align-items: center;
+                display: flex;
+            }
+            .container-pAUXADuj>:first-child {
+                grid-area: logo;
+            }
+            .container-xoKMfU7r {
+                display: inline-flex;
+                position: relative;
+            }
+
+            .badgeContainer-xoKMfU7r {
+                --ui-lib-badge-background: #1e222d;
+                --ui-lib-badge-color-content: #fff;
+                bottom: -6px;
+                display: inline-flex;
+                justify-content: center;
+                position: absolute;
+                width: 100%;
+            }
+
+            .large-xoKMfU7r {
+                display: none;
+            }
+            .size-xlarge-PlSmolIm {
+                --ui-lib-badge-default-padding-left: 12px;
+                --ui-lib-badge-default-padding-right: 12px;
+                --ui-lib-badge-default-border-radius: 8px;
+                --ui-lib-badge-default-height: 32px;
+                font-size: 17px;
+                font-weight: 700;
+                height: var(--ui-lib-badge-default-height);
+                letter-spacing: .02em;
+                line-height: 24px;
+            }
+            .badge-PlSmolIm {
+                outline: none;
+                overflow: visible;
+                position: relative;
+            }
+            .badge-PlSmolIm {
+                --ui-lib-badge-default-color-focus-outline: #2962ffcc;
+                align-items: center;
+                background: var(--ui-lib-badge-background,var(--ui-lib-badge-default-background,#f0f3fa));
+                border: none;
+                border-radius: var(--ui-lib-badge-border-radius,var(--ui-lib-badge-default-border-radius));
+                color: var(--ui-lib-badge-color-content,var(--ui-lib-badge-default-color-content,#131722));
+                display: inline-flex;
+                flex-flow: row nowrap;
+                padding: var(--ui-lib-badge-padding-top,0) var(--ui-lib-badge-padding-right,var(--ui-lib-badge-default-padding-right)) var(--ui-lib-badge-padding-bottom,0) var(--ui-lib-badge-padding-left,var(--ui-lib-badge-default-padding-left));
+                text-transform: uppercase;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            .size-xlarge-PlSmolIm {
+                --ui-lib-badge-default-padding-left: 12px;
+                --ui-lib-badge-default-padding-right: 12px;
+                --ui-lib-badge-default-border-radius: 8px;
+                --ui-lib-badge-default-height: 32px;
+                font-size: 17px;
+                font-weight: 700;
+                height: var(--ui-lib-badge-default-height);
+                letter-spacing: .02em;
+                line-height: 24px;
+            }
+            .badge-PlSmolIm {
+                outline: none;
+                overflow: visible;
+                position: relative;
+            }
+            .badge-PlSmolIm {
+                --ui-lib-badge-default-color-focus-outline: #2962ffcc;
+                align-items: center;
+                background: var(--ui-lib-badge-background,var(--ui-lib-badge-default-background,#f0f3fa));
+                border: none;
+                border-radius: var(--ui-lib-badge-border-radius,var(--ui-lib-badge-default-border-radius));
+                color: var(--ui-lib-badge-color-content,var(--ui-lib-badge-default-color-content,#131722));
+                display: inline-flex;
+                flex-flow: row nowrap;
+                padding: var(--ui-lib-badge-padding-top,0) var(--ui-lib-badge-padding-right,var(--ui-lib-badge-default-padding-right)) var(--ui-lib-badge-padding-bottom,0) var(--ui-lib-badge-padding-left,var(--ui-lib-badge-default-padding-left));
+                text-transform: uppercase;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            a {
+                text-decoration: none;
+            }
+            user agent stylesheet
+            a:-webkit-any-link {
+                color: -webkit-link;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+
+            .container-pAUXADuj>:nth-child(2) {
+                grid-area: title;
+            }
+            .title-HFnhSVZy {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 36px;
+                --ui-lib-typography-font-size: 28px;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                display: -webkit-box;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 600;
+                line-height: var(--ui-lib-typography-line-height);
+                line-height: 36px;
+                max-height: 72px;
+                overflow: hidden;
+            }
+
+            
+            .buttonsRow-HFnhSVZy {
+                align-items: center;
+                column-gap: 8px;
+                display: inline-flex;
+                flex-wrap: wrap;
+                row-gap: 8px;
+                width: 100%;
+            }
+
+            .containerWithButton-pAUXADuj .logo-pAUXADuj img {
+                font-size: 0;
+            }
+            
+            .large-xoKMfU7r {
+                display: none;
+            }
+            .tv-circle-logo--xxxlarge {
+                font-size: 160px;
+                height: 168px;
+                line-height: 160px;
+                width: 168px;
+            }
+            .tv-circle-logo {
+                align-items: center;
+                border-radius: 50%;
+                color: #fff;
+                display: inline-flex;
+                font-style: normal;
+                font-weight: 700;
+                justify-content: center;
+            }
+
+            .variant-secondary-bYDQcOkp.color-gray-bYDQcOkp {
+                --ui-lib-light-button-default-color-bg: #0000;
+                --ui-lib-light-button-default-color-content: #131722;
+                --ui-lib-light-button-default-color-border: #e0e3eb;
+            }
+            .size-small-bYDQcOkp.with-end-icon-bYDQcOkp {
+                --ui-lib-light-button-padding-inline-end-default: 7px;
+            }
+            .light-button-bYDQcOkp.typography-medium16px-bYDQcOkp, .light-button-bYDQcOkp.typography-regular16px-bYDQcOkp {
+                --ui-lib-typography-line-height: 24px;
+                --ui-lib-typography-font-size: 16px;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                line-height: var(--ui-lib-typography-line-height);
+            }
+            .light-button-bYDQcOkp.typography-regular16px-bYDQcOkp {
+                font-feature-settings: "tnum" on,"lnum" on;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 400;
+            }
+            .size-small-bYDQcOkp {
+                --ui-lib-light-button-padding-inline-start-default: 11px;
+                --ui-lib-light-button-padding-inline-end-default: 11px;
+                --ui-lib-light-button-padding-block-start-default: 0;
+                --ui-lib-light-button-padding-block-end-default: 0;
+                border-radius: 6px;
+                height: 34px;
+                min-width: 34px;
+                padding-block-end: 0;
+                padding-block-start: 0;
+                padding-inline-end: max(var(--ui-lib-light-button-padding-inline-end,var(--ui-lib-light-button-padding-inline-end-default)),3px);
+                padding-inline-start: max(var(--ui-lib-light-button-padding-inline-start,var(--ui-lib-light-button-padding-inline-start-default)),3px);
+            }
+            .light-button-bYDQcOkp {
+                align-items: center;
+                background-color: var(--ui-lib-light-button-color-bg,var(--ui-lib-light-button-default-color-bg));
+                border-color: var(--ui-lib-light-button-color-border,var(--ui-lib-light-button-default-color-border));
+                border-style: solid;
+                border-width: 1px;
+                box-sizing: border-box;
+                color: var(--ui-lib-light-button-color-content,var(--ui-lib-light-button-default-color-content));
+                cursor: default;
+                display: inline-flex;
+                justify-content: center;
+                max-width: 100%;
+                min-width: 40px;
+                outline: none;
+                overflow: visible;
+                position: relative;
+            }
+
+            .container-pAUXADuj>:nth-child(3) {
+                grid-area: buttonsRow!important;
+            }
+ 
+            .containerWithButton-pAUXADuj .quotesRow-pAUXADuj {
+                align-items: end;
+                column-gap: 24px;
+                display: flex;
+                flex-direction: row;
+                grid-area: quotesRow;
+                margin: 0 calc(var(--adaptive-mf-container-padding)*-1) 8px;
+                min-height: 98px;
+                overflow: auto;
+                padding: 0 var(--adaptive-mf-container-padding);
+                scrollbar-width: none;
+            }
+            .container-pAUXADuj>:nth-child(4) {
+                grid-area: quotesRow;
+            }
+            
+            .container-JWoJqCpY {
+                align-items: baseline;
+                color: #131722;
+                display: grid;
+                gap: 4px 12px;
+                grid-template:
+                    "last"
+                    "change"
+                    "sub";
+            }
+
+            
+            .change-JWoJqCpY {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 24px;
+                --ui-lib-typography-font-size: 20px;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 600;
+                grid-area: change;
+                line-height: var(--ui-lib-typography-line-height);
+                margin-top: -2px;
+            }
+            .change-JWoJqCpY, .quotesSubLine-JWoJqCpY {
+                column-gap: 8px;
+                display: flex;
+            }
+            .down-Cg53lmZp, .falling-Cg53lmZp {
+                color: #f23645;
+            }
+
+            .quotesSubLine-JWoJqCpY {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 24px;
+                --ui-lib-typography-font-size: 16px;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 400;
+                grid-area: sub;
+                line-height: var(--ui-lib-typography-line-height);
+                white-space: nowrap;
+            }
+            .change-JWoJqCpY, .quotesSubLine-JWoJqCpY {
+                column-gap: 8px;
+                display: flex;
+            }
+
+            .tv-category-symbol-header__tabs {
+                margin-bottom: -2px;
+                padding-left: calc(var(--adaptive-mf-container-padding) - 20px);
+                padding-right: calc(var(--adaptive-mf-container-padding) - 20px);
+                border-bottom: 2px solid #e0e3eb;;
+            }
+            .tv-category-symbol-header__tabs {
+                --adaptive-mf-container-padding: 20px;
+                --adaptive-mf-container-max-width: 2360px;
+                overflow: hidden;
+                padding-left: var(--adaptive-mf-container-padding);
+                padding-right: var(--adaptive-mf-container-padding);
+            }
+            .tv-category-symbol-header {
+                border-bottom: 2px solid #e0e3eb;
+                max-width: 100%;
+            }
+            .tv-tabs--category-header.i-loaded, .tv-tabs--category-header.i-loaded .tv-tabs__scroll-box, .tv-tabs--compact, .tv-tabs--compact.i-loaded .tv-tabs__scroll-box, .tv-tabs--semi-compact, .tv-tabs--semi-compact.i-loaded .tv-tabs__scroll-box {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .tv-tabs.i-loaded {
+                padding: 0;
+            }
+            .tv-tabs--category-header, .tv-tabs--category-header .tv-tabs__scroll-box, .tv-tabs--category-header.i-loaded .tv-tabs__scroll-box {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .tv-tabs--category-header {
+                height: 46px;
+            }
+            .tv-tabs {
+                -webkit-tap-highlight-color: transparent;
+                display: flex;
+                height: 53px;
+                line-height: 53px;
+                overflow: hidden;
+                padding: 0 16px;
+                position: relative;
+                -webkit-user-select: none;
+                user-select: none;
+                white-space: nowrap;
+            }
+            .tv-tabs__scroll-wrap {
+                -webkit-overflow-scrolling: touch;
+                display: block;
+                height: 100%;
+                overflow-x: scroll;
+                overflow-y: hidden;
+                padding-bottom: 100px;
+                position: relative;
+                -webkit-transform: translateZ(0);
+                white-space: nowrap;
+                width: 100%;
+            }
+            
+            .tv-tabs--category-header, .tv-tabs--category-header .tv-tabs__scroll-box, .tv-tabs--category-header.i-loaded .tv-tabs__scroll-box {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .tv-tabs--category-header.i-loaded, .tv-tabs--category-header.i-loaded .tv-tabs__scroll-box, .tv-tabs--compact, .tv-tabs--compact.i-loaded .tv-tabs__scroll-box, .tv-tabs--semi-compact, .tv-tabs--semi-compact.i-loaded .tv-tabs__scroll-box {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .tv-tabs.i-loaded .tv-tabs__scroll-box {
+                padding: 0 16px;
+            }
+            .tv-tabs__scroll-box {
+                display: flex;
+                position: relative;
+            }
+
+            .tv-tabs--category-header .tv-tabs__tab:first-child {
+                margin-left: -24px;
+            }
+            .tv-tabs--category-header .tv-tabs__tab {
+                color: #131722;
+                font-size: 18px;
+                height: 46px;
+                line-height: 46px;
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+            .tv-tabs__tab {
+                -webkit-tap-highlight-color: transparent;
+                box-sizing: border-box;
+                color: #131722;
+                cursor: pointer;
+                display: block;
+                font-size: 14px;
+                height: 53px;
+                line-height: 53px;
+                margin: 0;
+                padding: 0 16px;
+                position: relative;
+                transition: color .35s ease;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            .tv-tabs__slider, .tv-tabs__tab.i-active:after {
+                background-color: #2962ff;
+                bottom: 0;
+                display: block;
+                height: 3px;
+                pointer-events: none;
+                position: absolute;
+            }
+            /****************************************************/
+            .container-Ma_i1vJp {
+                margin-top: var(--v-rhythm-spacing-5);
+            }
+            
+            .container-lu7Cy9jC {
+                display: grid;
+                grid-auto-rows: -webkit-min-content;
+                grid-auto-rows: min-content;
+                position: relative;
+            }
+            .container-lu7Cy9jC {
+                display: grid;
+                grid-auto-rows: -webkit-min-content;
+                grid-auto-rows: min-content;
+                position: relative;
+            }
+            .container-SCxmJPkt {
+                --adaptive-mf-container-padding: 20px;
+                --adaptive-mf-container-max-width: 2360px;
+                margin-bottom: var(--v-rhythm-header-1-space);
+                overflow: hidden;
+                padding-left: var(--adaptive-mf-container-padding);
+                padding-right: var(--adaptive-mf-container-padding);
+            }
+
+            
+            
+            
+            .container-lu7Cy9jC>* {
+                min-width: 0;
+            }
+
+            .container-lu7Cy9jC>* {
+                min-width: 0;
+            }
+
+            .tablesWrapper-kg4MJrFB {
+                grid-column-gap: 64px;
+                display: grid;
+            }
+
+            .tablesWrapper-kg4MJrFB.tabletVertical-kg4MJrFB {
+                grid-template-columns: repeat(2,1fr);
+            }
+
+            .tableWithAction-kg4MJrFB {
+                flex-basis: calc(50% - 20px);
+                flex-grow: 0;
+            }
+            .container-hvDpy38G, .table-hvDpy38G, .tableWrapper-hvDpy38G {
+                width: 100%;
+            }
+
+            .title-hvDpy38G {
+                margin-bottom: 10px;
+            }
+
+            .link-hvDpy38G:visited {
+                fill: #131722;
+                color: #131722;
+            }
+            .link-hvDpy38G {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 24px;
+                --ui-lib-typography-font-size: 16px;
+                fill: #131722;
+                color: #131722;
+                display: flex;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 600;
+                line-height: var(--ui-lib-typography-line-height);
+                text-align: left;
+            }
+
+            .row-hvDpy38G {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 18px;
+                --ui-lib-typography-font-size: 14px;
+                border-top: 1px solid #f0f3fa;
+                color: #131722;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 400;
+                height: 40px;
+                line-height: var(--ui-lib-typography-line-height);
+            }
+
+            .cell-hvDpy38G:first-child {
+                padding-left: 0;
+                text-align: left;
+            }
+            .cell-hvDpy38G {
+                padding: 10px 0 10px 20px;
+                text-align: right;
+            }
+
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G.tabletLandscape-hvDpy38G {
+                padding-left: 80px;
+            }
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G.tabletVertical-hvDpy38G {
+                padding-left: 20px;
+            }
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G.phoneLandscape-hvDpy38G {
+                padding-left: 80px;
+            }
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G {
+                padding-left: 20px;
+            }
+            .tableWithAction-kg4MJrFB tr td:last-child, .tableWithAction-kg4MJrFB tr th:last-child {
+                text-align: left;
+                width: 60px;
+            }
+            .cell-hvDpy38G:not(:first-child) {
+                white-space: nowrap;
+            }
+            .neutralColor-hvDpy38G {
+                color: #6a6d78;
+            }
+            .cell-hvDpy38G {
+                padding: 10px 0 10px 20px;
+                text-align: right;
+            }
+
+            .pageHead-Sg1oJ_ft {
+                --adaptive-mf-container-padding: 20px;
+                --adaptive-mf-container-max-width: 2360px;
+                overflow: hidden;
+                padding-left: var(--adaptive-mf-container-padding);
+                padding-right: var(--adaptive-mf-container-padding);
+                margin: 40px 0;
+            }
+
+            @media screen and (min-width: 1280px){
+                .containerWithButton-pAUXADuj {
+                    grid-template-areas:
+                        "logo title goToChartButton"
+                        "logo buttonsRow buttonsRow"
+                        "logo quotesRow quotesRow";
+                }
+                .container-pAUXADuj {
+                    gap: 20px 32px;
+                    grid-template-areas:
+                        "logo title"
+                        "logo buttonsRow"
+                        "logo quotesRow";
+                }
+                .containerWithButton-pAUXADuj .quotesRow-pAUXADuj {
+                    margin: -4px 0 0;
+                    min-height: 84px;
+                }
+                .large-xoKMfU7r {
+                    display: inline-flex;
+                }
+                .pageHead-Sg1oJ_ft {
+                    --adaptive-mf-container-padding: 32px;
+                }
+            }
+            
+            @media screen and (min-width: 1024px){
+                .containerWithButton-pAUXADuj {
+                    grid-template-areas:
+                        "logo title goToChartButton"
+                        "logo buttonsRow buttonsRow"
+                        "quotesRow quotesRow quotesRow ";
+                    grid-template-columns: -webkit-min-content 1fr -webkit-min-content;
+                    grid-template-columns: min-content 1fr min-content;
+                }
+                .container-pAUXADuj {
+                    gap: 16px 24px;
+                }
+                .containerWithButton-pAUXADuj .quotesRow-pAUXADuj {
+                    margin: 8px 0 0;
+                }
+            }
+            
+            @media screen and (min-width: 768px){
+                .containerWithButton-pAUXADuj {
+                    grid-template-areas:
+                        "logo title"
+                        "logo buttonsRow"
+                        "quotesRow quotesRow"
+                        "goToChartButton goToChartButton";
+                }
+                .container-pAUXADuj {
+                    gap: 20px 20px;
+                    grid-template-areas:
+                        "logo title"
+                        "logo buttonsRow"
+                        "quotesRow quotesRow";
+                }
+                .containerWithButton-pAUXADuj .quotesRow-pAUXADuj {
+                    column-gap: 48px;
+                    margin: 0;
+                    min-height: 72px;
+                    padding: 0;
+                }
+                    .container-JWoJqCpY {
+                    grid-template: "last change" -webkit-min-content "sub sub";
+                    grid-template:
+                        "last change" min-content
+                        "sub sub";
+                    row-gap: 0;
+                }
+                .change-JWoJqCpY {
+                    font-feature-settings: "tnum" on,"lnum" on;
+                    --ui-lib-typography-line-height: 28px;
+                    --ui-lib-typography-font-size: 24px;
+                    font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                    font-size: var(--ui-lib-typography-font-size);
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: var(--ui-lib-typography-line-height);
+                    margin-top: unset;
+                }
+            }
+
+            
+            
+    </style>
+</head>
+<body>
+    <main class="pageHead-Sg1oJ_ft">
+        <div class="container-pAUXADuj containerWithButton-pAUXADuj">
+            <div class="container-xoKMfU7r logo-pAUXADuj">
+                
+                <img class="tv-circle-logo tv-circle-logo--xxxlarge large-xoKMfU7r" src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{symbol}}--big.svg" alt="Bitcoin" id="symbolLogo" />
+                <div class="badgeContainer-xoKMfU7r">
+                    <a href="#" title="The coin's rank by capitalization" class="badge-PlSmolIm size-xlarge-PlSmolIm large-xoKMfU7r apply-common-tooltip common-tooltip-below">
+                        <span class="content-PlSmolIm" id="rank_val">#1</span>
+                    </a>
+                </div>
+            </div>
+            <h2 class="apply-overflow-tooltip title-HFnhSVZy" style="font-size: 52px;">{{symbol}}</h2>
+            <div class="quotesRow-pAUXADuj">
+                <div class="js-symbol-header-ticker quote-ticker-inited" data-symbol="BITSTAMP:BTCUSD" data-symbol-type="spot">
+                    <div class="container-JWoJqCpY container-JWoJqCpY">
+                        <div class="lastContainer-JWoJqCpY">
+                            <span class="last-JWoJqCpY js-symbol-last" id="price_val" style="font-size: 52px;">300</span>
+                            <span class="currencyAndDataMode-JWoJqCpY">
+                                <span class="js-symbol-currency currency-JWoJqCpY">USD</span><span class="js-data-mode dataMode-JWoJqCpY tv-data-mode tv-data-mode--realtime apply-common-tooltip" title="Real-time">R</span>
+                            </span>
+                        </div>
+                        <div class="change-JWoJqCpY js-symbol-change-direction down-Cg53lmZp"><span class="js-symbol-change">−250</span><span class="js-symbol-change-pt">−0.83%</span></div>
+                        <div class="quotesSubLine-JWoJqCpY">
+                            <span class="lastUpdateTime-pAUXADuj textDimmed-JWoJqCpY"><span class="js-symbol-lp-time">Last update at Jul 17, 10:25 UTC</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="js-symbol-header-ticker i-hidden quote-ticker-inited" data-symbol="BITSTAMP:BTCUSD" data-symbol-type="spot">
+                    <div class="container-JWoJqCpY containerNoRtc-Yab1qHkq">
+                        <div class="lastContainer-JWoJqCpY">
+                            <span class="last-JWoJqCpY last-Yab1qHkq js-symbol-ext-hrs-close"></span>
+                            <span class="currencyAndDataMode-JWoJqCpY currencyAndDataMode-Yab1qHkq"><span class="js-symbol-currency currency-JWoJqCpY">USD</span><span class="dataMode-JWoJqCpY"></span></span>
+                        </div>
+                        <div class="change-JWoJqCpY js-symbol-ext-hrs-change-direction"><span class="js-symbol-ext-hrs-change"></span><span class="js-symbol-ext-hrs-change-pt"></span></div>
+                        <div class="quotesSubLine-JWoJqCpY quotesSubLine-Yab1qHkq"><span class="noTrades-Yab1qHkq">No trades</span><span></span><span class="js-symbol-rtc-time textDimmed-JWoJqCpY"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>   
+        
+        <div class="tv-category-symbol-header__tabs">
+            <div class="tv-tabs tv-tabs--category-header tv-tabs--no-border js-category-tabs i-loaded">
+                <div class="tv-tabs__scroll-wrap">
+                    <div class="tv-tabs__scroll-box" style="height: 53px;">
+                        <a href="#" title="Bitcoin / U.S. dollar Overview and Chart" class="tv-tabs__tab js-category-tab" data-tv-tabs__tab="Overview">Overview</a>
+                        <a href="#" title="History of Bitcoin / U.S. dollar" class="tv-tabs__tab js-category-tab" data-tv-tabs__tab="Indicators"> Technicals </a>
+                    </div>
+                </div>
+                <div class="tv-tabs__left-arrow i-slided" style="transition: none 0s ease 0s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="14" height="14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M8.5 1.5L3.5 7l5 5.5"></path></svg>
+                </div>
+                <div class="tv-tabs__right-arrow" style="">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="14" height="14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5.5 1.5l5 5.5-5 5.5"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicators BEGIN -->
+        
+        <div class="technicals-root" data-props-id="98W3fn">
+            <div class="container-SCxmJPkt">
+                <section class="container-Ma_i1vJp">
+                    <div class="container-lu7Cy9jC">
+                        <div class="tabs-kg4MJrFB" style="margin-bottom: 30px;">
+                            <div class="scroll-wrap-mf1FlhVw enable-scroll-mf1FlhVw" data-name="square-tabs-buttons">
+                                <div class="intervals">
+                                    <div class="interval" data-interval="1m">1m</div>
+                                    <div class="interval" data-interval="3m">3m</div>
+                                    <div class="interval" data-interval="5m">5m</div>
+                                    <div class="interval" data-interval="15m">15m</div>
+                                    <div class="interval" data-interval="30m">30m</div>
+                                    <div class="interval" data-interval="1h">1h</div>
+                                    <div class="interval" data-interval="2h">2h</div>
+                                    <div class="interval" data-interval="4h">4h</div>
+                                    <div class="interval" data-interval="6h">6h</div>
+                                    <div class="interval" data-interval="12h">12h</div>
+                                    <div class="interval" data-interval="1d">1d</div>
+                                    <div class="interval" data-interval="1w">1w</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="spacing-kg4MJrFB"></div>
+                        
+                        <div class="spacing-kg4MJrFB"></div>
+                        <div class="tablesWrapper-kg4MJrFB tabletVertical-kg4MJrFB">
+                            <div class="container-hvDpy38G tableWithAction-kg4MJrFB tabletVertical-hvDpy38G">
+                                <div class="title-hvDpy38G">
+                                        Oscillators
+                                        <span class="icon-hvDpy38G">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" width="18" height="18">
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M7.56 4.5a.75.75 0 1 0-1.12 1l1.12-1zM10.5 9l.56.5a.75.75 0 0 0 0-1l-.56.5zm-4.06 3.5a.75.75 0 0 0 1.12 1l-1.12-1zm0-7l3.5 4 1.12-1-3.5-4-1.12 1zm3.5 3l-3.5 4 1.12 1 3.5-4-1.12-1z"
+                                                ></path>
+                                            </svg>
+                                        </span>
+                                </div>
+                                <div class="tableWrapper-hvDpy38G">
+                                    <table class="table-hvDpy38G">
+                                        <tbody>
+                                            <tr class="header-hvDpy38G">
+                                                <th class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">Name</th>
+                                                <th class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">Value</th>
+                                                <th class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">Action</th>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Relative Strength Index (14)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="rsi_val">52</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Stochastic %K (14, 3, 3)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="stoch_val">25</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Commodity Channel Index (20)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="cci_val">−106</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Average Directional Index (14)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="adx_val">35</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G" style="display:none;">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Awesome Oscillator</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ao_val">927</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G" style="display:none;">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Momentum (10)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">0</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>MACD Level (12, 26)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="macd_val">408</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G" style="display:none;">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Stochastic RSI Fast (3, 3, 14, 14)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">0</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Williams Percent Range (14)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="wpr_val">−79</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G" style="display:none;">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Bull Bear Power</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="bp_val">−393</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G" style="display:none;">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Ultimate Oscillator (7, 14, 28)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">0</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="container-hvDpy38G maTable-kg4MJrFB tableWithAction-kg4MJrFB tabletVertical-kg4MJrFB tabletVertical-hvDpy38G">
+                                <div class="title-hvDpy38G">
+
+                                        Moving Averages
+                                        <span class="icon-hvDpy38G">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" width="18" height="18">
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M7.56 4.5a.75.75 0 1 0-1.12 1l1.12-1zM10.5 9l.56.5a.75.75 0 0 0 0-1l-.56.5zm-4.06 3.5a.75.75 0 0 0 1.12 1l-1.12-1zm0-7l3.5 4 1.12-1-3.5-4-1.12 1zm3.5 3l-3.5 4 1.12 1 3.5-4-1.12-1z"
+                                                ></path>
+                                            </svg>
+                                        </span>
+                                </div>
+                                <div class="tableWrapper-hvDpy38G">
+                                    <table class="table-hvDpy38G">
+                                        <tbody>
+                                            <tr class="header-hvDpy38G">
+                                                <th class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">Name</th>
+                                                <th class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">Value</th>
+                                                <th class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">Action</th>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Exponential Moving Average (10)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ema10_val">30393</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Simple Moving Average (10)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="sma10_val">30440</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Exponential Moving Average (20)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ema20_val">30182</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Simple Moving Average (20)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="sma20_val">30465</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Exponential Moving Average (30)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ema30_val">29830</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Simple Moving Average (30)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="sma30_val">30113</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Exponential Moving Average (50)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ema50_val">29241</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Simple Moving Average (50)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="sma50_val">28677</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Exponential Moving Average (100)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ema100_val">28140</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Simple Moving Average (100)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="sma100_val">28445</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Exponential Moving Average (200)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="ema200_val">26573</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Simple Moving Average (200)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G" id="sma200_val">25805</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G buyColor-hvDpy38G">Buy</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Ichimoku Base Line (9, 26, 52, 26)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">0</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G neutralColor-hvDpy38G">Neutral</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Volume Weighted Moving Average (20)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">0</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                            <tr class="row-hvDpy38G">
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">
+                                                    <span>Hull Moving Average (9)</span>
+                                                </td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G">0</td>
+                                                <td class="cell-hvDpy38G largePadding-hvDpy38G phoneLandscape-hvDpy38G tabletVertical-hvDpy38G tabletLandscape-hvDpy38G sellColor-hvDpy38G">Sell</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div>
+            <div id="chart-container"></div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+
+        setInterval(getPrice,1000);
+        async function getPrice(){
+            await fetch(`/getPrice/?symbol={{symbol}}&exchange={{exchange}}&interval=${localStorage.getItem('interval')||"15m"}`)
+            .then(res=>res.json())
+            .then(res=>{
+                console.log(res)
+                price_val.innerHTML = res.price;
+                rank_val.innerHTML = "#"+res.cmc_rank;
+                rsi_val.innerHTML = parseFloat(res.rsi);
+                stoch_val.innerHTML = res.stoch;
+                macd_val.innerHTML = res.macd;
+                wpr_val.innerHTML = res.wpr;
+                cci_val.innerHTML = res.cci;
+                adx_val.innerHTML = res.adx;
+                ao_val.innerHTML = res.ao;
+                bp_val.innerHTML = res.bp;
+                ema10_val.innerHTML = res.ema10;
+                ema20_val.innerHTML = res.ema20;
+                ema30_val.innerHTML = res.ema30;
+                ema50_val.innerHTML = res.ema50;
+                ema100_val.innerHTML = res.ema100;
+                ema200_val.innerHTML = res.ema200;
+                sma10_val.innerHTML = res.sma10;
+                sma20_val.innerHTML = res.sma20;
+                sma30_val.innerHTML = res.sma30;
+                sma50_val.innerHTML = res.sma50;
+                sma100_val.innerHTML = res.sma100;
+                sma200_val.innerHTML = res.sma200;
+            })
+        }
+
+        function calcMarketCap_dominance(circulating_supply, price,full_market_cap){
+            let market_cap = parseFloat(circulating_supply) * parseFloat(price)
+            let dominance = (parseFloat(market_cap) / parseFloat(full_market_cap)) * 100
+            return [market_cap, dominance]
+        }
+
+        if(!localStorage.getItem("interval")){
+                localStorage.setItem("interval","15m")
+        }
+        [...document.querySelectorAll(".interval")].filter(e=>e.getAttribute('data-interval') == localStorage.getItem("interval"))[0].classList.add('active')
+        document.querySelectorAll(".interval").forEach(e=>{
+            e.addEventListener('click',()=>{
+                localStorage.setItem("interval",e.getAttribute('data-interval'));
+                [...document.querySelectorAll(".interval")].filter(e=>e.classList.contains("active")).forEach(e=>{
+                    e.classList.remove('active')
+                })
+                e.classList.add('active')
+                
+            })
+        });
+        if(!localStorage.getItem("tv-tabs__tab")){
+                localStorage.setItem("tv-tabs__tab","Overview")
+        }
+        [...document.querySelectorAll(".tv-tabs__tab")].filter(e=>e.getAttribute('data-tv-tabs__tab') == localStorage.getItem("tv-tabs__tab"))[0].classList.add('i-active')
+        document.querySelectorAll(".tv-tabs__tab").forEach(e=>{
+            e.addEventListener('click',()=>{
+                localStorage.setItem("tv-tabs__tab",e.getAttribute('data-tv-tabs__tab'));
+                [...document.querySelectorAll(".tv-tabs__tab")].filter(e=>e.classList.contains("i-active")).forEach(e=>{
+                    e.classList.remove('i-active')
+                })
+                e.classList.add('i-active')
+                
+            })
+        })
+
+        let tradingViewWidget = null;
+
+        // Define a function to create the chart
+        function createChart() {
+        // Create the chart
+        tradingViewWidget = new TradingView.widget({
+            "width": "100%",
+            "height": 610,
+            "symbol": "OKX:{{symbol}}",
+            "interval": "1",
+            "timezone": "Asia/Riyadh",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": false,
+            "container_id": "chart-container"
+        });
+        }
+
+        // Call the createChart function to create the initial chart
+        createChart();
+        symbolLogo.src = symbolLogo.src.replace("USDT","")
+    </script>
+</body>
+</html>

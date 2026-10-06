@@ -1,0 +1,1575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>COINEX | Responsive Bootstrap 5 Admin Dashboard Template</title>
+      <!-- Favicon -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+      <script src="https://s3.tradingview.com/tv.js"></script>
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+      <link rel="shortcut icon" href="/static/assets/images/favicon.ico" />
+      <link rel="stylesheet" href="/static/assets/css/libs.min.css">
+      <link rel="stylesheet" href="/static/assets/css/coinex.css?v=1.0.0">  
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+      <style>
+        .wrapper .d-grid.grid-1-auto.gap-card::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        .content-block__title{
+            margin: 12px;
+            margin-left: 0;
+        }
+        #widget-container {
+            border-color: #202022!important;
+        }
+        html.theme-dark .chart-page {
+            background-color: var(--tv-color-platform-background,#202022)!important;
+        }
+        html.theme-dark #widget-container {
+            border-color: #202022!important;
+        }
+        #widget-container {
+            border: 1px solid #202022!important;
+        }
+        .hidden{
+            display: none;
+        }
+        .form-group {
+            position: relative;
+            margin-bottom: 35px;
+        }
+        .style-block__steps, .content-block__steps {
+            position: relative;
+            padding: 0;
+        }
+        .flexbox.stepsell-table__row {
+            width: 100%;
+        }
+        .RUBYDEV_flexbox, .RUBYDEV_flexbox div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .stepsell-table__header {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .flexbox {
+            display: -moz-flex;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+        .flexbox.stepsell-table__row {
+            width: 100%;
+        }
+        .RUBYDEV_flexbox, .RUBYDEV_flexbox div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .stepsell-table__body {
+            padding-top: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #313135;
+            white-space: nowrap;
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: normal;
+            line-height: 17px;
+        }
+        .RUBYDEV_flexbox, .RUBYDEV_flexbox div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .RUBYDEV_flexbox, .RUBYDEV_flexbox div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+        .RUBYDEV_max_width_fit_content {
+            max-width: -moz-fit-content;
+            max-width: fit-content;
+        }
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+        .table > :not(:last-child) > :last-child > * {
+            border-bottom-color: transparent;
+            border-top: 0;
+        }
+        .btn-group, .btn-group-vertical{
+            width: 100%!important;
+        }
+        .control-label_after-input {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 0;
+            margin-top: 4px;
+            font-weight: 600;
+            flex-basis: 100%;
+            justify-content: center;
+            width: 100%;
+            color: #6b7b8b;
+        }
+        .control-label {
+            display: inline-block;
+            max-width: 100%;
+            color: #aaaaaa;
+            font-weight: 700;
+            letter-spacing: .2px;
+            font-size: 12px;
+            line-height: 16px;
+            margin-bottom: 4px;
+        }
+        .smartTradeHeader{
+            width: 100%;
+        }
+        .smartTradeHeader > .dropdown.mt-2.ms-2{
+            width: 33.33%;
+        }
+        .hOeLnE {
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            display: inline-grid;
+            grid-auto-flow: column;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            user-select: none;
+            touch-action: none;
+            vertical-align: baseline;
+            font-family: "Open Sans", sans-serif;
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0.25px;
+            text-transform: inherit;
+            font-weight: 600;
+            transition-property: all;
+            transition-duration: 0.15s;
+            transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+            gap: 6px;
+            height: 32px;
+            max-height: 32px;
+            min-width: 88px;
+            padding: 6px 4px;
+            border-radius: 4px;
+            width: auto;
+            color: rgb(255, 255, 255);
+        }
+
+        .hOeLnE > :first-child {
+            width: 16px;
+            height: 16px;
+        }
+        .buttons-group {
+            display: flex;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            align-items: stretch;
+            justify-content: center;
+            margin-left: 1px;
+        }
+        .buttons-group .button:last-child {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+        .button__text {
+            display: inline-flex;
+            vertical-align: baseline;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+        }
+        .buttons-group .button {
+            position: relative;
+            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 100%;
+            margin-left: -1px;
+            border-radius: 0;
+        }
+        .button {
+            display: inline-flex;
+            margin-bottom: 0;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 100%;
+            min-width: 32px;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+            touch-action: manipulation;
+            cursor: pointer;
+            background-image: none;
+            border: 0;
+            font-family: open sans,helvetica,arial,sans-serif;
+            border-radius: 4px;
+            box-sizing: border-box;
+            letter-spacing: .24px;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 600;
+            padding: 8px;
+            position: relative;
+            transition-duration: .25s,.25s,.25s;
+            transition-property: color,box-shadow,background-color;
+            transition-timing-function: ease-in-out,ease-in-out,ease-in-out;
+            flex-shrink: 0;
+            color: #6b7b8b;
+            background-color: #fff;
+            box-shadow: inset 0 0 0 1px #6b7b8b;
+        }
+
+        /***************************************************/
+        .compact-controls_align_center {
+            align-items: center;
+            align-content: center;
+        }
+        .compact-controls_justify_center {
+            justify-content: center;
+        }
+        .compact-controls {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .compact-controls__item_two-thirds:first-child {
+            margin-right: auto;
+        }
+        .compact-controls__item_two-thirds {
+            width: calc(66.6666666667% - 4px);
+            flex-shrink: 0;
+            flex-grow: 0;
+            flex-basis: calc(66.6666666667% - 4px);
+        }
+        .compact-controls__item_expand-if-one {
+            flex-grow: 1;
+        }
+        .compact-controls__item_one-third {
+            width: calc(33.3333333333% - 4px);
+            flex-shrink: 0;
+            flex-grow: 0;
+            flex-basis: calc(33.3333333333% - 4px);
+        }
+        .content-block__slider {
+            padding-bottom: 8px;
+        }
+                
+        .dragdealer {
+            position: relative;
+            padding-left: 0;
+            padding-right: 0;
+            width: 100%;
+            height: 33px;
+        }
+
+        .dragdealer .scale-block {
+    position: absolute;
+    top: 9px;
+    left: 0;
+    right: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+}
+
+.dragdealer .scale-block .scale {
+    position: relative;
+    background: #e8edf2;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    border: none;
+}
+.smarttrading .ui-slider {
+    border: none!important;
+}
+.dragdealer .noUi-target {
+    box-shadow: none;
+}
+.noUi-target {
+    background: #fafafa;
+    border-radius: 4px;
+    border: 1px solid #d3d3d3;
+    box-shadow: inset 0 1px 1px #f0f0f0, 0 3px 6px -5px #bbb;
+}
+.noUi-horizontal {
+    height: 18px;
+}
+.noUi-target {
+    position: relative;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.dragdealer .scale-block .scale .selection {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0%;
+    border-radius: 4px;
+}
+.dragdealer.dragdealer-plus .scale .selection {
+    background: #00a59a;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.dragdealer .value {
+    position: absolute;
+    top: 17px;
+    left: 50%;
+    color: #57697a;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    font-family: open sans,Helvetica,Arial,sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: normal;
+    line-height: 17px;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.smarttrading .ui-slider-handle {
+    opacity: 0!important;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.dragdealer .noUi-base {
+    z-index: 2;
+}
+.noUi-base, .noUi-connects {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.noUi-connects {
+    border-radius: 3px;
+}
+.noUi-connects {
+    overflow: hidden;
+    z-index: 0;
+}
+.noUi-base, .noUi-connects {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.noUi-horizontal .noUi-origin {
+    height: 0;
+}
+.noUi-connect, .noUi-origin {
+    will-change: transform;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    -ms-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    -webkit-transform-style: preserve-3d;
+    transform-origin: 0 0;
+    transform-style: flat;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.dragdealer .noUi-handle {
+    top: -10px;
+    opacity: 0;
+}
+.noUi-horizontal .noUi-handle {
+    width: 34px;
+    height: 28px;
+    right: -17px;
+    top: -6px;
+}
+.noUi-handle {
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    background: #fff;
+    cursor: default;
+    box-shadow: inset 0 0 1px #fff, inset 0 1px 7px #ebebeb, 0 3px 6px -3px #bbb;
+}
+.noUi-handle {
+    backface-visibility: hidden;
+    position: absolute;
+}
+.noUi-target, .noUi-target * {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.noUi-touch-area {
+    height: 100%;
+    width: 100%;
+}
+
+.noUi-handle:after, .noUi-handle:before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 14px;
+    width: 1px;
+    background: #e8e7e6;
+    left: 14px;
+    top: 6px;
+}
+
+.noUi-handle:after {
+    left: 17px;
+}
+.noUi-handle:after, .noUi-handle:before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 14px;
+    width: 1px;
+    background: #e8e7e6;
+    left: 14px;
+    top: 6px;
+}
+
+.smartTradeLine{
+    height: 3px;
+    background-color: white;
+    position:relative;
+    width: 200px;
+}
+
+.smartTradeProgress{
+    direction: rtl;
+}
+
+.smartTradeTPContainer,.smartTradeCurrentContainer{
+    height: 20px;
+    width: 200px;
+}
+
+.smartTradeTPContainer{
+    direction: rtl;
+    display: flex;
+}
+
+.smartTradeTP,.smartTradeCurrent{
+    width: 30px;
+    display: inline-block;
+    height: 20px;
+    background-color: transparent;
+    border-left: 2px solid white;
+    position: relative;
+}
+
+.smartTradeCurrent > span{
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+}
+
+.smartTradeCurrentContainer{
+    height: 40px;
+}
+
+.smartTradeCurrentContainer > div:nth-child(2){
+    height: 40px;
+}
+
+.smartTradeTP > span{
+    position: absolute;
+    top: 100%;
+    right: 0;
+}
+
+.smartTradeTP{
+    border-right: 2px solid white;
+    border-left: 0;
+}
+
+.smartTradeCurrent{
+    width: 98px;
+}
+
+        /******************table********************/
+        .container-Ma_i1vJp {
+                margin-top: var(--v-rhythm-spacing-5);
+            }
+            
+            .container-lu7Cy9jC {
+                display: grid;
+                grid-auto-rows: -webkit-min-content;
+                grid-auto-rows: min-content;
+                position: relative;
+            }
+            .container-lu7Cy9jC {
+                display: grid;
+                grid-auto-rows: -webkit-min-content;
+                grid-auto-rows: min-content;
+                position: relative;
+            }
+            .container-SCxmJPkt {
+                --adaptive-mf-container-padding: 20px;
+                --adaptive-mf-container-max-width: 2360px;
+                margin-bottom: var(--v-rhythm-header-1-space);
+                overflow: hidden;
+                padding-left: var(--adaptive-mf-container-padding);
+                padding-right: var(--adaptive-mf-container-padding);
+            }
+
+            .smartTradeHeader .form-floating > label{
+              left:16px!important;
+            }
+            
+            
+            .container-lu7Cy9jC>* {
+                min-width: 0;
+            }
+
+            .container-lu7Cy9jC>* {
+                min-width: 0;
+            }
+
+            .tablesWrapper-kg4MJrFB {
+                grid-column-gap: 64px;
+                display: grid;
+            }
+
+            .tablesWrapper-kg4MJrFB.tabletVertical-kg4MJrFB {
+                grid-template-columns: repeat(2,1fr);
+            }
+
+            .tableWithAction-kg4MJrFB {
+                flex-basis: calc(50% - 20px);
+                flex-grow: 0;
+            }
+            .container-hvDpy38G, .table-hvDpy38G, .tableWrapper-hvDpy38G {
+                width: 100%;
+            }
+
+            .title-hvDpy38G {
+                margin-bottom: 10px;
+            }
+
+            .link-hvDpy38G:visited {
+                fill: #131722;
+            }
+            .link-hvDpy38G {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 24px;
+                --ui-lib-typography-font-size: 16px;
+                fill: #131722;
+                display: flex;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 600;
+                line-height: var(--ui-lib-typography-line-height);
+                text-align: left;
+            }
+
+            .row-hvDpy38G {
+                font-feature-settings: "tnum" on,"lnum" on;
+                --ui-lib-typography-line-height: 18px;
+                --ui-lib-typography-font-size: 14px;
+                border-top: 1px solid #313135;
+                font-family: -apple-system,BlinkMacSystemFont,Trebuchet MS,Roboto,Ubuntu,sans-serif;
+                font-size: var(--ui-lib-typography-font-size);
+                font-style: normal;
+                font-weight: 400;
+                height: 40px;
+                line-height: var(--ui-lib-typography-line-height);
+            }
+
+            .cell-hvDpy38G:first-child {
+                padding-left: 0;
+                text-align: left;
+            }
+            .cell-hvDpy38G {
+                padding: 10px 0 10px 20px;
+                text-align: right;
+            }
+
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G.tabletLandscape-hvDpy38G {
+                padding-left: 80px;
+            }
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G.tabletVertical-hvDpy38G {
+                padding-left: 20px;
+            }
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G.phoneLandscape-hvDpy38G {
+                padding-left: 80px;
+            }
+            .cell-hvDpy38G:last-child.largePadding-hvDpy38G {
+                padding-left: 20px;
+            }
+            .tableWithAction-kg4MJrFB tr td:last-child, .tableWithAction-kg4MJrFB tr th:last-child {
+                text-align: left;
+                width: 60px;
+            }
+            .cell-hvDpy38G:not(:first-child) {
+                white-space: nowrap;
+            }
+            .neutralColor-hvDpy38G {
+                color: #6a6d78;
+            }
+            .cell-hvDpy38G {
+                padding: 10px 0 10px 20px;
+                text-align: right;
+            }
+
+            .pageHead-Sg1oJ_ft {
+                --adaptive-mf-container-padding: 20px;
+                --adaptive-mf-container-max-width: 2360px;
+                overflow: hidden;
+                padding-left: var(--adaptive-mf-container-padding);
+                padding-right: var(--adaptive-mf-container-padding);
+                margin: 40px 0;
+            }
+
+            .intervals{
+                display: flex;
+                gap: 5px;
+                width: fit-content;
+                justify-content: flex-start;
+            }
+
+            .interval{
+                padding: 8px;
+                background-color: transparent;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .interval.active{
+                background-color: #FF971D;
+            }
+
+            .table > :not(:last-child) > :last-child > * {
+            border-bottom-color: transparent;
+            border-top: 0;
+        }
+        .hOeLnE {
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            display: inline-grid;
+            grid-auto-flow: column;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            user-select: none;
+            touch-action: none;
+            vertical-align: baseline;
+            font-family: "Open Sans", sans-serif;
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0.25px;
+            text-transform: inherit;
+            font-weight: 600;
+            transition-property: all;
+            transition-duration: 0.15s;
+            transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+            gap: 6px;
+            height: 32px;
+            max-height: 32px;
+            min-width: 88px;
+            padding: 6px 4px;
+            border-radius: 4px;
+            width: auto;
+            color: rgb(255, 255, 255);
+        }
+
+        .hOeLnE > :first-child {
+            width: 16px;
+            height: 16px;
+        }
+
+        .graph-and-cup.var2 .cup {
+            height: auto;
+            height: initial;
+            min-height: 424px;
+            overflow: visible;
+            overflow: initial;
+            position: static;
+            position: initial;
+            width: 350px;
+            padding: 0 18px;
+        }
+        .graph-and-cup .cup {
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            right: 10px;
+            overflow: hidden;
+            width: 280px;
+            height: 375px;
+        }
+        .cup {
+            text-align: right;
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: normal;
+            line-height: 17px;
+        }
+
+        .cup__container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cup .price-type-filters {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin: 0 0 5px;
+        }
+
+        .cup__orders {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cup .price-type-filters .price-type-filters__container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .cup .price-type-filters .filter-icon__ask-bid {
+            background-image: url(/static/images/trades.svg);
+        }
+        .cup .price-type-filters .filter-icon {
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            margin: 0 5px 0 0;
+        }
+        .cup .price-type-filters .filter-icon__bid {
+            background-image: url(/static/images/sell_orders.svg);
+        }
+
+        .cup .price-type-filters .filter-icon__ask {
+            background-image: url(/static/images/buy_order.svg);
+        }
+
+        .cup__headers {
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: normal;
+            line-height: 17px;
+            height: 17px;
+        }
+        .cup__row {
+            position: relative;
+            height: fit-content;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .cup__cell {
+            padding-left: 4px;
+            width: 33.3333333333%;
+            display: inline-block;
+            vertical-align: top;
+            height: fit-content;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cup__row.cup__row--minus .cup__progress {
+            background: rgba(192, 50, 33, 0.2);
+        }
+        .cup__progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            height: 17px;
+        }
+
+        .button_link.button_color-info {
+            color: #579ee0;
+        }
+        .button_link {
+            color: #6b7b8b;
+            background-color: transparent;
+            box-shadow: none;
+            padding: 0;
+            text-align: left;
+            justify-content: flex-start;
+            font-weight: 500;
+            border-radius: 0;
+        }
+
+        .cup__row.cup__row--plus .cup__progress {
+            background: rgba(26, 160, 83, 0.4);
+        }
+        .cup__progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            height: 17px;
+        }
+        .cup__row.cup__headers label.btn{
+            margin-bottom: 0!important;
+        }
+
+        .flexbox {
+            display: -moz-flex;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+        .mainstats {
+            min-height: 142px;
+            padding-left: 150px;
+            position: relative;
+        }
+
+        .detailstats.flexbox {
+            flex: 1 1 100%;
+        }
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+        .detailstats {
+            margin-bottom: 10px;
+        }
+        .flexbox {
+            display: -moz-flex;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .mainstats .piechart-place {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .piechart-place, .piechart-place * {
+            overflow: visible!important;
+        }
+        .piechart-place {
+            width: 130px;
+            height: 130px;
+        }
+
+        #chart-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        #chart-overlay .buy_order {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 58px;
+            border-bottom: 1px dotted #ff971d;
+            width: calc(100% - 114px);
+            height: 62%;
+        }
+
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+
+        .mainstats .stat-string.xsmall {
+            padding-bottom: 20px;
+        }
+        .night-theme .style-block .stat-string, .night-theme .content-block .stat-string {
+            color: #728faa;
+        }
+        .style-block__body .stat-string.xsmall, .content-block__body .stat-string.xsmall {
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: normal;
+            line-height: 17px;
+        }
+        .style-block__body .stat-string, .content-block__body .stat-string {
+            position: relative;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .style-block__body .stat-string>span, .content-block__body .stat-string>span {
+            display: inline-flex;
+            align-items: center;
+        }
+        .tooltip-btn:not(.button) {
+            vertical-align: top;
+        }
+        .tooltip-btn {
+            cursor: pointer;
+        }
+        .tooltip-btn {
+            display: inline-flex;
+            align-items: center;
+            pointer-events: all;
+            vertical-align: middle;
+        }
+
+        .night-theme .style-block .stat-string, .night-theme .content-block .stat-string {
+            color: #728faa;
+        }
+        .style-block__body .stat-string.large, .content-block__body .stat-string.large {
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: normal;
+            line-height: 33px;
+        }
+        .style-block__body .stat-string, .content-block__body .stat-string {
+            position: relative;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .style-block__body .stat-string>span, .content-block__body .stat-string>span {
+            display: inline-flex;
+            align-items: center;
+        }
+        .plus {
+            color: #00a59a;
+        }
+
+        .night-theme .style-block .stat-string, .night-theme .content-block .stat-string {
+            color: #728faa;
+        }
+        .style-block__body .stat-string.small, .content-block__body .stat-string.small {
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: normal;
+            line-height: 17px;
+        }
+        .style-block__body .stat-string, .content-block__body .stat-string {
+            position: relative;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .detailstats.flexbox {
+            flex: 1 1 100%;
+        }
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+        .detailstats {
+            margin-bottom: 10px;
+        }
+
+        
+        .flexbox>div, .flexbox>span, .flexbox>a {
+            flex: 1 1;
+        }
+
+        .night-theme .style-block .stat-string, .night-theme .content-block .stat-string {
+            color: #728faa;
+        }
+        .style-block__body .stat-string.xsmall, .content-block__body .stat-string.xsmall {
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: normal;
+            line-height: 17px;
+        }
+        .style-block__body .stat-string, .content-block__body .stat-string {
+            position: relative;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .detailstats .stat-string.small {
+            margin-bottom: 10px;
+        }
+        .night-theme .style-block .stat-string, .night-theme .content-block .stat-string {
+            color: #728faa;
+        }
+        .style-block__body .stat-string.small, .content-block__body .stat-string.small {
+            font-family: open sans,Helvetica,Arial,sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: normal;
+            line-height: 17px;
+        }
+        .style-block__body .stat-string, .content-block__body .stat-string {
+            position: relative;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 767px){
+            .flexbox.detailstats>div {
+                min-width: 33.333%;
+            }
+        }
+
+        @media (max-width: 767px){
+            .flexbox.detailstats>div {
+                min-width: 33.333%;
+            }
+        }
+
+        @media (max-width: 760px){
+            .mainstats {
+                padding-left: 50%;
+            }
+            .flexbox.detailstats>div {
+                min-width: 50%;
+            }
+            .flexbox{
+                flex-direction: column;
+            }
+        }
+        
+      </style>
+    </head>
+  <body class="" >
+    <div id="toasts" style="position: fixed;
+    left: 19px;
+    z-index: 99999999999999999;
+    bottom: 25px;">
+        
+    </div>
+    <!-- loader Start -->
+    <div id="loading">
+      <div class="loader simple-loader">
+          <div class="loader-body"></div>
+      </div>    </div>
+    <!-- loader END -->
+    <aside class="sidebar sidebar-default navs-rounded ">
+        <div class="sidebar-header d-flex align-items-center justify-content-start">
+            <a href="{{url_for('dashboard')}}" class="navbar-brand dis-none align-items-center justify-content-center replaceExchange">
+                <svg width="36" class="text-primary" viewBox="0 0 128 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <path d="M117.348 105.33C117.594 105.476 117.669 105.799 117.508 106.036C110.26 116.759 99.5876 125.042 87.0232 129.687C74.2883 134.395 60.2849 135.117 47.0817 131.745C33.8785 128.372 22.1759 121.086 13.7027 110.961C5.22957 100.836 0.43531 88.4101 0.0282348 75.5189C-0.37884 62.6276 3.62286 49.9548 11.4421 39.3726C19.2614 28.7905 30.4835 20.8602 43.4505 16.7536C56.4176 12.6469 70.4417 12.5815 83.4512 16.5672C96.2865 20.4995 107.462 28.1693 115.375 38.4663C115.55 38.6939 115.495 39.0214 115.256 39.1813L97.3742 51.176C97.1539 51.3238 96.8567 51.2735 96.6942 51.0637C91.6372 44.53 84.5205 39.6627 76.3537 37.1606C68.031 34.6109 59.0591 34.6527 50.7636 37.2799C42.468 39.9071 35.2888 44.9804 30.2865 51.7502C25.2842 58.5201 22.7241 66.6274 22.9846 74.8745C23.245 83.1215 26.3121 91.0709 31.7327 97.5482C37.1533 104.025 44.64 108.687 53.0866 110.844C61.5332 113.002 70.4918 112.54 78.6389 109.528C86.6324 106.573 93.4288 101.316 98.0645 94.5111C98.2142 94.2913 98.5086 94.2233 98.7376 94.3583L117.348 105.33Z" fill="#FF971D"></path>
+                        <path d="M53.2837 0.5C53.2837 0.223858 53.5075 0 53.7837 0H75.6195C75.8957 0 76.1195 0.223858 76.1195 0.5V26.25H53.2837V0.5Z" fill="#FF971D"></path>
+                        <path d="M53.2837 123.75H76.1195V149.5C76.1195 149.776 75.8957 150 75.6195 150H53.7837C53.5075 150 53.2837 149.776 53.2837 149.5V123.75Z" fill="#FF971D"></path>
+                    </g>
+                </svg>            <h4 class="logo-title m-0">OINEX</h4>
+            </a>
+            <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                <i class="icon">
+                    <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5"></path>
+                        <path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor" stroke-width="1.5"></path>
+                    </svg>
+                </i>
+            </div>
+        </div>
+        <div class="sidebar-body p-0 data-scrollbar">
+            <div class="collapse navbar-collapse pe-3" id="sidebar">
+                <ul class="navbar-nav iq-main-menu">
+                    <li class="nav-item ">
+                        <a class="nav-link replaceExchange" aria-current="page" href="{{url_for('dashboard')}}">
+                            <i class="icon">
+                            <svg width="22" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.15722 20.7714V17.7047C9.1572 16.9246 9.79312 16.2908 10.581 16.2856H13.4671C14.2587 16.2856 14.9005 16.9209 14.9005 17.7047V17.7047V20.7809C14.9003 21.4432 15.4343 21.9845 16.103 22H18.0271C19.9451 22 21.5 20.4607 21.5 18.5618V18.5618V9.83784C21.4898 9.09083 21.1355 8.38935 20.538 7.93303L13.9577 2.6853C12.8049 1.77157 11.1662 1.77157 10.0134 2.6853L3.46203 7.94256C2.86226 8.39702 2.50739 9.09967 2.5 9.84736V18.5618C2.5 20.4607 4.05488 22 5.97291 22H7.89696C8.58235 22 9.13797 21.4499 9.13797 20.7714V20.7714" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>                            
+                            </i>
+                            <span class="item-name">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" aria-current="page" href="{{url_for('exchanges')}}">
+                            <i class="icon">
+                              <svg width="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    <path d="M15.7729 9.30504V6.27304C15.7729 4.18904 14.0839 2.50004 12.0009 2.50004C9.91694 2.49104 8.21994 4.17204 8.21094 6.25604V6.27304V9.30504" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16.7422 21.0004H7.25778C4.90569 21.0004 3 19.0954 3 16.7454V11.2294C3 8.87937 4.90569 6.97437 7.25778 6.97437H16.7422C19.0943 6.97437 21 8.87937 21 11.2294V16.7454C21 19.0954 19.0943 21.0004 16.7422 21.0004Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>                                                       
+                            </i>
+                            <span class="item-name">My Exchanges</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" aria-current="page" href="{{url_for('trade')}}">
+                            <i class="icon">
+                              <svg width="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">                                    <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>                                                        
+                            </i>
+                            <span class="item-name">Trading</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#sidebar-auth" role="button" aria-expanded="false" aria-controls="sidebar-user">
+                            <i class="icon">
+                                 <svg width="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9846 21.606C11.9846 21.606 19.6566 19.283 19.6566 12.879C19.6566 6.474 19.9346 5.974 19.3196 5.358C18.7036 4.742 12.9906 2.75 11.9846 2.75C10.9786 2.75 5.26557 4.742 4.65057 5.358C4.03457 5.974 4.31257 6.474 4.31257 12.879C4.31257 19.283 11.9846 21.606 11.9846 21.606Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M9.38574 11.8746L11.2777 13.7696L15.1757 9.86963" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </i>
+                            <span class="item-name">History</span>
+                            <i class="right-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </i>
+                        </a>
+                        <ul class="sub-nav collapse show" id="sidebar-auth" data-bs-parent="#sidebar" style="">
+                            <li class="nav-item">
+                                <a class="nav-link replaceExchange" href="{{url_for('history_open_orders')}}">
+                                    <i class="icon">
+                                        <svg width="10" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="1" width="11" height="11" stroke="currentcolor"></rect>
+                                        </svg> 
+                                    </i>
+                                    <i class="sidenav-mini-icon"> O </i>
+                                    <span class="item-name">Open orders</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link replaceExchange" href="{{url_for('history_orders')}}">
+                                    <i class="icon">
+                                        <svg width="10" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="1" width="11" height="11" stroke="currentcolor"></rect>
+                                        </svg> 
+                                    </i>
+                                    <i class="sidenav-mini-icon"> O </i>
+                                    <span class="item-name">Order history</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link replaceExchange" href="{{url_for('history_positions_history')}}">
+                                    <i class="icon">
+                                        <svg width="10" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="1" width="11" height="11" stroke="currentcolor"></rect>
+                                        </svg> 
+                                    </i>
+                                    <i class="sidenav-mini-icon"> P </i>
+                                    <span class="item-name">Position history</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link replaceExchange" href="{{url_for('history_trades_history')}}">
+                                    <i class="icon">
+                                        <svg width="10" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="1" width="11" height="11" stroke="currentcolor"></rect>
+                                        </svg> 
+                                    </i>
+                                    <i class="sidenav-mini-icon"> T </i>
+                                    <span class="item-name">Trade history</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link replaceExchange" href="{{url_for('history_funding_history')}}">
+                                   <i class="icon">
+                                        <svg width="10" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="0.5" y="1" width="11" height="11" stroke="currentcolor"></rect>
+                                        </svg> 
+                                    </i>
+                                    <i class="sidenav-mini-icon"> F </i>
+                                    <span class="item-name">Funding history</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </div>        
+            <div id="sidebar-footer" class="position-relative sidebar-footer">
+                <div class="card mx-4">
+                    <div class="card-body">
+                        <div class="sidebarbottom-content">
+                            <div class="image">
+                                <img src="/static/assets/images/coins/13.png" alt="User-Profile" class="img-fluid">
+                            </div>
+                            <p class="mb-0">Be more secure with Pro Feature</p>
+                            <button type="button" class="btn btn-primary mt-3">Upgrade Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>    <main class="main-content" style="padding-top:80px;">
+      <div class="position-relative">
+        <!--Nav Start-->
+        <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar border-bottom fixed-top" style="z-index:99999999;">
+          <div class="container-fluid navbar-inner">
+            <a href="{{url_for('dashboard')}}" class="navbar-brand">
+            </a>
+            <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                <i class="icon">
+                 <svg width="20px" height="20px" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" />
+                </svg>
+                </i>
+            </div>
+              <!--h4 class="title">
+                Dashboard
+              </h4-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon">
+                  <span class="navbar-toggler-bar bar1 mt-2"></span>
+                  <span class="navbar-toggler-bar bar2"></span>
+                  <span class="navbar-toggler-bar bar3"></span>
+                </span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="form-floating mb-3" style="margin-left: 10px;margin-bottom: 0!important;">
+                    <select class="form-select form-select-lg mb-3" id="selectedExchangeMain">                              
+                       {% for exchange2 in exchanges %}
+                        {% if exchange2.isActive == 'true' %}
+                        <option value="{{exchange2.name}}" selected>{{exchange2.name}}</option>
+                        {% else %}
+                        <option value="{{exchange2.name}}">{{exchange2.name}}</option>
+                            {% endif %}
+                       {% endfor %}
+                    </select>
+                    <label for="floatingInput">Exchange</label>
+                 </div>
+              <ul class="navbar-nav ms-auto navbar-list mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item dropdown" id="notifications_container">
+                  <a href="#"  class="nav-link" id="notification-drop" data-bs-toggle="dropdown" >
+                    <svg width="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 17.8476C17.6392 17.8476 20.2481 17.1242 20.5 14.2205C20.5 11.3188 18.6812 11.5054 18.6812 7.94511C18.6812 5.16414 16.0452 2 12 2C7.95477 2 5.31885 5.16414 5.31885 7.94511C5.31885 11.5054 3.5 11.3188 3.5 14.2205C3.75295 17.1352 6.36177 17.8476 12 17.8476Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M14.3889 20.8572C13.0247 22.3719 10.8967 22.3899 9.51953 20.8572" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>                            
+                    <span class="bg-danger dots" style="position: absolute;
+                    top: 7px;
+                    right: 7px;
+                    height: 10px;
+                    width: 10px;
+                    border-radius: 200px;background-color: #1aa053!important;"></span>
+                  </a>
+                  <div class="sub-drop dropdown-menu iq-noti dropdown-menu-end p-0" aria-labelledby="notification-drop">
+                      <div class="card shadow-none m-0">
+                        <div class="card-header d-flex justify-content-between">
+                            <div class="header-title">
+                              <p class="fs-6 ">New notifications.</p>
+                            </div>
+                            <div class="header-title">
+                              <p class="fs-6">Mark all</p>
+                            </div>
+                        </div>
+                        <div class="card-body p-0" id="notifications">
+                            {% for notification in notifications %}
+                            <a href="#" class="iq-sub-card">
+                                <div class="d-flex">
+                                    <img src="/static/assets/images/utilities/05.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img51"><div class="ms-3 w-100">
+                                        <h6 class="mb-0 ">{{notification.content}}</h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-0">{{notification.date}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                            <!--a href="#" class="iq-sub-card">
+                              <div class="d-flex">
+                                  <img src="/static/assets/images/utilities/05.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img51"><div class="ms-3 w-100">
+                                    <h6 class="mb-0 ">Successfull transaction og 0.01 BTC</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-0">15 mins ago</p>
+                                        </div>
+                                  </div>
+                              </div>
+                            </a>
+                            <a href="#" class="iq-sub-card">
+                              <div class="d-flex align-items-center">
+                                  <div class="">
+                                    <img src="/static/assets/images/utilities/03.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img52">
+                                  </div>
+                                  <div class="ms-3 w-100">
+                                    <h6 class="mb-0 ">4 of Pending Transactions!</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-0">30 mins ago</p>
+                                        
+                                    </div>
+                                  </div>
+                              </div>
+                            </a>
+                            <a href="#" class="iq-sub-card">
+                              <div class="d-flex align-items-center">
+                                  <img src="/static/assets/images/utilities/04.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img53"><div class="ms-3 w-100">
+                                    <h6 class="mb-0 ">Cancelled order of 2000 ICO</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-0">55 mins ago</p>
+                                        
+                                    </div>
+                                  </div>
+                              </div>
+                            </a>
+                            <a href="#" class="iq-sub-card">
+                              <div class="d-flex align-items-center">
+                                  <img src="/static/assets/images/utilities/05.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img54"><div class="w-100 ms-3">
+                                    <h6 class="mb-0 ">Great speed notify of 1.34 LTC</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-0">14 Mar</p>
+                                        
+                                    </div>
+                                  </div>
+                              </div>
+                            </a-->
+                        </div>
+                      </div>
+                  </div>
+                </li>
+                <li class="nav-item dropdown" >
+                  <a href="#" class="nav-link" id="mail-drop" data-bs-toggle="dropdown"  aria-haspopup="true" aria-expanded="false">
+                    <svg width="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9028 8.85107L13.4596 12.4641C12.6201 13.1301 11.4389 13.1301 10.5994 12.4641L6.11865 8.85107" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M16.9089 21C19.9502 21.0084 22 18.5095 22 15.4384V8.57001C22 5.49883 19.9502 3 16.9089 3H7.09114C4.04979 3 2 5.49883 2 8.57001V15.4384C2 18.5095 4.04979 21.0084 7.09114 21H16.9089Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>                            
+                    <span class="bg-primary count-mail"></span>
+                  </a>
+                  <div class="sub-drop dropdown-menu dropdown-menu-end p-0" aria-labelledby="mail-drop">
+                      <div class="card shadow-none m-0">
+                        <div class="card-header d-flex justify-content-between py-3">
+                            <div class="header-title">
+                              <p class="mb-0 text-white">Our Latest News</p>
+                            </div>
+                        </div>
+                        <div class="card-body p-0 ">
+                            <a href="#" class="iq-sub-card">
+                              <div class="d-flex ">
+                                  <div class="">
+                                    <img src="/static/assets/images/coins/02.png" class="img-fluid avatar avatar-50 avatar-rounded" alt="img55">
+                                  </div>
+                                  <div class=" w-100 ms-3">
+                                    <h6 class="mb-0 ">Bitcoin</h6>
+                                    <small class="float-left font-size-12">Lorem Ipsum is simply dummy text of the printing and typesetting industry. </small>
+                                  </div>
+                              </div>
+                            </a>
+                            <a href="#" class="iq-sub-card">
+                              <div class="d-flex">
+                                  <div class="">
+                                    <img src="/static/assets/images/coins/03.png" class="img-fluid avatar avatar-50 avatar-rounded" alt="img56">
+                                  </div>
+                                  <div class="ms-3">
+                                    <h6 class="mb-0 ">Ethereum</h6>
+                                    <small class="float-left font-size-12">Lorem Ipsum is simply dummy text of the printing and typesetting industry. </small>
+                                  </div>
+                              </div>
+                            </a>
+                            <a href="#" class="iq-sub-card">
+                              <div class="d-flex">
+                                  <div class="">
+                                    <img src="/static/assets/images/coins/06.png" class="img-fluid avatar avatar-50 avatar-rounded" alt="img57">
+                                  </div>
+                                  <div class="ms-3">
+                                    <h6 class="mb-0 ">Litecoin</h6>
+                                    <small class="float-left font-size-12">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</small>
+                                  </div>
+                              </div>
+                            </a>
+                        </div>
+                      </div>
+                  </div>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link py-0 d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/static/assets/images/avatars/01.png" alt="User-Profile" class="img-fluid avatar avatar-50 avatar-rounded">
+                    <div class="caption ms-3 ">
+                        <h6 class="mb-0 caption-title">Wade Warren</h6>
+                        <p class="mb-0 caption-sub-title">Super Admin</p>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li class="border-0"><a class="dropdown-item" href="{{url_for('user_profile')}}">Profile</a></li>
+                    <li class="border-0"><a class="dropdown-item" href="{{url_for('user_privacy_setting')}}">Privacy Setting</a></li>
+                    <li class="border-0"><hr class="m-0 dropdown-divider"></li>
+                    <li class="border-0"><a class="dropdown-item" href="{{url_for('logout')}}">Logout</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>        <!--Nav End-->
+      </div>
+      <script>
+        selectedExchangeMain.addEventListener("change",async function(){
+          await fetch(`/api/v1/fav_exchange/`,{
+            'method':'POST',
+            'body':JSON.stringify({
+              'exchange_name':selectedExchangeMain.value
+            }),
+            'headers':{
+              'Content-Type':'application/json'
+            }
+          })
+            .then(()=>{
+                location.reload()
+            })
+        });
+
+        setInterval(function(){
+            document.querySelector("nav.fixed-top").style.marginLeft = `${document.querySelector("aside").clientWidth+13}px`
+        },100)
+
+        if(selectedExchangeMain.querySelectorAll("option").length==0){
+            selectedExchangeMain.parentElement.classList.add('hidden')
+        }
+
+        var socket = io.connect("http://127.0.0.1:5000");
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+        });
+
+        socket.on('connect_error', function(error) {
+        console.log('Connection error:', error);
+        });
+
+        socket.on('reconnect_error', function(error) {
+        console.log('Reconnection error:', error);
+        });
+
+        socket.on('reconnect_failed', function() {
+        console.log('Failed to reconnect');
+        });
+
+        socket.on('new_notification', function(message) {
+            message = message.split("***")
+            document.querySelector("#toasts").insertAdjacentHTML('afterbegin',`
+                <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <svg class="bd-placeholder-img rounded me-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#007aff"></rect></svg>
+                        
+                        <strong class="me-auto">${message[1]}</strong>
+                        <small class="text-muted">11 mins ago</small>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message[0]}
+                    </div>
+                </div>
+            `)
+            notifications.insertAdjacentHTML('afterbegin',`
+                <a href="#" class="iq-sub-card">
+                    <div class="d-flex">
+                        <img src="/static/assets/images/utilities/05.png" class="img-fluid avatar avatar-30 avatar-rounded" alt="img51"><div class="ms-3 w-100">
+                            <h6 class="mb-0 ">${message[0]}</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="mb-0">now</p>
+                                </div>
+                        </div>
+                    </div>
+                </a>
+            `)                
+        });
+
+        document.querySelector(".sub-drop.dropdown-menu.iq-noti.dropdown-menu-end.p-0").addEventListener("transitionend",async function(){
+            if(this.classList.contains("show")){
+                await fetch(`/api/v1/read_notifications/`)
+                .then(()=>{
+                    document.querySelector("#notifications_container .dots").style.display = "none"
+                })
+            }
+        })
+
+        
+      </script>

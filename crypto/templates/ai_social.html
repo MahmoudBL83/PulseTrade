@@ -1,0 +1,689 @@
+{% extends 'base_ai.html' %}
+{% block content %}
+<span></span>
+<style data-emotion="css 16ld5u0">
+    .css-16ld5u0 {
+        -webkit-margin-start: auto;
+        margin-inline-start: auto;
+        -webkit-margin-end: auto;
+        margin-inline-end: auto;
+        padding: 20px;
+        -webkit-padding-end: 20px;
+        padding-inline-end: 20px;
+        min-height: 100vh;
+        padding-top: 50px;
+    }
+    @media screen and (min-width: 48em) {
+        .css-16ld5u0 {
+            padding: 30px;
+        }
+    }
+</style>
+<div class="css-16ld5u0">
+    <style data-emotion="css 1k6wnub">
+        .css-1k6wnub {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            width: 100%;
+            position: relative;
+            margin-top: 70px;
+        }
+        @media screen and (min-width: 48em) {
+            .css-1k6wnub {
+                margin-top: 0px;
+            }
+        }
+        @media screen and (min-width: 80em) {
+            .css-1k6wnub {
+                margin-top: 0px;
+            }
+        }
+    </style>
+    <div class="css-1k6wnub">
+        <style data-emotion="css nw09je">
+            .css-nw09je {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-flex-direction: column;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                -webkit-justify-content: center;
+                justify-content: center;
+                -webkit-margin-start: auto;
+                margin-inline-start: auto;
+                -webkit-margin-end: auto;
+                margin-inline-end: auto;
+                width: 100%;
+                max-width: 100%;
+            }
+            @media screen and (min-width: 48em) {
+                .css-nw09je {
+                    -webkit-flex-direction: row;
+                    -ms-flex-direction: row;
+                    flex-direction: row;
+                    width: 100%;
+                }
+            }
+            @media screen and (min-width: 80em) {
+                .css-nw09je {
+                    width: 100%;
+                }
+            }
+        </style>
+        <div class="css-nw09je">
+            <style data-emotion="css msp3jl">
+                .css-msp3jl {
+                    padding: 20px;
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-flex-direction: column;
+                    -ms-flex-direction: column;
+                    flex-direction: column;
+                    width: 100%;
+                    position: relative;
+                    border-radius: 14px;
+                    min-width: 100%;
+                    word-wrap: break-word;
+                    background: #ffffff;
+                    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+                    -webkit-background-clip: border-box;
+                    background-clip: border-box;
+                    max-width: 100%;
+                    height: -webkit-min-content;
+                    height: -moz-min-content;
+                    height: min-content;
+                    -webkit-margin-end: 0px;
+                    margin-inline-end: 0px;
+                    margin-bottom: 20px;
+                }
+                @media screen and (min-width: 48em) {
+                    .css-msp3jl {
+                        min-width: 40%;
+                        max-width: 40%;
+                        -webkit-margin-end: 20px;
+                        margin-inline-end: 20px;
+                        margin-bottom: 0px;
+                    }
+                }
+                @media screen and (min-width: 80em) {
+                    .css-msp3jl {
+                        min-width: 476px;
+                        max-width: 476px;
+                    }
+                }
+            </style>
+            <div class="css-msp3jl">
+                <style data-emotion="css movt29">
+                    .css-movt29 {
+                        font-size: 30px;
+                        color: var(--chakra-colors-navy-700);
+                        font-weight: 800;
+                        margin-bottom: 10px;
+                    }
+                </style>
+                <p class="chakra-text css-movt29">Topic</p>
+                <style data-emotion="css 1iikji2">
+                    .css-1iikji2 {
+                        font-size: 16px;
+                        color: var(--chakra-colors-gray-500);
+                        font-weight: 500;
+                        margin-bottom: 30px;
+                    }
+                </style>
+                <p class="chakra-text css-1iikji2">What is the topic you need to talk about ?</p>
+                <style data-emotion="css hcjibr">
+                    .css-hcjibr {
+                        display: -webkit-box;
+                        display: -webkit-flex;
+                        display: -ms-flexbox;
+                        display: flex;
+                        text-align: start;
+                        font-size: var(--chakra-fontSizes-md);
+                        -webkit-margin-end: var(--chakra-space-3);
+                        margin-inline-end: var(--chakra-space-3);
+                        margin-bottom: var(--chakra-space-2);
+                        font-weight: var(--chakra-fontWeights-bold);
+                        transition-property: var(--chakra-transition-property-common);
+                        transition-duration: var(--chakra-transition-duration-normal);
+                        opacity: 1;
+                        -webkit-margin-start: 10px;
+                        margin-inline-start: 10px;
+                        color: var(--chakra-colors-navy-700);
+                        letter-spacing: 0px;
+                    }
+                    .css-hcjibr[disabled],
+                    .css-hcjibr[aria-disabled="true"],
+                    .css-hcjibr[data-disabled] {
+                        opacity: 0.4;
+                    }
+                    .css-hcjibr:hover,
+                    .css-hcjibr[data-hover] {
+                        cursor: pointer;
+                    }
+                </style>
+                <label for="topic" class="chakra-form__label css-hcjibr">Topic</label>
+                <style data-emotion="css 1hu5sdg">
+                    .css-1hu5sdg {
+                        width: 100%;
+                        min-width: 0px;
+                        outline: 2px solid transparent;
+                        outline-offset: 2px;
+                        position: relative;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        -ms-appearance: none;
+                        appearance: none;
+                        transition-property: var(--chakra-transition-property-common);
+                        transition-duration: var(--chakra-transition-duration-normal);
+                        font-weight: 500;
+                        border-radius: 10px;
+                        font-size: var(--chakra-fontSizes-md);
+                        -webkit-padding-start: var(--chakra-space-4);
+                        padding-inline-start: var(--chakra-space-4);
+                        -webkit-padding-end: var(--chakra-space-4);
+                        padding-inline-end: var(--chakra-space-4);
+                        height: 60px;
+                        border: 1px solid;
+                        border-color: var(--chakra-colors-gray-200);
+                        background: inherit;
+                        color: var(--chakra-colors-navy-700);
+                        margin-bottom: 28px;
+                    }
+                    .css-1hu5sdg:hover,
+                    .css-1hu5sdg[data-hover] {
+                        border-color: var(--chakra-colors-gray-300);
+                    }
+                    .css-1hu5sdg[aria-readonly="true"],
+                    .css-1hu5sdg[readonly],
+                    .css-1hu5sdg[data-readonly] {
+                        box-shadow: none !important;
+                        -webkit-user-select: all;
+                        -moz-user-select: all;
+                        -ms-user-select: all;
+                        user-select: all;
+                    }
+                    .css-1hu5sdg[disabled],
+                    .css-1hu5sdg[aria-disabled="true"],
+                    .css-1hu5sdg[data-disabled] {
+                        opacity: 0.4;
+                        cursor: not-allowed;
+                    }
+                    .css-1hu5sdg[aria-invalid="true"],
+                    .css-1hu5sdg[data-invalid] {
+                        border-color: #ee5d50;
+                        box-shadow: 0 0 0 1px #ee5d50;
+                    }
+                    .css-1hu5sdg:focus,
+                    .css-1hu5sdg[data-focus] {
+                        border-color: none;
+                    }
+                    .css-1hu5sdg::-webkit-input-placeholder {
+                        color: var(--chakra-colors-gray-500);
+                    }
+                    .css-1hu5sdg::-moz-placeholder {
+                        color: var(--chakra-colors-gray-500);
+                    }
+                    .css-1hu5sdg:-ms-input-placeholder {
+                        color: var(--chakra-colors-gray-500);
+                    }
+                    .css-1hu5sdg::placeholder {
+                        color: var(--chakra-colors-gray-500);
+                    }
+                </style>
+                <input placeholder="Type here the topic..." id="topic" class="chakra-input css-1hu5sdg" />
+                <style data-emotion="css dnmp8d">
+                    .css-dnmp8d {
+                        display: -webkit-inline-box;
+                        display: -webkit-inline-flex;
+                        display: -ms-inline-flexbox;
+                        display: inline-flex;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        -ms-appearance: none;
+                        appearance: none;
+                        -webkit-align-items: center;
+                        -webkit-box-align: center;
+                        -ms-flex-align: center;
+                        align-items: center;
+                        -webkit-box-pack: center;
+                        -ms-flex-pack: center;
+                        -webkit-justify-content: center;
+                        justify-content: center;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
+                        position: relative;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                        outline: 2px solid transparent;
+                        outline-offset: 2px;
+                        width: 100%;
+                        line-height: 1.2;
+                        border-radius: 45px;
+                        font-weight: var(--chakra-fontWeights-semibold);
+                        transition-property: var(--chakra-transition-property-common);
+                        transition-duration: var(--chakra-transition-duration-normal);
+                        box-shadow: var(--chakra-shadows-none);
+                        -webkit-transition: 0.25s all ease;
+                        transition: 0.25s all ease;
+                        box-sizing: border-box;
+                        height: 54px;
+                        min-width: var(--chakra-sizes-10);
+                        font-size: var(--chakra-fontSizes-md);
+                        -webkit-padding-start: 16px;
+                        padding-inline-start: 16px;
+                        -webkit-padding-end: 16px;
+                        padding-inline-end: 16px;
+                        background: linear-gradient(15.46deg, #4a25e1 26.3%, #7b5aff 86.4%);
+                        color: white;
+                        padding-top: 20px;
+                        padding-bottom: 20px;
+                        margin-top: 28px;
+                    }
+                    .css-dnmp8d:focus,
+                    .css-dnmp8d[data-focus] {
+                        box-shadow: var(--chakra-shadows-none);
+                        background: linear-gradient(15.46deg, #4a25e1 26.3%, #7b5aff 86.4%);
+                    }
+                    .css-dnmp8d[disabled],
+                    .css-dnmp8d[aria-disabled="true"],
+                    .css-dnmp8d[data-disabled] {
+                        opacity: 0.4;
+                        cursor: not-allowed;
+                        box-shadow: var(--chakra-shadows-none);
+                    }
+                    .css-dnmp8d:hover,
+                    .css-dnmp8d[data-hover] {
+                        box-shadow: 0px 21px 27px -10px rgba(96, 60, 255, 0.48) !important;
+                        background: linear-gradient(15.46deg, #4a25e1 26.3%, #7b5aff 86.4%) !important;
+                    }
+                    .css-dnmp8d:hover[disabled],
+                    .css-dnmp8d[data-hover][disabled],
+                    .css-dnmp8d:hover[aria-disabled="true"],
+                    .css-dnmp8d[data-hover][aria-disabled="true"],
+                    .css-dnmp8d:hover[data-disabled],
+                    .css-dnmp8d[data-hover][data-disabled] {
+                        background: linear-gradient(15.46deg, #4a25e1 26.3%, #7b5aff 86.4%);
+                    }
+                    .css-dnmp8d:active,
+                    .css-dnmp8d[data-active] {
+                        box-shadow: var(--chakra-shadows-none);
+                        background: linear-gradient(15.46deg, #4a25e1 26.3%, #7b5aff 86.4%);
+                    }
+                </style>
+                <button type="button" class="chakra-button css-dnmp8d">Generate</button>
+            </div>
+            <style data-emotion="css 1guy1l1">
+                .css-1guy1l1 {
+                    padding: 20px;
+                    display: -webkit-box;
+                    display: -webkit-flex;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-flex-direction: column;
+                    -ms-flex-direction: column;
+                    flex-direction: column;
+                    width: 100%;
+                    position: relative;
+                    border-radius: 14px;
+                    min-width: 0px;
+                    word-wrap: break-word;
+                    background: #ffffff;
+                    box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+                    -webkit-background-clip: border-box;
+                    background-clip: border-box;
+                    max-width: 100%;
+                    height: 100%;
+                }
+            </style>
+            <div class="css-1guy1l1">
+                <p class="chakra-text css-movt29">AI Output</p>
+                <p class="chakra-text css-1iikji2">Enjoy your LinkedIn Message!</p>
+                <style data-emotion="css 1nm4eph">
+                    .css-1nm4eph {
+                        display: -webkit-box;
+                        display: -webkit-flex;
+                        display: -ms-flexbox;
+                        display: flex;
+                        -webkit-box-flex-wrap: wrap;
+                        -webkit-flex-wrap: wrap;
+                        -ms-flex-wrap: wrap;
+                        flex-wrap: wrap;
+                        width: 100%;
+                        max-width: 100%;
+                        padding: 15px 20px;
+                        border: 1px solid;
+                        color: var(--chakra-colors-navy-700);
+                        border-color: var(--chakra-colors-gray-200);
+                        border-radius: 10px;
+                        min-height: 564px;
+                        font-size: var(--chakra-fontSizes-md);
+                        font-weight: 500;
+                        margin-bottom: 28px;
+                    }
+                </style>
+                <div class="css-1nm4eph">
+                    <div class="font-medium w-[100%]"><p>Your generated response will appear here...</p></div>
+                </div>
+                <style data-emotion="css 1it7jq2">
+                    .css-1it7jq2 {
+                        display: -webkit-inline-box;
+                        display: -webkit-inline-flex;
+                        display: -ms-inline-flexbox;
+                        display: inline-flex;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        -ms-appearance: none;
+                        appearance: none;
+                        -webkit-align-items: center;
+                        -webkit-box-align: center;
+                        -ms-flex-align: center;
+                        align-items: center;
+                        -webkit-box-pack: center;
+                        -ms-flex-pack: center;
+                        -webkit-justify-content: center;
+                        justify-content: center;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
+                        position: relative;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                        outline: 2px solid transparent;
+                        outline-offset: 2px;
+                        width: 300px;
+                        line-height: 1.2;
+                        border-radius: var(--chakra-radii-full);
+                        font-weight: var(--chakra-fontWeights-semibold);
+                        transition-property: var(--chakra-transition-property-common);
+                        transition-duration: var(--chakra-transition-duration-normal);
+                        box-shadow: var(--chakra-shadows-none);
+                        -webkit-transition: 0.25s all ease;
+                        transition: 0.25s all ease;
+                        box-sizing: border-box;
+                        height: 54px;
+                        min-width: var(--chakra-sizes-10);
+                        font-size: var(--chakra-fontSizes-md);
+                        -webkit-padding-start: var(--chakra-space-4);
+                        padding-inline-start: var(--chakra-space-4);
+                        -webkit-padding-end: var(--chakra-space-4);
+                        padding-inline-end: var(--chakra-space-4);
+                        background: var(--chakra-colors-transparent);
+                        color: var(--chakra-colors-navy-700);
+                        border: 1px solid;
+                        border-color: var(--chakra-colors-gray-200);
+                        max-width: 160px;
+                        -webkit-margin-start: auto;
+                        margin-inline-start: auto;
+                    }
+                    .css-1it7jq2:focus,
+                    .css-1it7jq2[data-focus] {
+                        box-shadow: var(--chakra-shadows-none);
+                        background: none;
+                    }
+                    .css-1it7jq2[disabled],
+                    .css-1it7jq2[aria-disabled="true"],
+                    .css-1it7jq2[data-disabled] {
+                        opacity: 0.4;
+                        cursor: not-allowed;
+                        box-shadow: var(--chakra-shadows-none);
+                    }
+                    .css-1it7jq2:hover,
+                    .css-1it7jq2[data-hover] {
+                        box-shadow: unset;
+                        background: var(--chakra-colors-gray-100);
+                    }
+                    .css-1it7jq2:hover[disabled],
+                    .css-1it7jq2[data-hover][disabled],
+                    .css-1it7jq2:hover[aria-disabled="true"],
+                    .css-1it7jq2[data-hover][aria-disabled="true"],
+                    .css-1it7jq2:hover[data-disabled],
+                    .css-1it7jq2[data-hover][data-disabled] {
+                        background: initial;
+                    }
+                    .css-1it7jq2:active,
+                    .css-1it7jq2[data-active] {
+                        box-shadow: var(--chakra-shadows-none);
+                        background: var(--chakra-colors-gray-200);
+                    }
+                    @media screen and (min-width: 48em) {
+                        .css-1it7jq2 {
+                            width: 420px;
+                        }
+                    }
+                    .css-1it7jq2 i{
+                        font-size: 25px;
+                    }
+                </style>
+                <div style="display: flex;gap:10px;">
+                    <button type="button" class="chakra-button css-1it7jq2">Copy text</button>
+                    <button type="button" class="chakra-button css-1it7jq2">
+                        <i class="fab fa-facebook"></i>
+                    </button>
+                    <button type="button" class="chakra-button css-1it7jq2">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                    <button type="button" class="chakra-button css-1it7jq2">
+                        <i class="fab fa-linkedin"></i>
+                    </button>
+                    <button type="button" class="chakra-button css-1it7jq2">
+                        <i class="fab fa-instagram"></i>
+                    </button>
+                    <button type="button" class="chakra-button css-1it7jq2">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                    <button type="button" class="chakra-button css-1it7jq2">
+                        <i class="fab fa-telegram"></i>
+                    </button>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="css-0">
+    <style data-emotion="css ogz40h">
+        .css-ogz40h {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            -webkit-align-items: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            z-index: 3;
+            -webkit-padding-start: 30px;
+            padding-inline-start: 30px;
+            -webkit-padding-end: 30px;
+            padding-inline-end: 30px;
+            padding-bottom: 30px;
+        }
+        @media screen and (min-width: 48em) {
+            .css-ogz40h {
+                -webkit-padding-start: 50px;
+                padding-inline-start: 50px;
+                -webkit-padding-end: 50px;
+                padding-inline-end: 50px;
+            }
+        }
+        @media screen and (min-width: 80em) {
+            .css-ogz40h {
+                -webkit-flex-direction: row;
+                -ms-flex-direction: row;
+                flex-direction: row;
+            }
+        }
+    </style>
+    <div class="css-ogz40h">
+        <style data-emotion="css 17k5k5s">
+            .css-17k5k5s {
+                color: var(--chakra-colors-gray-500);
+                font-size: var(--chakra-fontSizes-xs);
+                text-align: center;
+                font-weight: 500;
+                margin-bottom: 10px;
+            }
+            @media screen and (min-width: 48em) {
+                .css-17k5k5s {
+                    font-size: var(--chakra-fontSizes-sm);
+                }
+            }
+            @media screen and (min-width: 80em) {
+                .css-17k5k5s {
+                    text-align: start;
+                    margin-bottom: 0px;
+                }
+            }
+        </style>
+        <p class="chakra-text css-17k5k5s">
+            <!-- -->©
+            <!-- -->2023
+            <style data-emotion="css 1ckssb9">
+                .css-1ckssb9 {
+                    font-weight: 500;
+                    -webkit-margin-start: 4px;
+                    margin-inline-start: 4px;
+                }
+            </style>
+            <span class="chakra-text css-1ckssb9">Horizon UI AI Template. All Rights Reserved.</span>
+        </p>
+        <style data-emotion="css 1ttwu97">
+            .css-1ttwu97 {
+                list-style-type: none;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+            }
+        </style>
+        <ul role="list" class="css-1ttwu97">
+            <style data-emotion="css 1897is1">
+                .css-1897is1 {
+                    -webkit-margin-end: 10px;
+                    margin-inline-end: 10px;
+                }
+                @media screen and (min-width: 48em) {
+                    .css-1897is1 {
+                        -webkit-margin-end: 44px;
+                        margin-inline-end: 44px;
+                    }
+                }
+            </style>
+            <li class="css-1897is1">
+                <style data-emotion="css 1y6bt33">
+                    .css-1y6bt33 {
+                        display: -webkit-inline-box;
+                        display: -webkit-inline-flex;
+                        display: -ms-inline-flexbox;
+                        display: inline-flex;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        -ms-appearance: none;
+                        appearance: none;
+                        -webkit-align-items: center;
+                        -webkit-box-align: center;
+                        -ms-flex-align: center;
+                        align-items: center;
+                        -webkit-box-pack: center;
+                        -ms-flex-pack: center;
+                        -webkit-justify-content: center;
+                        justify-content: center;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
+                        position: relative;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                        outline: 2px solid transparent;
+                        outline-offset: 2px;
+                        width: auto;
+                        line-height: 1.2;
+                        border-radius: 16px;
+                        font-weight: 500;
+                        transition-property: var(--chakra-transition-property-common);
+                        transition-duration: var(--chakra-transition-duration-normal);
+                        box-shadow: 45px 76px 113px 7px rgba(112, 144, 176, 0.08);
+                        -webkit-transition: 0.25s all ease;
+                        transition: 0.25s all ease;
+                        box-sizing: border-box;
+                        height: var(--chakra-sizes-10);
+                        min-width: var(--chakra-sizes-10);
+                        font-size: var(--chakra-fontSizes-xs);
+                        -webkit-padding-start: var(--chakra-space-4);
+                        padding-inline-start: var(--chakra-space-4);
+                        -webkit-padding-end: var(--chakra-space-4);
+                        padding-inline-end: var(--chakra-space-4);
+                        background: var(--chakra-colors-transparent);
+                        color: var(--chakra-colors-gray-500);
+                        padding: 0px;
+                    }
+                    .css-1y6bt33:focus,
+                    .css-1y6bt33[data-focus] {
+                        box-shadow: var(--chakra-shadows-none);
+                        background: var(--chakra-colors-transparent);
+                    }
+                    .css-1y6bt33[disabled],
+                    .css-1y6bt33[aria-disabled="true"],
+                    .css-1y6bt33[data-disabled] {
+                        opacity: 0.4;
+                        cursor: not-allowed;
+                        box-shadow: var(--chakra-shadows-none);
+                    }
+                    .css-1y6bt33:hover,
+                    .css-1y6bt33[data-hover] {
+                        box-shadow: unset;
+                        -webkit-text-decoration: underline;
+                        text-decoration: underline;
+                        background: var(--chakra-colors-transparent);
+                    }
+                    .css-1y6bt33:hover[disabled],
+                    .css-1y6bt33[data-hover][disabled],
+                    .css-1y6bt33:hover[aria-disabled="true"],
+                    .css-1y6bt33[data-hover][aria-disabled="true"],
+                    .css-1y6bt33:hover[data-disabled],
+                    .css-1y6bt33[data-hover][data-disabled] {
+                        background: initial;
+                    }
+                    .css-1y6bt33:active,
+                    .css-1y6bt33[data-active] {
+                        box-shadow: var(--chakra-shadows-none);
+                        background: var(--chakra-colors-transparent);
+                    }
+                    @media screen and (min-width: 48em) {
+                        .css-1y6bt33 {
+                            font-size: var(--chakra-fontSizes-sm);
+                        }
+                    }
+                </style>
+                <a class="chakra-button css-1y6bt33" href="https://horizon-ui.com/pro">Homepage</a>
+            </li>
+            <li class="css-1897is1"><a class="chakra-button css-1y6bt33" href="https://horizon-ui.notion.site/End-User-License-Agreement-8fb09441ea8c4c08b60c37996195a6d5">License</a></li>
+            <li class="css-1897is1"><a class="chakra-button css-1y6bt33" href="https://horizon-ui.notion.site/Terms-Conditions-6e79229d25ed48f48a481962bc6de3ee">Terms of Use</a></li>
+            <li class="css-0"><a class="chakra-button css-1y6bt33" href="https://horizon-ui.notion.site/Privacy-Policy-8addde50aa8e408ca5c5f5811c38f971">Privacy Policy</a></li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

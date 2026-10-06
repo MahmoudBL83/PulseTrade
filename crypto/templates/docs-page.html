@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <title>PulseTrade - User Docs</title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Bootstrap 4 Template For Software Startups">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">    
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100;200;300;400;500;600;700;800;900&family=Cairo:wght@200;300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/static/images/logo2.png" id="favIco">
+    <!-- FontAwesome JS-->
+    <script defer src="/static/docs/assets/fontawesome/js/all.min.js"></script>
+    
+    <!-- Plugins CSS -->
+    <!--link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.2/styles/atom-one-dark.min.css"-->
+    <link rel="stylesheet" href="/static/docs/assets/plugins/simplelightbox/simple-lightbox.min.css">
+
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="/static/docs/assets/css/theme.css">
+	<style>
+		section img{
+			width: 460px;
+			margin-bottom: 20px;
+			margin-top: 20px;
+		}
+
+		.with-bg{
+			padding: 20px;
+			background: whitesmoke;
+			border-radius: 10px;
+		}
+
+		@media only screen and (max-width: 600px) {
+			section img{
+				width: 100%;
+			}
+		}
+
+		html[dir='rtl'] .docs-content{
+			margin-right: 300px;
+			margin-left: 0;
+		}
+
+		html[dir='rtl'] .docs-nav .nav-link:before {
+			right: 0;
+			left: unset;
+		}
+
+		html[dir='rtl'] .docs-logo-wrapper{
+			right: 15px;
+			left: unset;
+		}
+
+		html[dir='rtl'] .docs-sidebar.sidebar-hidden{
+			transform: translateX(300px);
+		}
+
+		html[dir='rtl'] .docs-article ul, .docs-article ol, .docs-article dl {
+			padding-right: 1.5rem;
+			padding-left: 0;
+		}
+
+		html[dir='rtl'] .me-2{
+			margin-left: .5rem !important;
+			margin-right: 0!important;
+		}
+
+		@media (max-width: 1199.98px){
+			html[dir='rtl'] .docs-content {
+				margin-right: 0;
+			}
+		}
+
+
+	</style>
+</head> 
+
+<body class="docs-page">    
+    <header class="header fixed-top">	    
+        <div class="branding docs-branding">
+            <div class="container-fluid position-relative py-2">
+                <div class="docs-logo-wrapper">
+					<button id="docs-sidebar-toggler" class="docs-sidebar-toggler docs-sidebar-visible me-2 d-xl-none" type="button">
+	                    <span></span>
+	                    <span></span>
+	                    <span></span>
+	                </button>
+	                <div class="site-logo">
+						<a href="/docs" class="navbar-brand">
+								<img class="logo-icon me-2" style="width: 40px;height: 40px;" src="/static/docs/assets/images/logo2.png" alt="logo"><span class="logo-text">PulseTrade<span class="text-alt">Docs</span></span>
+							</a>
+						</div>    
+                </div><!--//docs-logo-wrapper-->
+	            <!--div class="docs-top-utilities d-flex justify-content-end align-items-center">
+	                <div class="top-search-box d-none d-lg-flex">
+		                <form class="search-form">
+				            <input type="text" placeholder="Search the docs..." name="search" class="form-control search-input">
+				            <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
+				        </form>
+	                </div>
+	
+					<ul class="social-list list-inline mx-md-3 mx-lg-5 mb-0 d-none d-lg-flex">
+						<li class="list-inline-item"><a href="#"><i class="fab fa-github fa-fw"></i></a></li>
+			            <li class="list-inline-item"><a href="#"><i class="fab fa-twitter fa-fw"></i></a></li>
+		                <li class="list-inline-item"><a href="#"><i class="fab fa-slack fa-fw"></i></a></li>
+		                <li class="list-inline-item"><a href="#"><i class="fab fa-product-hunt fa-fw"></i></a></li>
+		            </ul>
+		            <a href="https://themes.3rdwavemedia.com/bootstrap-templates/startup/coderdocs-free-bootstrap-5-documentation-template-for-software-projects/" class="btn btn-primary d-none d-lg-flex">Download</a>
+	            </div--><!--//docs-top-utilities-->
+            </div><!--//container-->
+        </div><!--//branding-->
+    </header><!--//header-->
+    
+    
+    <div class="docs-wrapper">
+	    <div id="docs-sidebar" class="docs-sidebar">
+		    <nav id="docs-nav" class="docs-nav navbar">
+				<a id="langChange" onclick="changeLang()" class="multi-lang-text-docs button-border-gradient relative rounded-lg text-black text-sm flex items-center gap-1.5 py-2 px-4.5 shadow-button hover:button-gradient-hover hover:shadow-none multi-lang-text-index" style="font-family: 'Rubik';cursor: pointer;    width: 100%;
+				text-align: center;
+				background: #f5f0f0;
+				margin-bottom: 25px;
+				border-radius: 10px;
+				text-decoration: unset;">English</a>
+			    <ul class="section-items list-unstyled nav flex-column pb-3">
+				    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#section-1"><span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span><span class="multi-lang-text-docs">Introduction</span></a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-1-1">Welcome to pulseTrade</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-1-2">Overview of Features</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-1-3">Getting Started</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-2"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span><span class="multi-lang-text-docs">Creating an Account</span></a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-2-1">Registration Process</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-2-2">Security Settings</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-3"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span><span class="multi-lang-text-docs">Connecting Exchanges</span></a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-3-1">API Key Setup</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-3-2">Troubleshooting Connection Issues</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-4"><span class="theme-icon-holder me-2"><i class="fas fa-cogs"></i></span><span class="multi-lang-text-docs">Managing Bots</span></a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-4-1">Creating a New Bot</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-4-2">Configuring Bot Settings</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-4-3">Monitoring Bot Performance</a></li>
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-4-3">Editing and Pausing Bots</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-5"><span class="theme-icon-holder me-2"><i class="fas fa-tools"></i></span><span class="multi-lang-text-docs">Trading</span></a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-1">Information and Live Price</a></li>
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-2">Oscillators and Moving Averages</a></li>	
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-3">Trading Recommendations</a></li>	
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-4">Advanced Traditional View Chart</a></li>	
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-5">Order Book and Last Trades</a></li>
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-6">Buy/Sell with Different Order Types</a></li>
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-7">Smart Trade and Smart Cover</a></li>
+					<li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-5-8">List of Orders and Trades</a></li>									
+
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-6"><span class="theme-icon-holder me-2"><i class="fas fa-laptop-code"></i></span><span class="multi-lang-text-docs">Account Settings</span></a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-6-1">Notifications</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto multi-lang-text-docs" href="#item-6-2">Subscription Management</a></li>
+			    </ul>
+
+		    </nav><!--//docs-nav-->
+	    </div><!--//docs-sidebar-->
+	    <div class="docs-content">
+		    <div class="container">
+			    <article class="docs-article" id="section-1">
+				    <header class="docs-header">
+					    <h1 class="docs-heading"><span class="multi-lang-text-docs">Introduction</span> <span class="docs-time multi-lang-text-docs">Last updated: 2024-01-11</span></h1>
+					    <section class="docs-intro">
+						    <p class="multi-lang-text-docs">
+							</p>
+						</section><!--//docs-intro-->
+
+				    </header>
+				    <section class="docs-section" id="item-1-1">
+						<h2  class="section-heading multi-lang-text-docs">1.1 Welcome to pulseTrade: Automate Your Crypto Trading Experience</h2>
+						<p class="multi-lang-text-docs">pulseTrade is your all-in-one platform for automating your cryptocurrency trading strategies. Whether you're a seasoned trader looking for advanced tools or a newcomer seeking a helping hand, pulseTrade empowers you to:</p>
+
+						<ul>
+						<li class="multi-lang-text-docs">Set and forget: Create powerful trading bots that execute your strategies autonomously, 24/7.</li>
+						<li class="multi-lang-text-docs">Effortlessly manage your portfolio: Simplify your trading routine with intuitive tools.</li>
+						<li class="multi-lang-text-docs">Trade smarter, not harder: Leverage smart trading features to control risk and secure profits.</li>
+						<li class="multi-lang-text-docs">Copy the best: Learn from industry leaders and copy the trades of proven signal providers.</li>
+						</ul>
+
+						<p class="multi-lang-text-docs">With pulseTrade, you can:</p>
+
+						<ul>
+						<li class="multi-lang-text-docs">Save time and energy</li>
+						<li class="multi-lang-text-docs">Reduce stress and anxiety</li>
+						<li class="multi-lang-text-docs">Boost your profit potential</li>
+						<li class="multi-lang-text-docs">Gain confidence and knowledge</li>
+						</ul>
+
+						<p><span class="multi-lang-text-docs">Ready to trade smarter and get your time back? </span><a href="/login" class="multi-lang-text-docs">Sign up for pulseTrade today</a><span class="multi-lang-text-docs"> and unlock a world of automated trading possibilities!</span></p>
+                       
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-1-2">
+						<h2 class="section-heading multi-lang-text-docs">1.2 Overview of Features</h2>
+
+						<p class="multi-lang-text-docs">pulseTrade offers a powerful suite of features that cater to both novice and experienced cryptocurrency traders. Here's a quick overview of what you can expect:</p>
+
+						<h3 class="multi-lang-text-docs">Automated Trading Bots</h3>
+
+						<ul>
+							<li class="multi-lang-text-docs">DCA (Dollar-Cost Averaging)</li>
+							<li class="multi-lang-text-docs">Customizable Strategies</li>
+						</ul>
+
+						<h3 class="multi-lang-text-docs">Portfolio Management and Performance Tracking</h3>
+
+						<ul>
+							<li class="multi-lang-text-docs">Multi-Exchange Support</li>
+							<img src="/static/docs/assets/images/docs/3.PNG" alt="">
+							<li class="multi-lang-text-docs">Detailed Analytics</li>
+							<img src="/static/docs/assets/images/docs/1.PNG" alt="">
+							<li class="multi-lang-text-docs">Real-time Monitoring</li>
+							<img src="/static/docs/assets/images/docs/2.PNG" alt="">
+						</ul>
+
+						<h3 class="multi-lang-text-docs">Smart Trading Features</h3>
+
+						<ul>
+							<li class="multi-lang-text-docs">Take Profit and Stop Loss</li>
+							<img src="/static/docs/assets/images/docs/smart_trade.gif">
+							<li class="multi-lang-text-docs">Trailing Stop Loss</li>
+							<img src="/static/docs/assets/images/docs/trailing_stop_loss.gif">
+							<li class="multi-lang-text-docs">Trailing Take Profit</li>
+							<img src="/static/docs/assets/images/docs/trailing_take_profit.gif">
+							<li class="multi-lang-text-docs">TradingView Integration</li>
+							<img src="/static/docs/assets/images/docs/4.PNG">
+						</ul>
+
+						<p class="multi-lang-text-docs">This is just a glimpse of what pulseTrade offers. As you explore the platform further, you'll discover even more features and functionalities designed to enhance your cryptocurrency trading experience.</p>
+
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-1-3">
+						<h2 class="section-heading multi-lang-text-docs">1.3 Getting Started with pulseTrade</h2>
+
+						<p class="multi-lang-text-docs">Ready to unlock the power of automated crypto trading with pulseTrade? Let's take a quick tour and guide you through the initial setup process:</p>
+
+						<ol>
+						<li><strong class="multi-lang-text-docs">Sign Up and Account Verification:</strong>
+							<ul>
+							<li class="multi-lang-text-docs">Create a free pulseTrade account by providing your email address and setting a strong password.</li>
+							<li class="multi-lang-text-docs">Complete the verification process to ensure account security and access all features. This may involve email confirmation and KYC (Know Your Customer) procedures depending on your region.</li>
+							</ul>
+						</li>
+						<li><strong class="multi-lang-text-docs">Connect Your Exchange:</strong>
+							<ul>
+							<li class="multi-lang-text-docs">Select your preferred cryptocurrency exchange from the supported list (e.g., Binance, Coinbase Pro, etc.).</li>
+							<li class="multi-lang-text-docs">Follow the provided prompts to grant pulseTrade access to your exchange account. This allows the platform to execute trades on your behalf based on your bot instructions.</li>
+						</ul>
+						</li>
+						<li><strong class="multi-lang-text-docs">Explore Bots and Choose Your Strategy:</strong>
+							<ul>
+							<li class="multi-lang-text-docs">Dive into the "Bots" section and discover the range of available pre-configured bots, covering various trading strategies</li>
+							<li class="multi-lang-text-docs">Alternatively, build your own custom bot by defining specific buying and selling conditions with flexible parameters.</li>
+							</ul>
+						</li>
+						<li><strong class="multi-lang-text-docs">Fund Your Account and Launch Your Bot:</strong>
+							<ul>
+							<li class="multi-lang-text-docs">Transfer cryptocurrency from your exchange account or external wallet to your pulseTrade wallet.</li>
+							<li class="multi-lang-text-docs">Select the desired bot, customize any settings, and allocate the desired amount of capital to activate it.</li>
+							<li class="multi-lang-text-docs">Sit back and watch as your bot autonomously executes your chosen trading strategy, 24/7.</li>
+							</ul>
+						</li>
+						<li><strong class="multi-lang-text-docs">Monitor Performance and Optimize Strategies:</strong>
+							<ul>
+							<li class="multi-lang-text-docs">Track your bot's performance through detailed statistics and visualizations in the "Analytics" section.</li>
+							<li class="multi-lang-text-docs">Analyze its effectiveness, adjust parameters if needed, and refine your overall trading strategy for maximum returns.</li>
+							</ul>
+						</li>
+						<img src="/static/docs/assets/images/docs/13.PNG" alt="">
+						</ol>
+
+						<p><strong class="multi-lang-text-docs">Remember:</strong></p>
+
+						<ul>
+						<li class="multi-lang-text-docs">Start small and cautiously when trying out new bots and strategies.</li>
+						<li class="multi-lang-text-docs">Familiarize yourself with risk management tools like take profit and stop loss before deploying real capital.</li>
+						<li class="multi-lang-text-docs">Explore the extensive educational resources available within pulseTrade and the broader crypto community.</li>
+						</ul>
+
+					
+
+						<p class="multi-lang-text-docs">By following these steps and exploring the wealth of features within pulseTrade, you can embark on your automated crypto trading journey with confidence.</p>
+
+					</section><!--//section-->
+					
+			    </article>
+			    
+			    <article class="docs-article" id="section-2">
+				    <header class="docs-header">
+					    <h1 class="docs-heading multi-lang-text-docs">Creating an Account</h1>
+					    <section class="docs-intro">
+						    <p class="multi-lang-text-docs">Welcome to pulseTrade! To start automating your trades and unlocking the platform's features, let's create your account.</p>
+						</section><!--//docs-intro-->
+				    </header>
+				     <section class="docs-section" id="item-2-1">
+						<h2 class="multi-lang-text-docs">2.1 Registration Process</h2>
+
+						<ol>
+						<li class="multi-lang-text-docs">Visit the pulseTrade website and click the "Sign Up" button.</li>
+						<li class="multi-lang-text-docs">Enter your email address and create a strong password.</li>
+						<li class="multi-lang-text-docs">Confirm your email address by clicking the link in the verification email.</li>
+						<li class="multi-lang-text-docs">Read and agree to the Terms of Service and Privacy Policy.</li>
+						<li class="multi-lang-text-docs">Click "Create Account" to complete the registration process.</li>
+						</ol>
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-2-2">
+						<h2 class="section-heading multi-lang-text-docs">2.2 Security Settings</h2>
+						<p class="multi-lang-text-docs">Protect your account with these security measures:</p>
+						<ul>
+						<li class="multi-lang-text-docs">Choose a strong and unique password that you don't use for other accounts.</li>
+						<li class="multi-lang-text-docs">Avoid sharing your account information with anyone.</li>
+						<li class="multi-lang-text-docs">Report any suspicious activity to pulseTrade support immediately.</li>
+						</ul>
+					</section><!--//section-->
+			    </article><!--//docs-article-->
+			    
+			    
+			    <article class="docs-article" id="section-3">
+				    <header class="docs-header">
+					    <h1 class="docs-heading multi-lang-text-docs">Exchanges</h1>
+					    <section class="docs-intro">
+						    <p class="multi-lang-text-docs">PulseTrade supports a wide range of cryptocurrency exchanges through the ccxt Python library. You can seamlessly connect your exchange accounts to streamline trading and portfolio management. </p>
+						</section><!--//docs-intro-->
+				    </header>
+				     <section class="docs-section" id="item-3-1">
+						<h2 class="section-heading multi-lang-text-docs">3.1 API Key Setup</h2>
+						<ol>
+							<li>
+							<strong class="multi-lang-text-docs">Log in to the Exchange:</strong>
+							<ul>
+								<li class="multi-lang-text-docs">Visit the official website of the exchange you want to connect.</li>
+								<li class="multi-lang-text-docs">Log in to your exchange account.</li>
+							</ul>
+							</li>
+
+							<li>
+							<strong class="multi-lang-text-docs">Generate API Keys:</strong>
+							<ul>
+								<li class="multi-lang-text-docs">Locate the API key creation section in your exchange account settings.</li>
+								<li class="multi-lang-text-docs">Generate a new set of API keys, ensuring you grant the necessary permissions for trading and account information retrieval.</li>
+							</ul>
+							</li>
+
+							<li>
+							<strong class="multi-lang-text-docs">Add API Keys to PulseTrade:</strong>
+							<ul>
+								<li class="multi-lang-text-docs">Log in to your PulseTrade account.</li>
+								<li class="multi-lang-text-docs">Navigate to the "Connect Exchanges" section.</li>
+								<li class="multi-lang-text-docs">Click on the "Add Exchange" button.</li>
+								<li class="multi-lang-text-docs">Select the exchange you want to connect.</li>
+								<li class="multi-lang-text-docs">Enter the API key and secret key obtained from the exchange.</li>
+								<img src="/static/docs/assets/images/docs/12.PNG" alt="">
+							</ul>
+							</li>
+
+							<li>
+							<strong class="multi-lang-text-docs">Encrypting API Keys:</strong>
+							<ul>
+								<li class="multi-lang-text-docs">For enhanced security, PulseTrade uses the Fernet library to encrypt API keys.</li>
+								<li class="multi-lang-text-docs">Your API keys are securely stored and only decrypted when needed for trading operations.</li>
+								<img src="/static/docs/assets/images/docs/14.PNG" alt="">
+							</ul>
+							</li>
+
+						</ol>
+
+
+						
+						
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-3-2">
+						<h2 class="section-heading multi-lang-text-docs">3.2 Troubleshooting Connection Issues</h2>
+						<p class="multi-lang-text-docs">If you encounter issues connecting your exchanges, consider the following troubleshooting steps:</p>
+
+						<ul>
+							<li><strong class="multi-lang-text-docs">Double-check API Keys:</strong> Ensure that you have entered the correct API key and secret key.</li>
+							<li><strong class="multi-lang-text-docs">Permissions:</strong> Verify that the API keys have the necessary permissions for trading and data retrieval.</li>
+							<li><strong class="multi-lang-text-docs">Firewall and IP Whitelisting:</strong> Some exchanges may require whitelisting IP addresses. Ensure your server's IP is whitelisted.</li>
+							<li><strong class="multi-lang-text-docs">Exchange Status:</strong> Check the status page of the exchange for any ongoing maintenance or issues.</li>
+						</ul>
+
+						<p class="multi-lang-text-docs">If issues persist, please refer to the "Troubleshooting" section in this documentation or contact our support team for assistance.</p>
+					</section><!--//section-->
+					
+					
+			    </article><!--//docs-article-->
+			    
+			    <article class="docs-article" id="section-4">
+				    <header class="docs-header">
+					    <h1 class="docs-heading multi-lang-text-docs">Bots</h1>
+					    <section class="docs-intro">
+						    <p class="multi-lang-text-docs">Explore the power of automated trading with our sophisticated trading bots. Whether you are a seasoned trader or a beginner, our bots are designed to simplify and enhance your trading experience.</p>
+						</section><!--//docs-intro-->
+				    </header>
+				     <section class="docs-section" id="item-4-1">
+						<h2 class="section-heading multi-lang-text-docs">4.1 Creating a New Bot</h2>
+						<p class="multi-lang-text-docs">To create a new trading bot:</p>
+						<ol>
+						<li class="multi-lang-text-docs">Navigate to the "Bots" section in your dashboard.</li>
+						<li class="multi-lang-text-docs">Click on the "Create New Bot" button.</li>
+						<li class="multi-lang-text-docs">Specify the bot settings, including the bot name, type (single pair/multi pair), and other relevant parameters.</li>
+						<li class="multi-lang-text-docs">Click "Create Bot" to save your settings.</li>
+						</ol>
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-4-2">
+						<h2 class="section-heading multi-lang-text-docs">4.2 Configuring Bot Settings</h2>
+						<p class="multi-lang-text-docs">When configuring your bot, consider the following settings:</p>
+						<ul>
+						<li><strong class="multi-lang-text-docs">Name:</strong> <span class="multi-lang-text-docs">Provide a unique name for your trading bot.</span></li>
+						<li><strong class="multi-lang-text-docs">Bot Type:</strong> <span class="multi-lang-text-docs">Choose between "Single Pair" or "Multi Pair" trading.</span></li>
+						<span class="multi-lang-text-docs">single mean that the bot settings will apply to one pair; while multi mean that the bot will apply that settings on multi pairs</span>
+						<br>
+						<img src="/static/docs/assets/images/docs/15.PNG" alt="" style="max-width: 220px;">
+						<li><strong class="multi-lang-text-docs">Pairs:</strong> <span class="multi-lang-text-docs">Define the trading pairs for your bot.</span></li>
+						<li>
+							<strong>Strategy:</strong> <span class="multi-lang-text-docs">Specify the trading strategy, including "Long" or "Short" positions.</span>
+							<ul>
+							<li><strong class="multi-lang-text-docs">Base Order Size:</strong> <span class="multi-lang-text-docs">Set the base order size for your strategy.</span></li>
+							<span style="display: block;">Base Order Size mean that the bot will open the first deal with that amount</span>
+							<li>
+								<strong class="multi-lang-text-docs">Deal Start Condition:</strong> <span class="multi-lang-text-docs">Based on indicators like RSI, MACD, etc.
+								
+							</span></li>
+							<span style="display: block;">Deal Start Condition mean that the bot will start the deal when the price reach the condition</span>
+							<div class="with-bg">
+							<h4 class="multi-lang-text-docs">Relative Strength Index (RSI)</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Length:</strong> <span class="multi-lang-text-docs">The number of periods used for calculating the Relative Strength Index.</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong> <span class="multi-lang-text-docs">The timeframe or interval for which the RSI is calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong> <span class="multi-lang-text-docs">The type of condition to be checked, such as "Overbought," "Oversold," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Value:</strong> <span class="multi-lang-text-docs">The specific value used for the condition check.</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Moving Average Convergence Divergence (MACD)</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Fast Length:</strong><span class="multi-lang-text-docs">The number of periods used for calculating the fast exponential moving average in MACD.</span></li>
+								<li><strong class="multi-lang-text-docs">Slow Length:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the slow exponential moving average in MACD.</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Smoothing:</strong><span class="multi-lang-text-docs"> The number of periods used for smoothing the MACD line.</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked, such as "Crossing Up," "Crossing Down," "Positive Divergence," or "Negative Divergence."</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Value:</strong><span class="multi-lang-text-docs"> The specific value used for the condition check.</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong><span class="multi-lang-text-docs"> The timeframe or interval for which MACD is calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Money Flow Index (MFI)</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Length:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the Money Flow Index.</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked, such as "Overbought," "Oversold," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Value:</strong><span class="multi-lang-text-docs"> The specific value used for the condition check.</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Parabolic SAR</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Acceleration Factor:</strong><span class="multi-lang-text-docs"> The acceleration factor used in the Parabolic SAR calculation.</span></li>
+								<li><strong class="multi-lang-text-docs">Maximum Acceleration:</strong><span class="multi-lang-text-docs"> The maximum acceleration factor that can be reached in the Parabolic SAR calculation.</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked, such as "Bullish Reversal," "Bearish Reversal," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong><span class="multi-lang-text-docs"> The timeframe or interval for which Parabolic SAR is calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Commodity Channel Index (CCI)</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Length:</strong> <span class="multi-lang-text-docs">The number of periods used for calculating the Commodity Channel Index.</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong><span class="multi-lang-text-docs"> The timeframe or interval for which the CCI is calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked, such as "Greater Than," "Less Than," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Value:</strong><span class="multi-lang-text-docs"> The specific value used for the condition check.</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Bollinger Bands</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">BB% Period:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the Bollinger Bands percentage.</span></li>
+								<li><strong class="multi-lang-text-docs">Deviation:</strong><span class="multi-lang-text-docs"> The standard deviation multiplier used in Bollinger Bands calculation.</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong><span class="multi-lang-text-docs"> The timeframe or interval for which the Bollinger Bands are calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked, such as "Greater Than," "Less Than," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Value:</strong><span class="multi-lang-text-docs"> The specific value used for the condition check.</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Ultimate Oscillator</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Fast Length:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the fast moving average in the Ultimate Oscillator.</span></li>
+								<li><strong class="multi-lang-text-docs">Middle Length:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the middle moving average in the Ultimate Oscillator.</span></li>
+								<li><strong class="multi-lang-text-docs">Slow Length:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the slow moving average in the Ultimate Oscillator.</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked, such as "Greater Than," "Less Than," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">Signal Value:</strong><span class="multi-lang-text-docs"> The specific value used for the condition check.</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong><span class="multi-lang-text-docs"> The timeframe or interval for which the Ultimate Oscillator is calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+							</ul>
+
+							<h4 class="multi-lang-text-docs">Stochastic</h4>
+							<ul>
+								<li><strong class="multi-lang-text-docs">K Length:</strong><span class="multi-lang-text-docs"> The number of periods used for calculating the %K line in the Stochastic Oscillator.</span></li>
+								<li><strong class="multi-lang-text-docs">K Smoothing:</strong><span class="multi-lang-text-docs"> The smoothing parameter for the %K line.</span></li>
+								<li><strong class="multi-lang-text-docs">D Smoothing:</strong><span class="multi-lang-text-docs"> The smoothing parameter for the %D line.</span></li>
+								<li><strong class="multi-lang-text-docs">K Condition:</strong><span class="multi-lang-text-docs"> The type of condition for the %K line, such as "Greater Than," "Less Than," "Crossing Up," or "Crossing Down."</span></li>
+								<li><strong class="multi-lang-text-docs">K Signal Value:</strong><span class="multi-lang-text-docs"> The specific value used for the condition check for the %K line.</span></li>
+								<li><strong class="multi-lang-text-docs">Condition:</strong><span class="multi-lang-text-docs"> The type of condition to be checked between %K and %D, such as "K Crossing Up D" or "K Crossing Down D."</span></li>
+								<li><strong class="multi-lang-text-docs">Timeframe:</strong><span class="multi-lang-text-docs"> The timeframe or interval for which the Stochastic is calculated (e.g., 30 minutes, 1 hour, 1 day).</span></li>
+							</ul>
+						</div>	
+						</ul>
+						</li>
+						<li>
+							<strong class="multi-lang-text-docs">Take Profit:</strong><span class="multi-lang-text-docs"> Specify the Take Profit settings.</span>
+							<ul>
+								<li><strong class="multi-lang-text-docs">Take Profit (TP):</strong><span class="multi-lang-text-docs"> Configure TP settings, including percentage or conditions.</span></li>
+								<span class="multi-lang-text-docs">TP mean that the bot will close the deal when the price reach the take profit percentage</span>
+								<li><strong class="multi-lang-text-docs">Trailing TP:</strong><span class="multi-lang-text-docs"> Enable or disable trailing TP.</span></li>
+								<span class="multi-lang-text-docs">Trailing TP mean that the bot will follow the price and close the deal when the price reach the take profit percentage</span>
+							</ul>
+						</li>
+						<li>
+							<strong class="multi-lang-text-docs">Stop Loss (SL):</strong> Define stop loss settings.
+								<ul>
+								<li><strong class="multi-lang-text-docs">Stop Loss Percentage:</strong><span class="multi-lang-text-docs"> Set the percentage for stop loss.</span></li>
+								<li><strong class="multi-lang-text-docs">Stop Loss Action:</strong><span class="multi-lang-text-docs"> Choose between "Close Deal" or "Close Deal & Stop Bot."</span></li>
+								<span class="multi-lang-text-docs">Close Deal mean that the bot will close the deal and wait for the next deal, while Close Deal & Stop Bot mean that the bot will close the deal and stop the bot</span>
+								<li><strong class="multi-lang-text-docs">Stop Loss Timeout:</strong><span class="multi-lang-text-docs"> Specify the timeout for stop loss actions.</span></li>
+								<span class="multi-lang-text-docs">Timeout mean that the bot will wait for the timeout to close the deal</span>
+								<li><strong class="multi-lang-text-docs">Trailing Stop Loss:</strong><span class="multi-lang-text-docs"> Enable or disable trailing stop loss.</span></li>
+								<span class="multi-lang-text-docs">Trailing Stop Loss mean that the bot will follow the price and close the deal when the price reach the stop loss percentage</span>
+								<li><strong class="multi-lang-text-docs">Safety Orders:</strong><span class="multi-lang-text-docs"> Configure safety order settings.</span></li>
+								<span class="multi-lang-text-docs">Safety Orders mean that the bot will open a new deal when the price go down</span>
+								</ul>
+						</li>
+						<li><strong class="multi-lang-text-docs">Advanced Settings:</strong><span class="multi-lang-text-docs"> Access additional advanced settings for fine-tuning your bot's behavior.</span></li>
+						</ul>
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-4-3">
+						<h2 class="section-heading multi-lang-text-docs">4.3 Monitoring Bot Performance</h2>
+						<p class="multi-lang-text-docs">Monitor your bot's performance through the "Bots" section. Keep an eye on key metrics such as trade history, profit/loss, and other relevant statistics.</p>
+						<!-- Subsection 5.4: Editing and Pausing Bots -->
+						<img src="/static/docs/assets/images/docs/5.PNG" alt="">
+					</section><!--//section-->
+
+					<section class="docs-section" id="item-4-3">
+						<h2 class="section-heading multi-lang-text-docs">4.4 Editing and Pausing Bots</h2>
+						<p class="multi-lang-text-docs">To make changes to your bot or temporarily pause it:</p>
+						<ol>
+						<li class="multi-lang-text-docs">Navigate to the "Bots" section in your dashboard.</li>
+						<li class="multi-lang-text-docs">Locate the bot you want to edit or pause.</li>
+						<li class="multi-lang-text-docs">Click on the respective options for editing or pausing the bot.</li>
+						<li class="multi-lang-text-docs">Make the necessary changes and save your settings.</li>
+						</ol>
+					</section><!--//section-->
+			    </article><!--//docs-article-->
+			    
+			    <article class="docs-article" id="section-5">
+				    <header class="docs-header">
+					    <h1 class="docs-heading multi-lang-text-docs">Trading</h1>
+					    <section class="docs-intro">
+						    <p class="multi-lang-text-docs">Section intro goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque finibus condimentum nisl id vulputate. Praesent aliquet varius eros interdum suscipit. Donec eu purus sed nibh convallis bibendum quis vitae turpis. Duis vestibulum diam lorem, vitae dapibus nibh facilisis a. Fusce in malesuada odio.</p>
+						</section><!--//docs-intro-->
+				    </header>
+				     <section class="docs-section" id="item-5-1">
+						<h2 class="section-heading multi-lang-text-docs">5.1 Information and Live Price</h2>
+						<p class="multi-lang-text-docs">Get real-time information and live prices for all supported pairs on the exchange you've chosen. Stay updated with the latest market data to make informed trading decisions.</p>
+						<img src="/static/docs/assets/images/docs/7.PNG" alt="">
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-5-2">
+						<h2 class="section-heading multi-lang-text-docs">5.2 Oscillators and Moving Averages</h2>
+						<p class="multi-lang-text-docs">Access oscillators and moving averages from TradingView to analyze market trends and identify potential entry and exit points for your trades.</p>
+						<img src="/static/docs/assets/images/docs/4.PNG" alt="">
+					</section>
+				
+					<!-- Subsection 6.3: Trading Recommendations -->
+					<section class="docs-section" id="item-5-3">
+						<h2 class="section-heading multi-lang-text-docs">5.3 Trading Recommendations</h2>
+						<p class="multi-lang-text-docs">Receive recommendations for the best pairs to buy/sell from TradingView, providing valuable insights into market sentiment and potential trading opportunities.</p>
+						<img src="/static/docs/assets/images/docs/6.PNG" alt="">
+					</section>
+				
+					<!-- Subsection 6.4: Advanced Traditional View Chart -->
+					<section class="docs-section" id="item-5-4">
+						<h2 class="section-heading multi-lang-text-docs">5.4 Advanced Traditional View Chart</h2>
+						<p class="multi-lang-text-docs">Explore the market with an advanced traditional view chart, offering in-depth analysis tools and customization options for a comprehensive trading experience.</p>
+						<img src="/static/docs/assets/images/docs/8.PNG" alt="">
+					</section>
+				
+					<!-- Subsection 6.5: Order Book and Last Trades -->
+					<section class="docs-section" id="item-5-5">
+						<h2 class="section-heading multi-lang-text-docs">5.5 Order Book and Last Trades</h2>
+						<p class="multi-lang-text-docs">View the order book and recent trade history to understand market liquidity and recent market activities.</p>
+						<img src="/static/docs/assets/images/docs/9.PNG" alt="">
+					</section>
+				
+					<!-- Subsection 6.6: Buy/Sell with Different Order Types -->
+					<section class="docs-section" id="item-5-6">
+						<h2 class="section-heading multi-lang-text-docs">5.6 Buy/Sell with Different Order Types</h2>
+						<p class="multi-lang-text-docs">Execute trades with various order types, including limit, market, and conditional orders, to suit your specific trading strategy.</p>
+					</section>
+				
+					<!-- Subsection 6.7: Smart Trade and Smart Cover -->
+					<section class="docs-section" id="item-5-7">
+						<h2 class="section-heading multi-lang-text-docs">5.7 Smart Trade and Smart Cover</h2>
+						<p class="multi-lang-text-docs">Enhance your trading with smart trade and smart cover functionalities, featuring trailing TP (Take Profit) and trailing SL (Stop Loss) for advanced risk management.</p>
+						<img src="/static/docs/assets/images/docs/11.PNG" alt="">
+					
+						<h3 class="multi-lang-text-docs">Entry Trade Section</h3>
+					
+						<p><span class="multi-lang-text-docs">The Entry Trade section allows you to specify the details of your trade, divided into three key components:</span> <strong class="multi-lang-text-docs">Entry Trade</strong>, <strong class="multi-lang-text-docs">Take Profit</strong>, and <strong class="multi-lang-text-docs">Stop Loss</strong>. Let's focus on the <strong class="multi-lang-text-docs">Entry Trade</strong> for now.</p>
+					
+						<ul>
+							<li>
+								<h4 class="multi-lang-text-docs">1. Trade Entry Options</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Use Existing Asset</strong><span class="multi-lang-text-docs">: Use your current assets for the trade.</span></li>
+									<li><strong class="multi-lang-text-docs">Make Order</strong><span class="multi-lang-text-docs">: Create a new order for the trade.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> If you have 1 Bitcoin in your account and choose "Use Existing Asset," the system will use this existing Bitcoin for the trade. If you choose "Make Order," you can specify a new amount to trade, for example, 0.5 Bitcoin.</span></li>
+								</ul>
+							</li>
+						
+							<li>
+								<h4 class="multi-lang-text-docs">2. Units</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Units Input</strong><span class="multi-lang-text-docs">: Specify the amount of cryptocurrency you want to trade.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> If you input 10 units of Ethereum, it means you are initiating a trade for 10 units of Ethereum.</span></li>
+								</ul>
+							</li>
+						
+							<li>
+								<h4 class="multi-lang-text-docs">3. Buy Price</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Buy Type</strong><span class="multi-lang-text-docs">: Choose between "Limit," "Market," or "Conditional" orders.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> If you select "Limit Order" and set the "Buy Price Input" to $200, the system will execute the trade when the market price reaches $200.</span></li>
+									<li><strong class="multi-lang-text-docs">Conditional Buy Type (Conditional Order Only)</strong><span class="multi-lang-text-docs">: Choose between "Cond. Limit Order" and "Cond. Market Order."</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> If you choose "Cond. Limit Order" and set the "Trigger Price" to $180, the system will trigger the order when the market price reaches $180.</span></li>
+								</ul>
+							</li>
+						
+							<li>
+								<h4 class="multi-lang-text-docs">4. Total</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Total Input</strong><span class="multi-lang-text-docs">: Displays the total value of your trade.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> If the total input shows $2,000, it means you are initiating a trade worth $2,000 based on the specified units and buy price.</span></li>
+								</ul>
+							</li>
+						
+							<h3 class="multi-lang-text-docs">Take Profit Section</h3>
+					
+						<p class="multi-lang-text-docs">The Take Profit section allows you to set conditions for selling your assets to realize profits after entering a trade. This section consists of various options to customize your take profit strategy.</p>
+					
+						<ul>
+							<li>
+								<h4 class="multi-lang-text-docs">1. Take Profit Switch</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Enable/Disable Take Profit</strong><span class="multi-lang-text-docs">: Use the switch to enable or disable the take profit functionality.</span></li>
+								</ul>
+							</li>
+					
+							<li>
+								<h4 class="multi-lang-text-docs">2. Order Type</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Select Order Type</strong><span class="multi-lang-text-docs">: Choose between "Limit Order" and "Market Order" for executing the take profit.</span></li>
+								</ul>
+							</li>
+					
+							<li>
+								<h4 class="multi-lang-text-docs">3. Take Profit Targets</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Profit Percentage</strong><span class="multi-lang-text-docs">: Set the percentage of profit you want to achieve from the entry size.</span></li>
+									<li><strong class="multi-lang-text-docs">Volume Percentage</strong><span class="multi-lang-text-docs">: Specify the percentage of the total entry size to sell.</span></li>
+									<li><strong class="multi-lang-text-docs">Add TP Targets</strong><span class="multi-lang-text-docs">: Click this button to add take profit targets.</span></li>
+								</ul>
+							</li>
+					
+							<li>
+								<h4 class="multi-lang-text-docs">4. Trailing Take Profit</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Enable/Disable Trailing TP</strong><span class="multi-lang-text-docs">: Use the switch to enable or disable trailing take profit.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> If you enable "Trailing TP" and set the percentage to 3%, the system will dynamically adjust the take profit level as the market price increases. If the market price increases by 3%, the take profit level will be updated accordingly.</span></li>
+								</ul>
+								<img src="/static/docs/assets/images/docs/trailing_take_profit.gif" alt="">
+							</li>
+						</ul>
+					
+						<h3 class="multi-lang-text-docs">Stop Loss Section</h3>
+					
+						<p class="multi-lang-text-docs">The Stop Loss section allows you to set conditions for selling your assets to minimize losses after entering a trade. This section consists of various options to customize your stop loss strategy.</p>
+					
+						<ul>
+							<li>
+								<h4 class="multi-lang-text-docs">1. Stop Loss Switch</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Enable/Disable Stop Loss</strong><span class="multi-lang-text-docs">: Use the switch to enable or disable the stop loss functionality.</span></li>
+								</ul>
+							</li>
+					
+							<li>
+								<h4 class="multi-lang-text-docs">2. Order Type</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Select Order Type</strong><span  class="multi-lang-text-docs">: Choose between "Limit Order" and "Market Order" for executing the stop loss.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs"> When setting up your stop loss, you have the option to choose between "Cond. Limit Order" and "Cond. Market Order."</span>
+										<ul>
+											<li><strong class="multi-lang-text-docs">Cond. Limit Order</strong>: If you choose this option, you are specifying a particular price at which the stop loss order will be triggered. For instance, setting a "Cond. Limit Order" with a trigger price of $150 and an order price of $145 means that the stop loss order will only be placed when the market price reaches $150 or better, and the order will be executed at a limit price of $145 or better.</li>
+											<li><strong class="multi-lang-text-docs">Cond. Market Order</strong>: Alternatively, opting for a "Cond. Market Order" means that the stop loss order will be triggered and executed at the best available market price when the specified condition is met. This is useful when you want the order to be executed promptly without specifying a particular limit price.</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							
+					
+							<li>
+								<h4 class="multi-lang-text-docs">3. Trailing Stop Loss</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Enable/Disable Trailing SL</strong><span class="multi-lang-text-docs">: Use the switch to enable or disable trailing stop loss.</span></li>
+									<li><strong class="multi-lang-text-docs">Trailing SL Percentage</strong><span class="multi-lang-text-docs">: Specify the percentage of loss you want to minimize from the entry size.</span></li>
+									<li><strong class="multi-lang-text-docs">Example:</strong><span class="multi-lang-text-docs">Trailing Stop Loss is a dynamic strategy that automatically adjusts the stop loss level as the market price moves in your favor. </span>
+										<ul>
+											<li class="multi-lang-text-docs">If you enable "Trailing SL" and set the percentage to 3%, it means that the stop loss will trail behind the market price, maintaining a distance of 3% below the highest market price since you entered the trade.</li>
+											<li class="multi-lang-text-docs">For instance, if you enter a trade at $100 and the market price increases to $110, the initial stop loss would be at $97 (3% below the highest price of $110). If the market continues to rise to $120, the stop loss would automatically adjust to $116.4 (3% below $120).</li>
+											<li class="multi-lang-text-docs">This feature helps lock in profits while allowing room for the trade to unfold favorably, automatically adjusting to changing market conditions.</li>
+										</ul>
+									</li>
+								</ul>
+								<img src="/static/docs/assets/images/docs/trailing_stop_loss.gif" alt="">
+							</li>
+							
+					
+							<li>
+								<h4 class="multi-lang-text-docs">4. Stop Loss Timeout</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Enable/Disable Timeout</strong>: Use the switch to enable or disable the timeout functionality.</li>
+									<li><strong class="multi-lang-text-docs">Timeout</strong>: Specify the timeout for stop loss actions.</li>
+									<li><strong class="multi-lang-text-docs">Example:</strong> If you enable "Timeout" and set it to 30 minutes, the system will wait for 30 minutes before executing the stop loss action, giving the market some time to potentially recover.</li>
+									<img src="/static/docs/assets/images/docs/stop_loss_timeout.png" alt="">
+								</ul>
+							</li>
+					
+							<li>
+								<h4 class="multi-lang-text-docs">5. Move to Breakeven</h4>
+								<ul>
+									<li><strong class="multi-lang-text-docs">Enable/Disable Move to Breakeven</strong>: Use the switch to enable or disable the move to breakeven functionality.</li>
+									<li><strong class="multi-lang-text-docs">Example:</strong> If you enable "Move to Breakeven" and set the take profit percentage to 5%, the system will move the stop loss to the entry price when the market price increases by 5%, securing your initial investment.</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+				
+					<!-- Subsection 6.8: List of Orders and Trades -->
+					<section class="docs-section" id="item-5-8">
+						<h2 class="section-heading multi-lang-text-docs">5.8 List of Orders and Trades</h2>
+						<p class="multi-lang-text-docs">Review your trading history with a list of active orders, filled and cancelled orders, and your personal trade history on the chosen exchange.</p>
+						<img src="/static/docs/assets/images/docs/10.PNG" alt="">
+					</section>
+			    </article><!--//docs-article-->
+			    
+			    
+		        <article class="docs-article" id="section-6">
+				    <header class="docs-header">
+					    <h1 class="docs-heading multi-lang-text-docs">Account Settings</h1>
+					    <section class="docs-intro">
+						    <p class="multi-lang-text-docs"></p>
+						</section><!--//docs-intro-->
+				    </header>
+				     <section class="docs-section" id="item-6-1">
+						<h2 class="section-heading multi-lang-text-docs">6.1 Notifications</h2>
+						<p class="multi-lang-text-docs">Stay informed about your bots and trading performance with notifications. Customize your notification preferences to receive updates on:</p>
+						<ul>
+						<li class="multi-lang-text-docs">Bot Activities</li>
+						<li class="multi-lang-text-docs">Trading Performance</li>
+						<li class="multi-lang-text-docs">Buy/Sell Operations</li>
+						<!-- Add more notification options as needed -->
+						</ul>
+						<p class="multi-lang-text-docs">Adjust your notification settings in the "Notifications" section of your account.</p>
+					</section><!--//section-->
+					
+					<section class="docs-section" id="item-6-2">
+						<h2 class="section-heading multi-lang-text-docs">6.2 Subscription Management</h2>
+						<p class="multi-lang-text-docs">Manage your subscription to access premium features and maximize your trading capabilities.</p>
+						<p class="multi-lang-text-docs">We offer the following subscription plans:</p>
+						<ul>
+							<li><strong class="multi-lang-text-docs">Free Plan:</strong> Limited bots and trades.</li>
+							<li><strong class="multi-lang-text-docs">Premium Plan:</strong> Unlock unlimited bots and trades for enhanced trading flexibility.</li>
+						</ul>
+						<p class="multi-lang-text-docs">To manage your subscription:</p>
+						<ol>
+							<li class="multi-lang-text-docs">Navigate to the "Subscription" or "Billing" section in your account settings.</li>
+							<li class="multi-lang-text-docs">Choose your desired plan (Free or Premium).</li>
+							<li class="multi-lang-text-docs">Complete the payment process using our secure Stripe integration.</li>
+							<li class="multi-lang-text-docs">Your subscription details and billing information can be reviewed in the same section.</li>
+						</ol>
+					</section><!--//section-->
+					
+			    </article><!--//docs-article-->
+			    
+			    
+			    
+
+			    <footer class="footer">
+				    <div class="container text-center py-5">
+				        <!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
+			            <small class="copyright">Designed with <span class="sr-only">love</span><i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="theme-link" href="http://themes.3rdwavemedia.com" target="_blank">Xiaoying Riley</a> for developers</small>
+				    </div>
+			    </footer>
+		    </div> 
+	    </div>
+    </div><!--//docs-wrapper-->
+   
+       
+    <!-- Javascript -->          
+    <script src="/static/docs/assets/plugins/popper.min.js"></script>
+    <script src="/static/docs/assets/plugins/bootstrap/js/bootstrap.min.js"></script>  
+	
+    
+    
+    <!-- Page Specific JS -->
+    <script src="/static/docs/assets/plugins/smoothscroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+    <script src="/static/docs/assets/js/highlight-custom.js"></script> 
+    <script src="/static/docs/assets/plugins/simplelightbox/simple-lightbox.min.js"></script>      
+    <script src="/static/docs/assets/plugins/gumshoe/gumshoe.polyfills.min.js"></script> 
+    <script src="/static/docs/assets/js/docs.js"></script> 
+
+	<script src="/static/js/langs/docs.js"></script>
+    <script>
+      
+
+     if(localStorage.getItem('lang') == 'ar'){
+        document.dir = 'rtl' 
+        document.body.style.fontFamily = 'Rubik'
+    }
+    else{
+        document.dir = 'ltr'
+    }
+
+    function changeLang(){
+        if(langChange.innerHTML == 'English'){
+            localStorage.setItem('lang','en')
+			
+            
+        }
+        else{
+            localStorage.setItem('lang','ar')
+            
+        }
+        location.reload()
+    }
+
+    if(localStorage.getItem('lang') == 'ar'){
+        document.dir = 'rtl' 
+        document.body.style.fontFamily = 'Rubik'
+    }
+
+    document.querySelectorAll(".multi-lang-text-docs").forEach(function(element,i){
+         element.innerHTML = lang_data_docs[localStorage.getItem('lang')][i]
+     })
+</script>
+
+</body>
+</html> 
+

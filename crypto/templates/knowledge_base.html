@@ -1,0 +1,99 @@
+{% extends 'base_client.html' %}    
+{% block title %}PulseTrade | Knowledge Base{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+        <div>  
+            <div class="wrapper" style="">
+                <div class="row">
+                    <div class="container">
+                        <h1 class="my-4">
+                            <span class="multi-lang-text-knowledge_home">Advice and answers from the PulseTrade Team</span>
+                        </h1>
+                        <input type="text" class="form-control multi-lang-text-knowledge_home" id="search_kb" placeholder="Search for articles...">
+        
+                    </div>
+                </div>
+                <div class="row g-4" style="margin-bottom: 60px;margin-top:30px;">
+                {% for cat in cats %}
+                {% if cat.posts.all()|count > 0 %}
+                    <div class="col-sm-12 col-md-6 col-lg-4 categoryCard">
+                        <div class="card mb-0 botCard">
+                            <picture>
+                                <source srcset="{{cat.img}}" type="image/svg+xml">
+                                <img src="{{cat.img}}" style="border:0" class="img-fluid img-thumbnail" alt="...">
+                            </picture>
+                            <div class="card-header"><h5 class="card-title" title_ar="{{cat.title_ar}}" id="cat_title">{{cat.title}}</h5></div>
+                            <!--span style="border-radius: 8px;margin: 0 20px;">Choosing a subscription, experiencing payment issues, and questions about subscriptions overall.</span-->
+
+                            <div class="card-footer text-muted" style="display: flex;justify-content: space-between;align-items: center;    padding: 20px 20px;">
+                                <a href="{{url_for('kb_cat',category_id=cat.id)}}" style="width:100%"><button type="button" class="btn btn-outline-primary subBut" style="width:100%;" ar_count="{{ cat.posts|selectattr('lang', 'equalto', 'ar')|list|length }}" en_count="{{ cat.posts|selectattr('lang', 'equalto', 'ar')|list|length }}" id="posts_count"><span class="art-all">Articles</span></button></a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+          </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/knowledge_home.js"></script>
+
+      
+      
+
+    <script>
+      document.querySelectorAll(".multi-lang-text-knowledge_home").forEach(function(element,i){
+        if(i!=1)
+         element.innerHTML = lang_data_knowledge_home[localStorage.getItem('lang')][i]
+        else
+            element.placeholder = lang_data_knowledge_home[localStorage.getItem('lang')][i]
+     })
+        search_kb.addEventListener("input",function(){
+            //search in categoryCard elements titles
+            var input = this.value.toLowerCase();
+            var categoryCards = document.querySelectorAll(".categoryCard");
+            categoryCards.forEach(function(card){
+                var title = card.querySelector(".card-title").innerText.toLowerCase();
+                if(title.includes(input)){
+                    card.style.display = "block";
+                }else{
+                    card.style.display = "none";
+                }
+            })
+        })
+
+       
+
+        if(localStorage.getItem('lang') == 'ar'){
+            posts_count.innerHTML = posts_count.getAttribute('ar_count') + '<span class="art-all">Articles</span>'
+
+        }
+        else{
+            posts_count.innerHTML = posts_count.getAttribute('en_count') + '<span class="art-all">Articles</span>'
+        }
+
+        if(document.dir == "rtl"){
+            document.querySelectorAll(".art-all").forEach(function(e){
+                e.innerHTML = 'مقالات'
+            })
+            cat_title.innerHTML = cat_title.getAttribute('title_ar')
+        }
+    </script>
+</html>
+{% endblock %}

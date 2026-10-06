@@ -1,0 +1,379 @@
+{% extends 'base.html' %}    
+{% block title %}Coinex | Trasnfer Crypto{% endblock %}
+{% block head %}
+<style>
+select,input{
+    background: #ffffff08!important;
+    border-color: #36363869!important;
+}
+</style>
+{% endblock %}
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+        <div style="position: relative;" >
+            <img src="/static/images/Hexagon.png" style="position: fixed;top:0;
+        left: 0;width: fit-content;height: 100%;filter: grayscale(1);min-height: 100%;min-width: 100%;opacity: 0.08;">   
+            <div class="wrapper">
+                <div class="d-grid grid-1-auto gap-card" style="overflow: scroll;">
+                    <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px;text-align: center;padding: 31px;justify-content: center;">
+                        <a href="{{ url_for('crypto_convert') }}" id="walletOverview_transaction_history_aLink" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Convert</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M10.33 16.5928H4.0293" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M13.1406 6.90042H19.4413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.72629 6.84625C8.72629 5.5506 7.66813 4.5 6.36314 4.5C5.05816 4.5 4 5.5506 4 6.84625C4 8.14191 5.05816 9.19251 6.36314 9.19251C7.66813 9.19251 8.72629 8.14191 8.72629 6.84625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M20.0002 16.5538C20.0002 15.2581 18.9429 14.2075 17.6379 14.2075C16.3321 14.2075 15.2739 15.2581 15.2739 16.5538C15.2739 17.8494 16.3321 18.9 17.6379 18.9C18.9429 18.9 20.0002 17.8494 20.0002 16.5538Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>                              
+                         </a>
+                         <a href="{{ url_for('crypto_transfer') }}" id="walletOverview_top_transfer" class="btn btn-primary">
+                            <span class="remove_on_mobile">Transfer</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>                            
+                         </a>
+                         <a href="{{ url_for('crypto_withdraw') }}" id="walletOverview_top_withdrawal" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Withdraw</span>
+                            <svg style="transform:rotate(180deg)" width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                         </a>
+                         <a href="{{ url_for('crypto_deposit') }}" id="walletOverview_top_deposit" class="btn btn-secondary">
+                            <span class="remove_on_mobile">Deposit</span>
+                            <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                               <path d="M12.1221 15.436L12.1221 3.39502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M15.0381 12.5083L12.1221 15.4363L9.20609 12.5083" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M16.7551 8.12793H17.6881C19.7231 8.12793 21.3721 9.77693 21.3721 11.8129V16.6969C21.3721 18.7269 19.7271 20.3719 17.6971 20.3719L6.55707 20.3719C4.52207 20.3719 2.87207 18.7219 2.87207 16.6869V11.8019C2.87207 9.77293 4.51807 8.12793 6.54707 8.12793L7.48907 8.12793" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                         </a>
+                    </div>                 
+                 </div>
+                <section class="vh-100 bg-image">
+                    <div class="container h-100">
+                        <div class="row justify-content-start align-items-start">
+                            <div class="col-md-5 mt-5">
+                                <div class="card" style="background-color: #202022;background: transparent!important;box-shadow: unset;">
+                                    <div style="position: absolute;
+                                    top:0;
+                                    z-index: -2;
+                                    right: 0;
+                                    /*/**/
+                                    filter: blur(122px);
+                                    width: 100%;
+                                    height: 100%;"></div>
+                                    <div class="card-body" style="border-radius: 8px;">
+                                        <form id="transfer">
+                                        <div class="auth-form">
+                                            <div class="" style="margin:0;display: flex;justify-content: space-between;align-items: center;">
+                                                <div class="" style="margin:0;background: transparent;">
+                                                    <h2 class="multi-lang-text-transfer">Transfer</h2>
+                                                </div>
+                                                <span id="convert" style="cursor: pointer;">
+                                                    <svg width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                    </svg> 
+                                                </span>                           
+                                            </div>
+                                            <br>
+                                            <span class="card-header" style="margin:0;width: 100%;display: flex;justify-content: space-between;align-items: center;text-align: center;">
+                                                <span class="multi-lang-text-transfer">Pecentage From Balance</span>
+                                                <span id="bal_percentage">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </span>
+                                            </span>
+                                            <br>
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select disabled style="background: transparent!important;" class="form-control mb-3" name="target_asset">
+                                                                <option value="Fiat and Spot" class="multi-lang-text-transfer">Fiat and Spot</option>
+                                                                <option value="Funding" class="multi-lang-text-transfer">Funding</option>
+                                                            </select>
+                                                            <label for="floatingInput" class="multi-lang-text-transfer">From</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select disabled style="background: transparent!important;" class="form-control mb-3" name="source_asset">
+                                                                <option value="Funding" class="multi-lang-text-transfer">Funding</option>
+                                                                <option value="Fiat and Spot" class="multi-lang-text-transfer">Fiat and Spot</option>
+                                                            </select>
+                                                            <label for="floatingInput" class="multi-lang-text-transfer">To</label>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" style="background: transparent!important;" class="form-control" id="floatingInput" name="amount" value="0.0" placeholder="0.00">
+                                                            <label for="floatingInput" class="multi-lang-text-transfer">Amount</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select style="background: transparent!important;" class="form-control mb-3" name="coin" id="currencies">
+                                                            </select>
+                                                            <label for="floatingInput" class="multi-lang-text-transfer">Of</label>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+
+                                                 <input type="hidden" name="side" value="funding"/>
+                                                
+                                            </div>
+                                            <div class="">
+                                                <div class="d-grid gap-card grid-cols-1">
+                                                    <button disabled class="btn btn-success" type="submit">
+                                                       <span class="multi-lang-text-transfer">Transfer</span>
+                                                       <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                                    </button>
+                                                    <button class="btn btn-success hidden" type="button" disabled="">
+                                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </button>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-start align-items-start">
+                        <div class="col-lg-12 col-12 mt-5">
+                            <div class="card card-block card-stretch custom-scroll" style="background-color: #20202200;box-shadow: unset;">
+                                <div style="position: absolute;
+                                top:0;
+                                z-index: -2;
+                                right: 0;
+                                /*background-image: url('/static/assets/images/auth/01.png');*/
+                                filter: blur(122px);
+                                width: 100%;
+                                height: 100%;"></div>
+                                <div class="card-body" style="border-radius: 8px;">
+                                   <div class="table-responsive noScroll-webkit" style="overflow: scroll;height: 467px!important;position: relative;">
+                                      <table class="table data-table mb-0">
+                                         <thead class="{% if transfers|count == 0 and False %}hidden{% endif %}">
+                                            <tr>
+                                                <th class="col multi-lang-text-transfer">Date</th>
+                                                <th class="col multi-lang-text-transfer">Currency</th>
+                                                <th class="col multi-lang-text-transfer">Type</th>
+                                                <th class="col multi-lang-text-transfer">Amount</th>
+                                             </tr>
+                                         </thead>
+                                            <tbody id="assetsTable">
+                                            
+                                             {% for transfer in transfers %}
+                                             <tr class="white-space-no-wrap">
+                                                <td class="pe-2 timestamp">{{transfer.timestamp}}</td>
+                                                <td class="pe-2">{{transfer.currency}}</td>
+                                                <td class="pe-2">
+                                                   {{transfer.from}}
+                                                   <svg width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <path d="M12.7 11.7488H3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7002 16.7498L20.6372 11.7488L12.7002 6.74776V16.7498Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                   </svg>
+                                                   {{transfer.to}}
+                                                </td>
+                                                <td class="pe-2">{{transfer.amount}}</td>
+                                              </tr>
+                                            {% endfor %}
+                                            {% if transfers|count == 0 %}
+                                            <tr class="white-space-no-wrap">
+                                                <td style="padding: 0;" colspan="8">
+                                                    <div class="card mb-0" style="background: transparent;
+                                                    width: 100%;
+                                                    padding: 50px 0;">
+                                                        <img src="/static/images/not-found.png" style="max-width: 140px;margin:0 auto;filter:grayscale(1)">
+                                                        <span style="display: block;text-align: center;font-size: 20px;" class="no-records-found">No Records Found</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                         </tbody>
+                                      </table>
+                                   </div>
+                                </div>
+                             </div>
+                        </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+          </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script src="/static/js/langs/transfer.js"></script>
+
+    <script>
+      document.querySelectorAll(".multi-lang-text-transfer").forEach(function(element,i){
+         element.innerHTML = lang_data_transfer[localStorage.getItem('lang')][i]
+     })
+     if(localStorage.getItem('lang')=="ar" && document.querySelector(".no-records-found")){
+        document.querySelector(".no-records-found").innerHTML = "لا توجد سجلات"
+    }
+        /*document.querySelector(".row.justify-content-start").style="align-items: center!important;margin-top: -115px;"*/
+        selectedExchangeMain.parentElement.classList.remove("hidden")
+        document.querySelector("#transfer").addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = event.target;
+            form.querySelectorAll("button")[0].classList.add("hidden");
+            form.querySelectorAll("button")[1].classList.remove("hidden");
+            const data = {
+                exchange: selectedExchangeMain.value,
+                amount: form.elements.amount.value,
+                side: form.elements.side.value,
+                symbol: form.elements.coin.value,
+            };
+
+            
+            fetch('/api/v1/transfer/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                form.querySelectorAll("button")[0].classList.remove("hidden");
+                form.querySelectorAll("button")[1].classList.add("hidden");
+                console.log(data)
+                if (data.ok){
+                    // Show a success message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?"Success":"تم", data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", data.message, 'error');
+                }
+                
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal(localStorage.getItem("lang")!="ar"?"Error":"خطأ", error.message, 'error');
+            })
+        });
+
+        convert.addEventListener("click",function(){
+            let form = document.querySelector("#transfer")
+            if (form.elements.side.value=="funding"){
+                form.elements.side.value = "spot"
+                form.elements.source_asset.value = "Fiat and Spot"
+                form.elements.target_asset.value = "Funding"
+            }
+            else{
+                form.elements.side.value = "funding"
+                form.elements.source_asset.value = "Funding"
+                form.elements.target_asset.value = "Fiat and Spot"
+            }
+        })
+
+        /**********************************************/$
+
+        selectedExchangeMain.addEventListener("change",async function(){
+            get_currecies(this.value)
+        })
+
+        async function get_currecies(x){
+                currencies.innerHTML = '<option value=""></option>'
+                currencies.setAttribute("disabled","disabled")
+                await fetch(`/api/v1/markets/${x}`)
+                .then(res=>res.json())
+                .then(res=>{
+                    console.log(res)
+                    currencies.removeAttribute("disabled")
+                    Object.keys(res.base).forEach(symbol => {
+                                currencies.insertAdjacentHTML("beforeend",`
+                                    <option value="${symbol}">${symbol}</option>
+                                `)
+                    });
+                })
+        }
+
+        get_currecies(selectedExchangeMain.value)
+
+        document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(e.innerHTML)
+        })
+
+        let bal = null
+
+        async function get_bal(){
+            await fetch(`/api/v1/live_balance_json?exchange=${selectedExchangeMain.value}`)
+            .then(res=>res.json())
+            .then(res=>{
+                localStorage.setItem("balance_json",JSON.stringify(res))
+                
+            })
+            .finally(()=>{
+                get_bal()
+            })
+        }
+        
+        get_bal()
+        currencies.addEventListener("change",async function(){
+            let symbol = this.value
+            bal = parseFloat(JSON.parse(localStorage.getItem("balance_json"))[symbol])
+            if (bal>0){
+                document.querySelector("#bal_percentage").previousElementSibling.classList.remove("hidden")
+                document.querySelector("#bal_percentage").innerHTML = `${(parseFloat(document.querySelector("#transfer").elements.amount.value)/bal*100).toFixed(12)}%`
+            }
+            else{
+                document.querySelector("#bal_percentage").previousElementSibling.classList.add("hidden")
+                document.querySelector("#bal_percentage").innerHTML = localStorage.getItem("lang")!="ar"?'You have 0 of':' لديك 0 من' + ` ${this.value}`
+            } 
+        })
+
+        setInterval(()=>{
+                if(parseFloat(document.querySelector("#bal_percentage").innerHTML)<=100 && parseFloat(document.querySelector("#bal_percentage").innerHTML)>0 && bal!=null && !document.querySelector("#bal_percentage").previousElementSibling.classList.contains("hidden")){
+                    document.querySelector("#transfer").querySelectorAll("button")[0].removeAttribute("disabled");
+                    document.querySelector("#bal_percentage").parentElement.classList.remove("error-card")
+                }
+                else{
+                    
+                    document.querySelector("#transfer").querySelectorAll("button")[0].setAttribute("disabled","disabled");
+                    document.querySelector("#bal_percentage").parentElement.classList.add("error-card")
+                }
+
+                if(transfer.elements.side.value == 'spot'){
+                    document.querySelector("#bal_percentage").parentElement.classList.add("hidden")
+                    document.querySelector("#transfer").querySelectorAll("button")[0].removeAttribute("disabled");
+                }
+                else{
+                    document.querySelector("#bal_percentage").parentElement.classList.remove("hidden")
+                }
+        },100)
+
+        document.querySelector("#transfer").elements.amount.addEventListener("input",function(){
+            if(!document.querySelector("#bal_percentage").previousElementSibling.classList.contains("hidden")){
+                document.querySelector("#bal_percentage").innerHTML = `${(parseFloat(this.value)/bal*100).toFixed(12)}%`
+            }
+        })
+        
+    </script>
+</html>
+{% endblock %}

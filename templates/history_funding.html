@@ -1,0 +1,89 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+            <div class="wrapper">
+                    <!--div class="card card-block card-stretch custom-scroll" style="background: transparent;">
+                        <div class="card-body" style="background: transparent;">
+                            <div class="btn-check-group" style="margin-bottom: 32px;">
+                                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary active rounded-start">Buy/Sell</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Trade</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Buy</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary rounded-end">Smart Sell</label>
+                                 </div>
+                            </div>
+                        </div>
+                     </div-->
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch custom-scroll">
+                   <div class="card-body">
+                      <div class="table-responsive">
+                         <table class="table data-table mb-0">
+                            <thead>
+                               <tr>
+                                    <th class="col">Date</th>
+                                    <th class="col">Crypto</th>
+                                    <th class="col">Type</th>
+                                    <th class="col">Amount</th>
+                                    <th class="col">Balance</th>
+                                    <th class="col">Fee</th>
+                               </tr>
+                            </thead>
+                               <tbody id="assetsTable">
+                                {% for order in transfers %}
+                                  <tr class="white-space-no-wrap">
+                                    <td class="pe-2 timestamp">{{order.timestamp}}</td>
+                                    <td class="pe-2">{{order.currency}}</td>
+                                    <td class="pe-2">{{order.type}}</td>
+                                    <td class="pe-2">{{order.amount}}</td>
+                                    <td class="pe-2">{{order.balance}}</td>
+                                    <td class="pe-2">{{order.fee}}</td>
+                                  </tr>
+                               {% endfor %}
+                            </tbody>
+                         </table>
+                      </div>
+                   </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+        document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+                timeZone: "America/Los_Angeles",
+            }).format(e.innerHTML)
+        })
+    </script>
+</html>

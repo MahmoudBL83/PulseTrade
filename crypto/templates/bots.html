@@ -1,0 +1,860 @@
+{% extends 'base.html' %}    
+{% block title %}PulseTrade | Bots{% endblock %}
+
+{% block content %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+        
+            <div class="wrapper">
+                <div class="container-fluid content-inner pb-0">
+
+                   <!-- model for bot transactions -->
+                    <div class="modal fade" id="SMAModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title multi-lang-text-bots" id="SMAModalLabel1">Bot Trasnactions</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="card-skeleton" style="height: 132px;" id="trans_skel">
+                                        <div class="animated-background"> 
+                                          <div class="skel-mask-container">
+                                            <div class="skel-mask skel-mask-1"></div>
+                                            <div class="skel-mask skel-mask-2"></div>
+                                            <div class="skel-mask skel-mask-3"></div>
+                                            <div class="skel-mask skel-mask-4"></div>
+                                            <div class="skel-mask skel-mask-5"></div>
+                                            <div class="skel-mask skel-mask-6"></div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    <ul class="academy-list list-inline m-0 p-0" id="bot_transactions_list" style="display: flex;
+                                    flex-direction: column;max-height: 530px;overflow: scroll;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                <div class="row g-4">
+                    
+                    <div class="col-12">
+                        <a href="/bot_create"><button type="button" class="btn btn-outline-primary multi-lang-text-bots" style="">Create Bot</button></a>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 col-xl-6">
+                        <div class="card mb-0">
+                            <div class="card-body">
+                                <h5 class="card-title multi-lang-text-bots">Profit/Loss Per Day</h5>
+                            </div>
+                            <div class="canvas_container" style="height: 400px;
+                            padding: 0.5rem 1rem;
+                            margin: 15px;
+                            background-color: #19191A;
+                            width: calc(100% - 30px);
+                            border-radius: 8px;">
+                                <canvas id="botchart"></canvas>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 col-xl-6">
+                        <div class="card mb-0">
+                            <div class="card-body">
+                                <h5 class="card-title multi-lang-text-bots">Daily Summary Profit/Loss</h5>
+                            </div>
+                            <div class="canvas_container" style="height: 400px;
+                            padding: 0.5rem 1rem;
+                            margin: 15px;
+                            background-color: #19191A;
+                            width: calc(100% - 30px);
+                            border-radius: 8px;">
+                                <canvas id="botchart2"></canvas>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <input type="text" class="form-control" id="search_bots" placeholder="Search for bots...">
+                    </div>
+                    
+                    {% for bot in bots|reverse %}
+                    <div class="col-xs-12 col-md-6 col-xl-4">
+                        <div class="card mb-0 botCard" id="{{bot.id}}" transactions='{{bot.transactions}}'>
+                            <div class="symbol-imgs">
+                                <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.quote_currency}}--big.svg" style="border: 1px solid white;position: absolute;right: -8px;bottom: 16px;" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60"> 
+                                <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC{{bot.base_currency}}--big.svg" class="img-fluid avatar avatar-50 avatar-rounded" alt="img60" style="border: 1px solid white;margin-left: -36px;"> 
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title" exchange="{{bot.exchange}}" quote="{{bot.quote_currency}}" base="{{bot.base_currency}}">{{bot.name}} ({{bot.strategy}})</h5>
+                                <p class="card-text">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: {% if bot.isActive %}33%;{% else %}0%{% endif %}" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </p>
+                            </div>
+
+                            <div class="d-flex align-items-center align-self-center" style="margin-top: 15px;">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check active">
+                                        <input class="form-check-input bot_info_btns" type="radio" name="flexRadioDefault{{bot.id}}" id="bot_info_btns1" checked="true">
+                                        <label class="form-check-label multi-lang-text-bots2" for="flexRadioDefault{{bot.id}}"></label>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center ms-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input bot_info_btns" type="radio" name="flexRadioDefault{{bot.id}}" id="bot_info_btns2">
+                                        <label class="form-check-label multi-lang-text-bots2" for="flexRadioDefault{{bot.id}}"></label>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center ms-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input bot_info_btns" type="radio" name="flexRadioDefault{{bot.id}}" id="bot_info_btns3">
+                                        <label class="form-check-label multi-lang-text-bots2" for="flexRadioDefault{{bot.id}}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="list-group list-group-flush bots" style="border-radius: 8px;margin: 0 10px;">
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important;align-items: center;"><span class="multi-lang-text-bots2">Exchange: </span><span class="bot_exchange"><img src="/static/images/{{bot.exchange}}.svg" class="img-fluid avatar avatar-40" alt="img6"></span></li>
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Opened Trades: </span><span class="bot_total_trades">{{bot.total_trades}}</span></li>
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Amount: </span><span><span class="bot_amount">{{bot.total_volume|round(8)}}</span> {{bot.base_currency}}</span></li>
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2">Filled Amount: </span><span><span class="bot_units">{{bot.units|round(8)}}</span> {{bot.base_currency}}</span></li>
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important"><span class="multi-lang-text-bots2 bot_buy_price_text">Buy Price: </span><span><span class="bot_buy_price">{{bot.buy_price}}</span> {{bot.quote_currency}}</span></li>
+                                <li class="list-group-item"><span class="multi-lang-text-bots2 bot_sell_price_text">Sell Price: </span><span><span class="sell_price">{{bot.sell_price}}</span> {{bot.quote_currency}}</span></li>
+                                <li class="list-group-item"><span class="multi-lang-text-bots2 bot_highest_price_text">Highest Price: </span><span><span class="highest_price">{{bot.last_price}}</span> {{bot.quote_currency}}</span></li>
+                                <li class="list-group-item"><span class="multi-lang-text-bots2">Profit/Loss: </span><span><span class="total_profit">{{bot.total_profit}}</span></span></li>
+                            </ul>
+                            <ul class="list-group list-group-flush bots bots_indicators hidden" style="border-radius: 8px;margin: 0 10px;">
+                            </ul>
+                            <ul class="list-group list-group-flush bots bots_safetyOrders hidden" style="border-radius: 8px;margin: 0 10px;">
+                            </ul>
+                            <div style="height: 300px;display: none;">
+                                <canvas></canvas>
+                            </div>
+                            <div class="smartTradeProgress_bot" style="height: 153px;
+                            padding: 46px 0;
+                            margin: auto;">
+                                
+                            </div>
+                            
+                            <div class="card-footer text-muted" style="display: flex;
+                            flex-direction: column;
+                            gap: 10px;">
+                                <span class="readDate22">{{bot.created_at}}</span>
+                                <div style="display: flex;align-items: center;gap: 15px;">   
+                                    <div style="margin-right:0;transform: scale(1.3);display: flex;align-items: center;margin: 0;" class="form-check form-switch form-check-inline toggle_bot">
+                                        <input class="form-check-input toggleBot" type="checkbox" id="switch2">
+                                    </div>  
+                                    <button class="btn btn-outline-light btn-sm hidden run_bot multi-lang-text-bots2" style="white-space: nowrap;" onclick='run_bot(this)'>Run again</button>
+                                    <button class="btn btn-outline-secondary btn-sm multi-lang-text-bots2" onclick='edit_bot(this)'>Edit</button>
+                                    <svg width="32" class="shareBot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="shareBot('{{bot.id}}')">
+                                        <path d="M15.8325 8.17463L10.109 13.9592L3.59944 9.88767C2.66675 9.30414 2.86077 7.88744 3.91572 7.57893L19.3712 3.05277C20.3373 2.76963 21.2326 3.67283 20.9456 4.642L16.3731 20.0868C16.0598 21.1432 14.6512 21.332 14.0732 20.3953L10.106 13.9602" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>                            
+                                    <svg class="deleteBot" style="cursor:pointer;" width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.708 6.23975H3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M17.4406 6.23973C16.6556 6.23973 15.9796 5.68473 15.8256 4.91573L15.5826 3.69973C15.4326 3.13873 14.9246 2.75073 14.3456 2.75073H10.1126C9.53358 2.75073 9.02558 3.13873 8.87558 3.69973L8.63258 4.91573C8.47858 5.68473 7.80258 6.23973 7.01758 6.23973" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                    <svg  data-bs-toggle="modal" data-bs-target="#SMAModal" class="" onclick="botHisto(this)" style="cursor:pointer;" width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                         <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                </svg>                                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if bots|count == 0 %}
+                    <div class="col-12">
+                        <div class="card mb-0" style="background: transparent;
+                        width: 100%;
+                        padding: 50px 0;">
+                            <img src="/static/images/robot-blank-sign.png" style="max-width: 232px;margin:25px auto;filter:grayscale(1)">
+                            <span style="display: block;text-align: center;font-size: 20px;font-weight: 600;" class="no-bots-found">No Bots Found</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+    <script src="/static/js/langs/bots.js"></script>
+    <script>
+      document.querySelectorAll(".multi-lang-text-bots").forEach(function(element,i){
+         element.innerHTML = lang_data_bots[localStorage.getItem('lang')][i]
+     })
+
+     selectedExchangeMain.parentElement.classList.add("hidden")
+
+     document.querySelectorAll(".botCard").forEach(e=>{
+        e.querySelectorAll(".multi-lang-text-bots2").forEach(function(element,i){
+            element.innerHTML = lang_data_bots2[localStorage.getItem('lang')][i]
+        })
+     })
+     
+
+     if(document.dir=='rtl' && document.querySelector(".no-bots-found")){
+        document.querySelector(".no-bots-found").innerHTML = 'لا يوجد بوتات حالياً'
+     }
+     
+        document.querySelector('#sidebar').querySelectorAll("a.nav-link")[3].classList.add("active")
+        document.querySelectorAll(".toggleBot").forEach(e=>{
+            e.addEventListener("change",async function(){
+                /*if (e.checked){
+                    e.closest(".card").querySelector(".progress-bar").style.width = "33%"
+                }else{
+                    e.closest(".card").querySelector(".progress-bar").style.width = "0%"
+                }*/
+                let botId = e.closest(".botCard").id
+                let status = e.checked
+                await fetch('/api/v1/toggle_bot',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bot_id: botId,
+                        state: status
+                    })
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(!res.ok){
+                        swal({
+                            title: localStorage.getItem("lang") != 'ar' ? "Error" : "خطأ",
+                            text: res.message,
+                            icon: "error",
+                            button: localStorage.getItem("lang") != 'ar' ? "Ok" : "حسناً",
+                        })
+                    }
+                })
+            })
+        })
+
+        document.querySelectorAll(".deleteBot").forEach(e=>{
+            e.addEventListener("click",function(){
+                swal({
+                    title: localStorage.getItem("lang") != 'ar' ? "Are you sure?" : "هل أنت واثق من حذف البوت",
+                    text: localStorage.getItem("lang") != 'ar' ? "Once delete, you will not be able to recover it!" : "بمجرد الحذف ، لن تتمكن من استعادته!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then(async (willDelete) => {
+                    if (willDelete) {
+                        e.closest(".botCard").parentElement.remove()
+                        await fetch('/api/v1/delete_bot',{
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                bot_id: e.closest(".botCard").id,
+                            })
+                        })
+                    } 
+                });
+            })
+        })
+
+        /************get bot stats*************/
+        let charts = []
+                    
+
+        async function get_bot_stats_id(e){
+            await fetch(`/api/v1/get_bot_stats?bot_id=${e.id}`)
+                .then(res=>res.json())
+                .then(async res=>{
+                    let price_now = res.price_now;
+                    //console.log(res)
+                    if(charts.length>0 || true){
+                        //let chart = charts[i]
+                        //let price_now;
+                        //chart.options.plugins.annotation.annotations[0].value = res.stop_loss_price;
+                        //chart.options.scales.y.min = res.stop_loss_price - 300;
+                        /*await fetch(`/api/v1/live_price?exchange=${res.exchange}&pair=${res.base_currency}&market=${res.quote_currency}&stream=false`)
+                        .then(res=>res.json())
+                        .then(res=>{
+                            price_now = res;
+                        })*/
+                        //chart.options.plugins.annotation.annotations[1].value = price_now;
+                        //if(res.tp_price)
+                        //chart.options.plugins.annotation.annotations[2].value = res.tp_price;
+                        //chart.options.scales.y.max = Math.max(price_now,res.tp_price) + 300;
+                        //chart.update();
+
+                    }
+                    
+                    if(res.buy_price && res.tp_price){
+                        e.querySelector(".smartTradeProgress_bot").innerHTML = ''
+                        /*e.querySelector(".smartTradeProgress_bot").insertAdjacentHTML(`beforeend`,`
+                        <div class="smartTradeProgress">
+                            <div class="smartTradeCurrentContainer" style="position: relative;">
+                                <div class="smartTradeCurrent" style="border-color:#FAA938;position: absolute;left: ${Math.min((res.buy_price - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(Math.max(res.tp_price,price_now)) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now)))),200)}px;bottom: 0;width:0;">
+                                    <span style="${(res.buy_price - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(Math.max(res.tp_price,price_now)) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))))==0?'right: unset;left: -5px;':''}">${lang_data_bots[localStorage.getItem("lang")][13]} ${res.buy_price.toFixed(4)}</span>   
+                                </div>
+                                <div class="smartTradeCurrent" style="border-color:#3a57e8;position: absolute;left: ${Math.min((price_now - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(res.tp_price) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now)))),200)}px;">
+                                    <span style="${(price_now - (res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))) * 200 / (parseFloat(res.tp_price) - parseFloat((res.stop_loss?res.stop_loss_price:Math.min(res.buy_price,price_now))))==0?'right: unset;left: -5px;':''}">${lang_data_bots[localStorage.getItem("lang")][14]} ${price_now.toFixed(4)}</span>  
+                                </div>
+                            </div>
+                            <div class="smartTradeLine">
+                            </div>
+                            <div class="smartTradeTPContainer" style="position: relative;">
+                                <div class="smartTradeTP" style="height:40px;position:absolute;left:0;top:0;border-color: #f23645;width:0;display:${!res.stop_loss?'none':''};"><span>${lang_data_bots[localStorage.getItem("lang")][15]} ${res.stop_loss_price}</span></div>
+                                <div class="smartTradeTP" style="height:40px;border-color: #23635e;">
+                                    <span>${lang_data_bots[localStorage.getItem("lang")][16]} ${res.tp_price.toFixed(4)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `)*/
+
+                    let percentage_progress1 = 0
+                    let percentage_progress2 = 0
+                    if(parseFloat(res.tp_price)>parseFloat(res.buy_price))
+                        percentage_progress1 = parseFloat(res.tp_price) - parseFloat(res.buy_price)
+                    else
+                        percentage_progress1 = parseFloat(res.buy_price) - parseFloat(res.tp_price)
+                    
+                    if(parseFloat(res.buy_price) > parseFloat(res.stop_loss_price))
+                        percentage_progress2 = parseFloat(res.buy_price) - parseFloat(res.stop_loss_price)
+                    else
+                        percentage_progress2 = parseFloat(res.stop_loss_price) - parseFloat(res.buy_price)
+                    let final_progress1 = 0
+                    let final_progress2 = 0
+                    if(percentage_progress1<percentage_progress2){
+                        final_progress1 = percentage_progress1/percentage_progress2
+                        final_progress2 = 1 - final_progress1
+                    }
+                    else{
+                        final_progress2 = percentage_progress2/percentage_progress1
+                        final_progress1 = 1 - final_progress2
+                    }
+
+                    
+
+                    if(final_progress1 < 0.1){
+                        final_progress1 = 0.1
+                        final_progress2 = 0.9
+                    }
+                    else if(final_progress2 < 0.1){
+                        final_progress1 = 0.9
+                        final_progress2 = 0.1
+                    }
+
+                    if(!res.stop_loss && !res.trailing_take_profit){
+                        final_progress1 = 1
+                        final_progress2 = 0
+                    }
+
+                    e.querySelector(".smartTradeProgress_bot").insertAdjacentHTML("beforeend",`
+                        <div class="col" style="display:flex;align-items: center;position:relative;min-width: 240px;direction: rtl;margin-top: 30px;margin-bottom: 30px;padding: 0;">
+                            <span style="position:absolute;left: 0px;margin-top: 30px;" class="${res.stop_loss || res.trailing_take_profit ?'':'hidden'}">${res.trailing_take_profit ? (localStorage.getItem("lang")=='ar'?'ربح مخادع':'Trailing TP') : (localStorage.getItem("lang")=='ar'?'وقف الخسارة':'Stop Loss') }</span>
+                            <span style="position:absolute;right: 0px;margin-top: 30px;" class="">${localStorage.getItem("lang")=='ar'?'الربح':'TP'}</span>
+                            <span style="position:absolute;left: 0px;margin-bottom: 30px;" class="${res.stop_loss || res.trailing_take_profit?'':'hidden'}">${res.stop_loss_price.toFixed(5)}</span>
+                            <span style="position:absolute;right: 0px;margin-bottom: 30px;" class="">${(res.tp_price.toFixed(4))}</span>
+                            <div class="progress bg-soft-success shadow-none w-100" style="height: 6px;display:flex;border-radius: 0;flex-direction: row-reverse;flex:${final_progress1}">
+                                <div class="progress-bar bg-success" data-toggle="progress-bar" role="progressbar" aria-valuenow="${(res.strategy.toLowerCase()=='long'?(price_now - res.buy_price):(res.buy_price - price_now))*100/Math.abs(res.buy_price - (res.tp_price))}" aria-valuemin="0" aria-valuemax="100" style="width: ${(res.strategy.toLowerCase()=='long'?(price_now - res.buy_price):(res.buy_price - price_now))*100/Math.abs(res.buy_price - (res.tp_price))}%; transition: width 2s ease 0s;"></div>
+                            </div>
+                            <div class="progress bg-soft-danger shadow-none w-100" style="height: 6px;display:flex;border-radius: 0;flex:${final_progress2}">
+                                <div class="progress-bar bg-danger" data-toggle="progress-bar" role="progressbar" aria-valuenow="${(res.strategy.toLowerCase()=='long'?(res.buy_price - price_now) : (price_now - res.buy_price))*100/Math.abs(res.buy_price - res.stop_loss_price)}" aria-valuemin="0" aria-valuemax="100" style="width: ${(res.strategy.toLowerCase()=='long'?(res.buy_price - price_now) : (price_now - res.buy_price))*100/Math.abs(res.buy_price - res.stop_loss_price)}%"></div>
+                            </div>
+                            <!--span style="position:absolute;top:-30px;left:${(res.strategy.toLowerCase()=='long'? price_now >= res.tp_price : price_now < res.tp_price)?(100):((Math.min(100,Math.max((res.strategy.toLowerCase()!='long'?(price_now - res.tp_price):(res.tp_price - price_now))*100/Math.abs(res.tp_price - ((res.stop_loss||res.trailing_take_profit)?res.stop_loss_price:res.buy_price)),0))))}%;display:flex;gap:2px;align-items:flex-start;">
+                                <span style="margin-top:-20px;margin-left:0px;">${price_now}</span>
+                                <span style="width:0;height:30px;border-left:1px solid #ffffff45;"></span>
+                            </span-->
+                            <!--span style="position:absolute;top:-30px;left:${(res.strategy.toLowerCase()=='long'? price_now >= res.tp_price : price_now <= res.tp_price)?(100):((price_now < res.buy_price)?((100 - ((res.strategy.toLowerCase()=='long'?(res.buy_price - price_now) : (price_now - res.buy_price))*100/Math.abs(res.buy_price - res.stop_loss_price))*final_progress2)-(final_progress1*100)):(((res.strategy.toLowerCase()=='long'?(price_now - res.buy_price):(res.buy_price - price_now))*100/Math.abs(res.buy_price - (res.tp_price)))*final_progress1+(final_progress2*100)))}%;display:flex;gap:2px;align-items:flex-start;">
+                                <span style="margin-top:-20px;margin-left:0px;position: absolute;${((res.strategy.toLowerCase()=='long'? price_now >= res.tp_price : price_now <= res.tp_price)?(100):((price_now < res.buy_price)?((100 - ((res.strategy.toLowerCase()=='long'?(res.buy_price - price_now) : (price_now - res.buy_price))*100/Math.abs(res.buy_price - res.stop_loss_price))*final_progress2)-(final_progress1*100)):(((res.strategy.toLowerCase()=='long'?(price_now - res.buy_price):(res.buy_price - price_now))*100/Math.abs(res.buy_price - (res.tp_price)))*final_progress1+(final_progress2*100))))<50?'left: 0;':'right:0;'}">${price_now}</span>
+                                <span style="width:0;height:30px;border-left:1px solid #ffffff45;"></span>
+                            </span-->
+                            <span style="position:absolute;top:-30px;left:${calculateProgressBarPosition(res,price_now,final_progress1,final_progress2)}%;display:flex;gap:2px;align-items:flex-start;">
+                                <span style="margin-top:-20px;margin-left:0px;position: absolute;${calculateProgressBarPosition(res,price_now,final_progress1,final_progress2)<50?'left: 0;':'right:0;'}">${price_now}</span>
+                                <span style="width:0;height:30px;border-left:1px solid #ffffff45;"></span>
+                            </span>
+                            
+                        </div>
+                    `)
+                    }
+                    else{
+                        if(localStorage.getItem("lang") == 'ar')
+                        e.querySelector(".smartTradeProgress_bot").innerHTML = '<h5>'+'لم تبدأ الصفقة بعد'+'</h5>'
+                        else
+                        e.querySelector(".smartTradeProgress_bot").innerHTML = '<h5>'+'Trade not started yet'+'</h5>'
+                    }
+                    
+                    e.querySelector(".bot_units").innerHTML = (res.amount - res.units).toFixed(4)
+                    e.querySelector(".bot_buy_price").innerHTML = res.buy_price.toFixed(4)
+                    if(res.conds.length > 0){
+                        e.querySelector(".bots_indicators").innerHTML = ''
+                        for(let cond of res.conds){
+                            e.querySelector(".bots_indicators").insertAdjacentHTML('beforeend',`
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important">
+                                    <span>
+                                        ${cond.indicator}
+                                    </span>
+                                    <span>${parseFloat(cond.value) ? parseFloat(cond.value).toFixed(2) : cond.value || "-"}</span>
+                                </li>
+                            `)
+                        }
+                    }else{
+                        e.querySelector(".bots_indicators").innerHTML = localStorage.getItem("lang") == 'ar' ? `<li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important;justify-content:center;">لا يوجد مؤشرات لبدء الصفقة</li>` : `<li class="list-group-item" style="text-align:center;border-bottom: 2px solid #ffffff09!important">No indicators to start the deal</li>`
+                    }
+
+                    if(res.safety_orders.length > 0){
+                        e.querySelector(".bots_safetyOrders").innerHTML = ''
+                        for(let order of res.safety_orders){
+                            e.querySelector(".bots_safetyOrders").insertAdjacentHTML('beforeend',`
+                                <li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important">
+                                    <span>
+                                        ${(order.isOpened && order.isClosed == false) ? (localStorage.getItem("lang") == 'ar' ? 'يعمل' : 'Running') : (order.isClosed ? (localStorage.getItem("lang") == 'ar' ? 'مغلق' : 'Closed') : (localStorage.getItem("lang") == 'ar' ? 'لم يبدأ' : 'Not started'))}
+                                    </span>
+                                    <span>${parseFloat(order.price) ? parseFloat(order.price).toFixed(4) : order.price || "-"}</span>
+                                    <span>${parseFloat(order.amount) ? parseFloat(order.amount).toFixed(6) : order.amount || "-"}</span>
+                                </li>
+                            `)
+                        }
+                    }else{
+                        e.querySelector(".bots_safetyOrders").innerHTML = localStorage.getItem("lang") == 'ar' ? `<li class="list-group-item" style="border-bottom: 2px solid #ffffff09!important;justify-content:center;">لا يوجد مؤشرات للأوامر الآمنة</li>` : `<li class="list-group-item" style="text-align:center;border-bottom: 2px solid #ffffff09!important">No indicators for safety orders</li>`
+                    }
+                    
+                    console.log(res)
+                    
+                    e.querySelector(".total_profit").innerHTML = '$'+' '+res.total_profit.toFixed(4)
+                    if(res.total_profit>0){
+                        e.querySelector(".total_profit").classList = 'total_profit text-success'
+                    }
+                    else if(res.total_profit<0){
+                        e.querySelector(".total_profit").classList = 'total_profit text-danger'
+                    }
+                    e.querySelector(".sell_price").innerHTML = res.sell_price.toFixed(4)
+
+                    if(res.strategy.toLowerCase() == 'long'){
+                        e.querySelector(".bot_buy_price_text").textContent = localStorage.getItem("lang") == 'ar' ? 'سعر الشراء' : 'Buy Price'
+                        e.querySelector(".bot_sell_price_text").textContent = localStorage.getItem("lang") == 'ar' ? 'سعر البيع' : 'Sell Price'
+                    }
+                    else{
+                        e.querySelector(".bot_buy_price_text").textContent = localStorage.getItem("lang") == 'ar' ? 'سعر البيع' : 'Sell Price'
+                        e.querySelector(".bot_sell_price_text").textContent = localStorage.getItem("lang") == 'ar' ? 'سعر الشراء' : 'Buy Price'
+                    }
+                    if(res.strategy.toLowerCase() == 'long'){
+                        e.querySelector(".bot_highest_price_text").textContent = localStorage.getItem("lang") == 'ar' ? 'أعلى سعر' : 'Highest Price'
+                    }
+                    else{
+                        e.querySelector(".bot_highest_price_text").textContent = localStorage.getItem("lang") == 'ar' ? 'أقل سعر' : 'Lowest Price'
+                    }
+                    e.querySelector(".highest_price").textContent = res.last_price.toFixed(4)
+                    if(res.last_price <= 0){
+                        e.querySelector(".highest_price").closest(".list-group-item").classList.add("hidden")
+                    }
+                    else{
+                        e.querySelector(".highest_price").closest(".list-group-item").classList.remove("hidden")
+                    }
+                    e.querySelector(".bot_total_trades").innerHTML = res.total_trades
+                    e.querySelector(".progress-bar").style.width = `${(res.amount - res.units)/res.amount}%`
+                    if(res.isActive){
+                        e.querySelector(".toggleBot").checked = true
+                        
+                    }else{
+                        e.querySelector(".toggleBot").checked = false
+                        //e.querySelector(".progress-bar").style.width = `0%`
+                    }
+                    if(res.units <= 0 && res.isActive == false){
+                        e.querySelector(".toggle_bot").classList.add("hidden")
+                        e.querySelector(".run_bot").classList.remove("hidden")
+                    }
+                    else{
+                        e.querySelector(".toggle_bot").classList.remove("hidden")
+                        e.querySelector(".run_bot").classList.add("hidden")
+                    }
+                })
+                .finally(()=>{
+                    get_bot_stats_id(e)
+                })
+        }
+
+        function get_bot_stats(){
+            document.querySelectorAll(".botCard").forEach(async (e,i)=>{
+                get_bot_stats_id(e)
+            })
+        }
+
+
+
+        get_bot_stats()
+
+        // Create the chart
+        function createCanvasChart(canvas){
+            let chart = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: ['Time'],
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                annotation: {
+                    annotations: [
+                        {
+                            type: 'line',
+                            mode: 'horizontal',
+                            scaleID: 'y',
+                            value: 200,
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                            backgroundColor: 'red',
+                            content: 'Value: 200',
+                            enabled: true
+                            }
+                        },
+                        {
+                            type: 'line',
+                            mode: 'horizontal',
+                            scaleID: 'y',
+                            value: 100,
+                            borderColor: 'blue',
+                            borderWidth: 2,
+                            label: {
+                            backgroundColor: 'red',
+                            content: 'Value: 100',
+                            enabled: true
+                            }
+                        },
+                        {
+                            type: 'line',
+                            mode: 'horizontal',
+                            scaleID: 'y',
+                            value: 150,
+                            borderColor: 'green',
+                            borderWidth: 2,
+                            label: {
+                            backgroundColor: 'red',
+                            content: 'Value: 100',
+                            enabled: true
+                            }
+                        }
+                    ]
+                }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Price',
+                        },
+                        ticks: {
+                        // forces step size to be 50 units
+                            stepSize: 50
+                        }
+                    }
+                }
+            }
+            });
+            return chart
+        }
+
+
+        document.querySelectorAll(".readDate22").forEach(e=>{
+            e.innerHTML = Intl.DateTimeFormat('en-us',{
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                        hour12: false,
+                    }).format(new Date(e.innerHTML))
+        })
+
+        async function edit_bot(self){
+            let oldHTML = self.innerHTML
+            self.setAttribute("disabled","disabled")
+            self.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+            await fetch(`/api/v1/get_bot_stats?bot_id=${self.closest(".botCard").id}`)
+            .then(res=>res.json())
+            .then(res=>{
+                //self.removeAttribute("disabled")
+                //self.innerHTML = oldHTML
+                res.bot_id = self.closest(".botCard").id
+                localStorage.setItem("bot_config",JSON.stringify(res))
+                window.location.href = `/bot_create?config=${self.closest('.botCard').id}`
+                stop_loss_bool.checked = res.stop_loss_bool
+                if(stop_loss_bool.checked){
+                    stop_loss_price.closest(".card").querySelector(".card-body").classList.remove("hidden")
+                }
+                else{
+                    stop_loss_price.closest(".card").querySelector(".card-body").classList.add("hidden")
+                }
+            })
+        }
+
+        async function run_bot(self){
+            let oldHTML = self.innerHTML
+            self.setAttribute("disabled","disabled")
+            self.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+            await fetch(`/api/v1/run_bot?bot_id=${self.closest(".botCard").id}`)
+            .then(res=>res.json())
+            .then(res=>{
+                if(res.ok){
+                    swal({
+                        title: localStorage.getItem("lang") != 'ar' ? "Success" : "تم",
+                        text: res.message,
+                        icon: "success",
+                        button: localStorage.getItem("lang") != 'ar' ? "Ok" : "حسناً",
+                    })
+                }
+                else{
+                    swal({
+                        title: localStorage.getItem("lang") != 'ar' ? "Error" : "خطأ",
+                        text: res.message,
+                        icon: "error",
+                        button: localStorage.getItem("lang") != 'ar' ? "Ok" : "حسناً",
+                    })
+                }
+            })
+            .finally(res=>{
+                self.innerHTML = oldHTML
+                self.removeAttribute("disabled")
+            })
+        }
+
+        let balanceHistory = JSON.parse('{{ bots_history|tojson }}'.slice(1,-1));
+
+         const timestamps = balanceHistory.map(entry => Intl.DateTimeFormat('en-us',{
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(new Date(entry.timestamp)));
+
+
+         if (timestamps.length > 30){
+            timestamps.splice(0,timestamps.length-30)
+            balanceHistory.splice(0,balanceHistory.length-30)    
+         }
+
+         const data_chart = balanceHistory.map(entry => entry.profit);
+
+        const balanceChart_changes = new Chart(botchart.getContext('2d'), {        
+            type: 'bar',
+            data: {
+                labels: timestamps,
+                datasets: [
+                    {
+                    label: '',
+                    data: data_chart,
+                    borderColor: '#FF971D',
+                    backgroundColor: '#FF971D',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                legend: {
+                    position: 'top',
+                    display: false,
+                },
+                title: {
+                    display: false,
+                    text: 'Chart.js Bar Chart'
+                }
+                }
+            }
+         })
+
+         const balanceChart_changes2 = new Chart(botchart2.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [
+                    {
+                    label: '',
+                    data: data_chart,
+                    borderColor: '#FF971D',
+                    backgroundColor: '#FF971D',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                    position: 'top',
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Chart.js Line Chart',
+                    display: false,
+                }
+                }
+            },        
+         })
+
+         search_bots.addEventListener("input",function(){
+            //search in categoryCard elements titles
+            var input = this.value.toLowerCase();
+            var categoryCards = document.querySelectorAll(".botCard");
+            categoryCards.forEach(function(card){
+                var title = card.querySelector(".card-title").innerText.toLowerCase();
+                var exchange = card.querySelector(".card-title").getAttribute("exchange").toLowerCase();
+                var base = card.querySelector(".card-title").getAttribute("base").toLowerCase();
+                var quote = card.querySelector(".card-title").getAttribute("quote").toLowerCase();
+                if(title.includes(input) || exchange.includes(input) || base.includes(input) || quote.includes(input)){
+                    card.classList.remove("hidden")
+                }else{
+                    card.classList.add("hidden")
+                }
+            })
+        })
+
+        document.querySelectorAll(".bot_info_btns").forEach(e=>{
+            e.addEventListener("change",function(){
+                if(e.id == "bot_info_btns1"){
+                    e.closest(".botCard").querySelector(".bots").classList.remove("hidden")
+                    e.closest(".botCard").querySelector(".bots_safetyOrders").classList.add("hidden")
+                    e.closest(".botCard").querySelector(".bots_indicators").classList.add("hidden")
+                }
+                else if(e.id == "bot_info_btns2"){
+                    e.closest(".botCard").querySelector(".bots").classList.add("hidden")
+                    e.closest(".botCard").querySelector(".bots_safetyOrders").classList.add("hidden")
+                    e.closest(".botCard").querySelector(".bots_indicators").classList.remove("hidden")
+                }
+                else{
+                    e.closest(".botCard").querySelector(".bots").classList.add("hidden")
+                    e.closest(".botCard").querySelector(".bots_indicators").classList.add("hidden")
+                    e.closest(".botCard").querySelector(".bots_safetyOrders").classList.remove("hidden")
+                }
+            })
+        })
+
+        function shareBot(id){
+            url = window.location.href.replace("bots","bot_create")+"?botCopy="+id
+            swal({
+                title: localStorage.getItem("lang") != 'ar' ? "Share Bot" : "مشاركة البوت",
+                text: url,
+                icon: "success",
+                button: localStorage.getItem("lang") != 'ar' ? "Copy" : "نسخ",
+            }).then(()=>{
+                navigator.clipboard.writeText(url)
+            })
+        }
+
+        function calculateProgressBarPosition(e,last_price,final_progress1,final_progress2) {
+        
+        if (e.strategy.toLowerCase() == 'long'){
+            if(last_price >= e.tp_price){
+                return 100
+            }
+            else if(last_price <= e.buy_price){
+                return Math.max(0,((100 - ((e.buy_price - last_price)*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)))
+            }
+            else{
+                return Math.max(0,(((last_price - e.buy_price)*100/Math.abs(e.buy_price - (e.tp_price)))*final_progress1+(final_progress2*100)))
+            }
+        }
+        else{
+            if(last_price <= e.tp_price){
+                return Math.max(0,(100))
+            }
+            else if(last_price >= e.buy_price){
+                return Math.max(0,((100 - ((last_price - e.buy_price)*100/Math.abs(e.buy_price - e.stop_loss_price))*final_progress2)-(final_progress1*100)))
+            }
+            else{
+                return Math.max(0,(((e.buy_price - last_price)*100/Math.abs(e.buy_price - (e.tp_price)))*final_progress1+(final_progress2*100)))
+            }
+        }
+    }
+
+    async function botHisto(data){
+        bot_transactions_list.innerHTML = ""
+        trans_skel.classList.remove("hidden")
+        await fetch(`/api/v1/get_bot_stats?bot_id=${data.closest(".botCard").id}`)
+        .then(res=>res.json())
+        .then(res=>{
+            return res.transactions.reverse()
+        })
+        .then(data=>{
+            trans_skel.classList.add("hidden")
+            console.log(data)
+            
+            for(let x of data)
+            bot_transactions_list.insertAdjacentHTML('beforeend',`
+            <li>
+                <div class="${x.status ? 'alert alert-success' : 'alert alert-danger'} d-flex justify-content-between align-items-center rounded-pill" style="    flex-wrap: wrap;padding: 14px;border-radius: 4px !important">
+                    <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${x.symbol.split("/")[0]}--big.svg" class="img-fluid avatar avatar-40 avatar-rounded" alt="img6">
+                    <img src="https://s3-symbol-logo.tradingview.com/crypto/XTVC${x.symbol.split("/")[1]}--big.svg" class="img-fluid avatar avatar-40 avatar-rounded" alt="img6">
+                    <div class="ms-3 flex-grow-1">
+                        <h6 class="mb-2">${x.symbol}</h6>
+                        <p class="mb-0">${x.amount} ${x.symbol.split("/")[0]}</p>
+                        <p class="mb-0 ${x.type ? '':'hidden'}">${x.value} ${x.symbol.split("/")[1]}</p>
+                    </div>
+                    <div class="" style="width:100%;">
+                        <span class="${x.type == 'buy' ? 'text-success' : 'text-danger'}">${x.type == 'sell' ? (localStorage.getItem("lang")=='ar' ? 'بيع' : 'sell') : (localStorage.getItem("lang")=='ar' ? 'شراء' : 'buy')}</span>
+                        <p class="mb-0 text-white">
+                            ${x.status ? '' : `
+                                <details>
+                                    <summary>${localStorage.getItem("lang") == 'ar' ? 'الخطأ' : 'Error'}</summary>
+                                    <p style="overflow:scroll;">${x.err_msg}</p>
+                                </details>
+                            `}
+                            
+                        </p>
+                    </div>
+                    <div class="" style="width:100%;">
+                        <span>${formatUTCDateToLocal(x.created_at)}</span>
+                    </div>
+                </div>
+            </li>
+            
+            `)
+        })
+        
+    }
+
+    function formatUTCDateToLocal(dateString) {
+        const date = new Date(dateString);
+        const options = { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+        const localDate = date.toLocaleString('en-US', options);
+        return localDate;
+    }
+
+
+        
+    </script>
+</html>
+{% endblock %}

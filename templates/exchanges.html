@@ -1,0 +1,222 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch custom-scroll">
+                   <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                      <div class="caption">
+                         <h4 class="font-weight-bold mb-2">Supported exchanges</h4>
+                      </div>
+                   </div>
+                   <div class="card-body">
+                      <div class="table-responsive">
+                         <table class="table data-table mb-0" id="exchangesTable">
+                            <thead>
+                               <tr>
+                                  <th scope="col">Exchange</th>
+                                  <th scope="col" style="text-align: end;">Connect</th>
+                               </tr>
+                            </thead>
+                               <tbody>
+                               </tbody>
+                         </table>
+                      </div>
+                   </div>
+                </div>
+             </div>
+        </div>
+        
+        <!-- Pop-up div for success message -->
+        <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                Your API credentials have been saved successfully.
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+      </div>  
+    </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+    <!-- JavaScript code to handle Save Changes button click -->
+    <script>
+        /*$(document).ready(function() {
+        $("#saveChangesBtn").click(function() {
+            // Perform API key and API secret validation here
+            
+            // Show success message
+            $("#successModal").modal("show");
+        });
+        });*/
+        document.querySelector('#sidebar').querySelectorAll("a.nav-link")[1].classList.add("active")
+        connected_exchanges = []
+        '{% for exchange in exchanges %}'
+        connected_exchanges.push('{{ exchange.name }}')
+        
+        '{% endfor %}'
+        exchanges = ['ace', 'alpaca', 'ascendex', 'bequant', 'bigone', 'binance', 'binancecoinm', 'binanceus', 'binanceusdm', 'bit2c', 'bitbank', 'bitbay', 'bitbns', 'bitcoincom', 'bitfinex', 'bitfinex2', 'bitflyer', 'bitforex', 'bitget', 'bithumb', 'bitmart', 'bitmex', 'bitopro', 'bitpanda', 'bitrue', 'bitso', 'bitstamp', 'bitstamp1', 'bittrex', 'bitvavo', 'bkex', 'bl3p', 'blockchaincom', 'btcalpha', 'btcbox', 'btcex', 'btcmarkets', 'btctradeua', 'btcturk', 'bybit', 'cex', 'coinbase', 'coinbaseprime', 'coinbasepro', 'coincheck', 'coinex', 'coinfalcon', 'coinmate', 'coinone', 'coinsph', 'coinspot', 'cryptocom', 'currencycom', 'delta', 'deribit', 'digifinex', 'exmo', 'fmfwio', 'gate', 'gateio', 'gemini', 'hitbtc', 'hitbtc3', 'hollaex', 'huobi', 'huobijp', 'huobipro', 'idex', 'independentreserve', 'indodax', 'kraken', 'krakenfutures', 'kucoin', 'kucoinfutures', 'kuna', 'latoken', 'lbank', 'lbank2', 'luno', 'lykke', 'mercado', 'mexc', 'mexc3', 'ndax', 'novadax', 'oceanex', 'okcoin', 'okex', 'okex5', 'okx', 'paymium', 'phemex', 'poloniex', 'poloniexfutures', 'probit', 'tidex', 'timex', 'tokocrypto', 'upbit', 'wavesexchange', 'wazirx', 'whitebit', 'woo', 'xt', 'yobit', 'zaif', 'zonda']
+        exchanges = ['okex','binance','bybit','kucoin','coinbase','cryptocom','bittrex']
+        exchanges.forEach((e,i)=>{
+            exchangesTable.querySelector("tbody").insertAdjacentHTML('beforeend',`
+                <tr class="white-space-no-wrap">
+                    <td>
+                        <img src="/static/images/${e}.svg" class="img-fluid avatar avatar-30 avatar-rounded" alt="img23" />
+                        ${e}
+                    </td>
+                    <td style="text-align: end;">
+                    <button type="button" style="padding-left: 10px;padding-right: 10px;" class="btn ${!connected_exchanges.includes(e)?"btn-primary":"btn-secondary"} sc-caiLqq hOeLnE" data-toggle="modal"  data-target="${connected_exchanges.includes(e)?'':'#myModal'+i}">
+                        <svg width="16px" height="16px" class="svg-icon" viewBox="0 0 16 16" fill="none">
+                            <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M2 0.25C1.03379 0.25 0.25 1.03291 0.25 1.9997V4.5C0.25 4.91421 0.585786 5.25 1 5.25C1.41421 5.25 1.75 4.91421 1.75 4.5V1.9997C1.75 1.86192 1.86164 1.75 2 1.75H14C14.1381 1.75 14.25 1.86193 14.25 2V14C14.25 14.1381 14.1381 14.25 14 14.25H2C1.86164 14.25 1.75 14.1381 1.75 14.0003V11.5C1.75 11.0858 1.41421 10.75 1 10.75C0.585786 10.75 0.25 11.0858 0.25 11.5V14.0003C0.25 14.9671 1.03379 15.75 2 15.75H14C14.9665 15.75 15.75 14.9665 15.75 14V2C15.75 1.0335 14.9665 0.25 14 0.25H2ZM6.53033 4.46967C6.23744 4.17678 5.76256 4.17678 5.46967 4.46967C5.17678 4.76256 5.17678 5.23744 5.46967 5.53033L7.18934 7.25H1C0.585786 7.25 0.25 7.58579 0.25 8C0.25 8.41421 0.585786 8.75 1 8.75H7.18934L5.46967 10.4697C5.17678 10.7626 5.17678 11.2374 5.46967 11.5303C5.76256 11.8232 6.23744 11.8232 6.53033 11.5303L9.53033 8.53033L10.0607 8L9.53033 7.46967L6.53033 4.46967Z"
+                                fill="currentColor"
+                            ></path>
+                        </svg>
+                        <span id="${connected_exchanges.includes(e)?'disconnect'+i:''}">${connected_exchanges.includes(e)?"Disconnect":"Connect"}</span>
+                    </button>
+                    </td>
+                </tr>
+            `)
+            exchangesTable.insertAdjacentHTML('afterend',`
+                <!-- Pop-up div with input fields -->
+                <div class="modal fade" id="myModal${i}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="myModalLabel">API Credentials</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="{{ url_for('connect_exchange') }}">
+                                    <div class="form-group">
+                                        <label for="apiKey">API Key</label>
+                                        <input type="text" class="form-control" id="apiKey" name="api_key" placeholder="Enter API Key">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="apiSecret">API Secret</label>
+                                        <input type="text" class="form-control" id="apiSecret" name="api_secret" placeholder="Enter API Secret">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="text" class="form-control" id="password" name="password" placeholder="Enter Password if needed">
+                                    </div>
+                                    <div class="form-check form-check-block ${(e=='binance' || e=='okex' || true)?'':'hidden'}" id="demo_exchange">
+                                        <input type="checkbox" class="form-check-input" name="demo" id="customCheck6">
+                                        <label class="form-check-label pl-2" for="customCheck6">Demo</label>
+                                    </div>
+                                    <input type="hidden" name="exchange_name" value="${e}">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `)
+            document.querySelector(`#myModal${i}`).addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting normally
+                const form = event.target;
+                const data = {
+                    api_key: form.elements.api_key.value,
+                    api_secret: form.elements.api_secret.value,
+                    exchange_name: form.elements.exchange_name.value,
+                    password: form.elements.password.value,
+                    demo:form.elements.demo.checked==true?"true":"false",
+                };
+                console.log(data)
+                fetch('/api/v1/connect/', {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok)
+                    // Show a success message with SweetAlert
+                    swal('Success', data.message, 'success')
+                    .then(() => {
+                        localStorage.setItem("fav_exchange",form.elements.exchange_name.value)
+                        
+                        location.href = "/dashboard/";
+                    });
+                    else
+                    swal('Success', data.message, 'error')
+                    .then(() => {
+                        location.reload();
+                    });
+                })
+                .catch(error => {
+                    // Show an error message with SweetAlert
+                    swal('Error', error.message, 'error');
+                });
+            });
+
+            document.querySelector(`#disconnect${i}`)?.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the form from submitting normally
+                const form = this;
+                console.log(form.parentElement.parentElement.parentElement.querySelector("td").textContent.replaceAll(" ","").replaceAll("\n",""))
+                const data = {
+                    exchange_name: form.parentElement.parentElement.parentElement.querySelector("td").textContent.replaceAll(" ","").replaceAll("\n",""),
+                };
+                fetch('/api/v1/disconnect/', {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show a success message with SweetAlert
+                    swal('Success', data.message, 'success')
+                    .then(() => {
+                        location.reload();
+                    });
+                    
+                })
+                .catch(error => {
+                    // Show an error message with SweetAlert
+                    swal('Error', error.message, 'error');
+                });
+            });
+        })
+
+        document.querySelectorAll(".replaceExchange").forEach(e=>{
+            e.href = e.href.replace("okex",localStorage.getItem("fav_exchange"))
+        })
+        
+        
+    </script>
+  </body>
+</html>

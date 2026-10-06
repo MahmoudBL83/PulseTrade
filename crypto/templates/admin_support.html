@@ -1,0 +1,284 @@
+{% include 'base_admin.html' %}
+      <div class="container-fluid content-inner pb-0">
+         <div class="row">
+         <div class="col-lg-4">
+               <div class="card">
+               <div class="card-header">
+                  <div class="header-title" style="">
+                     <h4 class="card-title">Tickets</h4>
+                  </div>
+               </div>
+               <div class="card-body" id="tickets_list" style="max-height: 310px;overflow: hidden scroll;;margin-top: 14px;">
+                  <div class="btn-group btn-check-group takeProfitGroup" ticket_type="all" role="group" aria-label="Basic checkbox toggle button group">
+                     <input type="checkbox" class="btn-check" id="">
+                     <label class="btn btn-sm btn-secondary active rounded-start" for="">All</label>
+         
+                     <input type="checkbox" class="btn-check" id="">
+                     <label class="btn btn-sm btn-secondary " for="">New</label>
+                  </div>
+                  <div class="card-skeleton" style="height: 132px;">
+                     <div class="animated-background"> 
+                     <div class="skel-mask-container">
+                        <div class="skel-mask skel-mask-1"></div>
+                        <div class="skel-mask skel-mask-2"></div>
+                        <div class="skel-mask skel-mask-3"></div>
+                        <div class="skel-mask skel-mask-4"></div>
+                        <div class="skel-mask skel-mask-5"></div>
+                        <div class="skel-mask skel-mask-6"></div>
+                     </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="col-lg-8 hidden" id="ticket_details_chat">
+            <div class="profile-content tab-content">
+         <div id="profile-feed" class="tab-pane fade active show">
+            <div class="card" id="ticketMessages">
+               <div class="card-header d-flex align-items-center justify-content-between pb-4">
+                  <div class="header-title">
+                     <div class="d-flex flex-wrap" style="align-items: center;">
+                        <div class="media-support-user-img me-3">
+                           <img class="rounded-pill img-fluid avatar-60 bg-soft-danger" id="ticketMessages_img" src="" alt="">
+                        </div>
+                        <div class="media-support-info mt-2">
+                           <h5 class="mb-0" id="ticketMessages_username"></h5>  
+                        </div>
+                     </div>
+                  </div>                    
+               </div>
+               <div class="card-body p-0">
+                  <div class="comment-area p-3">
+                     <p id="ticketMessages_subject"></p>
+                     <hr>
+                     <ul class="list-inline p-0 m-0" id="ticketMessages_list" style="max-height: calc(100vh - 430px);
+                     overflow-y: scroll;
+                     overflow-x: hidden;"></ul>
+                     <form id='sendMessageForm' class="comment-text d-flex align-items-center mt-3">
+                        <input type="text" class="form-control rounded" id='message_content' name="content" placeholder="...">
+                     </form>
+                  </div>                              
+               </div>
+            </div>                             
+               </div>
+            </div>
+         </div>
+      </div>
+    </div>
+      </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+   
+    <script>
+      setInterval(()=>{
+         getTickets()
+      }, 2000)
+      localStorage.setItem("ticket_type", "all")
+      async function getTickets() {
+        await fetch('{{url_for("admin_support_tickets_get")}}')
+        .then((response) => response.json())
+        .then((tickets)=>{
+         document.querySelector(".card-skeleton")?.classList.add("hidden")
+         /*document.querySelectorAll(".intercom-1x83fso").forEach((ticket)=>{
+            ticket.remove()
+         })*/
+         document.querySelectorAll(".intercom-1x83fso").forEach((ticket)=>{
+            ticket.classList.remove("hidden")
+         })
+         if(localStorage.getItem("ticket_type")=="new"){
+            document.querySelectorAll(".intercom-1x83fso").forEach((ticket)=>{
+               if(ticket.classList.contains("alert-primary")){
+                  ticket.classList.add("hidden")
+               }
+            })
+         }
+         else if(localStorage.getItem("ticket_type")=="all"){
+            document.querySelectorAll(".intercom-1x83fso").forEach((ticket)=>{
+               ticket.classList.remove("hidden")
+            })
+         }
+         for(let ticket of tickets){
+               if([...document.querySelectorAll(".intercom-1x83fso")].every(e=>e.getAttribute("ticket_id")!=ticket.id)&&(localStorage.getItem("ticket_type")=="all" || (localStorage.getItem("ticket_type")=="new" && ticket.messages.at(-1).is_admin == false)))
+               tickets_list.insertAdjacentHTML('beforeend', `
+                     <div ticket_id=${ticket.id} user_id=${ticket.user_id} data-testid="conversation-list-item" class="ez972386 intercom-1x83fso e13m0kgk1 alert alert-${ticket.messages.at(-1).is_admin?'primary':'success'} d-flex align-items-center" role="button" tabindex="0" onclick='openTicketMessages(this,${ticket.id})' style="border-radius: 5px;">
+                        <div class="intercom-fup3w2 e13m0kgk2">
+                              <div size="36" shape="circle" class="intercom-kokwv7 evxuo3e0">
+                                 <img id="ticket_user_img" src="${ticket.user.img}" alt="${ticket.user.firstName} profile">
+                              </div>
+                        </div>
+                        <div class="intercom-1ya2i8a e13m0kgk0">
+                              <div class="intercom-1gb1rig ez972381">
+                                 <div class="intercom-dv934d ez972380">
+                                    <span class="intercom-13impe" class="ticket_subject">${ticket.subject}</span>
+                                 </div>
+                                 <div class="intercom-t6mohh ez972384" style="flex-direction:column;">
+                                    <div class="intercom-sv4aw ez972385" class="ticket_username">${ticket.user.firstName} ${ticket.user.lastName}</div>
+                                    <div class="readDate">${Intl.DateTimeFormat('en-us',{
+                     year: "numeric",
+                     month: "numeric",
+                     day: "numeric",
+                     hour: "numeric",
+                     minute: "numeric",
+                     second: "numeric",
+                     hour12: false,
+                     //timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                  }).format(new Date(ticket.updated_at?ticket.updated_at:ticket.created_at))}</div>
+                                 </div>
+                              </div>
+                        </div>
+                        <div class="intercom-t3a5jf e13m0kgk5">
+                              <i color="linkColor" size="16" class="intercom-1c2cktu e1fransm0">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M5.42773 4.70898C5.46387 4.85254 5.53809 4.98828 5.65039 5.10059L8.54932 8L5.64893 10.9004C5.31689 11.2324 5.31689 11.7705 5.64893 12.1025C5.98096 12.4336 6.51904 12.4336 6.85107 12.1025L10.3516 8.60059C10.5591 8.39355 10.6367 8.10449 10.585 7.83691C10.5537 7.67578 10.4761 7.52246 10.3516 7.39844L6.85254 3.89941C6.52051 3.56738 5.98242 3.56738 5.65039 3.89941C5.43066 4.11816 5.35645 4.42871 5.42773 4.70898Z" fill="#ffffff"></path>
+                                 </svg>
+                              </i>
+                        </div>
+                     </div>
+                  `
+               );
+               
+               if(![...document.querySelectorAll(".intercom-1x83fso")].every(e=>e.getAttribute("ticket_id")!=ticket.id)){
+                  document.querySelectorAll(".intercom-1x83fso").forEach((ticket2)=>{
+                     if(ticket2.getAttribute("ticket_id")==ticket.id){
+                        /*ticket.querySelector(".ticket_subject").innerHTML = ticket.subject
+                        ticket.querySelector(".ticket_username").innerHTML = ticket.user.firstName+" "+ticket.user.lastName
+                        ticket.querySelector(".readDate").innerHTML = readDate(ticket.updated_at?ticket.updated_at:ticket.created_at)
+                        ticket.querySelector("#ticket_user_img").src = ticket.user.img*/
+                        ticket2.classList.remove("alert-primary")
+                        ticket2.classList.remove("alert-success")
+                        ticket2.classList.add(ticket.messages.at(-1).is_admin?'alert-primary':'alert-success')
+                     }
+                  })
+               }
+               ticketMessages_list.scrollTo(0, ticketMessages_list.scrollHeight);
+            }
+            
+            
+        })
+      }
+
+      let ticketBoxInterval = null
+
+      async function openTicketMessages(self,ticket_id){
+         ticket_details_chat.classList.remove("hidden")
+         await fetch(`/admin/support/messages?ticket_id=${ticket_id}`)
+         .then(res => res.json())
+         .then(res=>{
+            messagesList = ``
+            for (let message of res){
+               messagesList += `
+                  <li class="mb-2" message_id=${message.id}>
+                     <div class="d-flex">
+                        <img src="${message.is_admin?"/static/assets/images/avatars/03.png":message.user.img}" alt="userimg" class="avatar-50  rounded-pill img-fluid">
+                        <div class="ms-3" style="width: calc(100% - 80px);">
+                           <h6 class="mb-1">${message.is_admin?"Support":message.user.firstName+" "+message.user.lastName}</h6>
+                           <p class="mb-1">${message.content}</p>
+                        </div>
+                     </div>
+                  </li>
+               `
+            }
+            ticketMessages_list.setAttribute("ticket_id", ticket_id)
+            ticketMessages_list.setAttribute("user_id", res[0].user.id)
+            ticketMessages_subject.innerHTML = res[0].subject
+            ticketMessages_list.innerHTML = ``
+            ticketMessages_username.innerHTML = res[0].user.firstName+" "+res[0].user.lastName
+            ticketMessages_img.src = res[0].user.img
+            ticketMessages_list.insertAdjacentHTML('beforeend', messagesList)
+         })
+         .finally(()=>{
+            if (ticketBoxInterval) clearInterval(ticketBoxInterval)
+            ticketBoxInterval = setInterval(()=>{
+               openTicketMessages(self,ticket_id)
+            }, 1000)
+         })
+      }
+
+      let messages_counter = 0
+      sendMessageForm.addEventListener("keypress", async function(event) {
+               if (event.keyCode === 13) {
+                  event.preventDefault();
+                  //messages_counter++;
+                  sendMessageForm.querySelector("input").setAttribute("disabled", "disabled")
+                  ticketMessages_list.insertAdjacentHTML("beforeend",`
+                     <li id="${messages_counter}" class="mb-2" message_id="">
+                        <div class="d-flex">
+                           <img src="/static/assets/images/avatars/03.png" alt="userimg" class="avatar-50  rounded-pill img-fluid">
+                           <div class="ms-3" style="width: calc(100% - 80px);">
+                              <h6 class="mb-1">Support</h6>
+                              <p class="mb-1">${sendMessageForm.querySelector("input").value}</p>
+                           </div>
+                        </div>
+                     </li>
+                  `)
+                  await fetch(`/admin/support/tickets/${ticketMessages_list.getAttribute("ticket_id")}/messages`,{
+                     method: "POST",
+                     headers: {
+                        'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify({
+                        content: message_content.value,
+                        is_admin:true,
+                        user_id:ticketMessages_list.getAttribute("user_id"),
+                     })
+                  })
+                  /*.then(res => res.json())
+                  .then(res=>{
+                     console.log(res)
+                     document.getElementById(messages_counter).setAttribute("message_id", res.id)
+                  })*/
+                  .finally(()=>{
+                     sendMessageForm.querySelector("input").removeAttribute("disabled")
+                     message_content.value = ""
+                  })
+               }
+            });
+
+            function readDate(utcDate){
+                  return  Intl.DateTimeFormat('en-us',{
+                     year: "numeric",
+                     month: "numeric",
+                     day: "numeric",
+                     hour: "numeric",
+                     minute: "numeric",
+                     second: "numeric",
+                     hour12: false,
+                     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                  }).format(new Date(utcDate))
+            }
+
+            document.querySelectorAll(".btn-check-group").forEach(elm=>{
+               elm.querySelectorAll(".btn-check").forEach(e=>{  
+                  e.nextElementSibling.addEventListener("click", function(){
+                     document.querySelector(".card-skeleton")?.classList.remove("hidden")
+                     document.querySelectorAll(".intercom-1x83fso").forEach((ticket)=>{
+                        ticket.classList.add("hidden")
+                     })
+                     elm.querySelectorAll("label").forEach(e=>{
+                        e.classList.remove("active")
+                     })
+                     e.nextElementSibling.classList.add("active")
+                     elm.setAttribute("ticket_type",this.innerHTML.toLowerCase())
+                     if(this.innerHTML.toLowerCase() == "all"){
+                        localStorage.setItem("ticket_type", "all")
+                     }else if(this.innerHTML.toLowerCase() == "new"){
+                        localStorage.setItem("ticket_type", "new")
+                     }
+                  })
+               })
+            })
+      </script>
+   </body>
+</html>

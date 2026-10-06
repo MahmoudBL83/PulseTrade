@@ -1,0 +1,126 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+            <div class="wrapper">
+                    <!--div class="card card-block card-stretch custom-scroll" style="background: transparent;">
+                        <div class="card-body" style="background: transparent;">
+                            <div class="btn-check-group" style="margin-bottom: 32px;">
+                                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary active rounded-start">Buy/Sell</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Trade</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary">Smart Buy</label>
+                
+                                    <input type="checkbox" class="btn-check">
+                                    <label class="btn btn-sm btn-secondary rounded-end">Smart Sell</label>
+                                 </div>
+                            </div>
+                        </div>
+                     </div-->
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch custom-scroll">
+                   <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table data-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="col">Time</th>
+                                    <th class="col">Type</th>
+                                    <th class="col">Action</th>
+                                    <th class="col">Taker/Maker</th>
+                                    <th class="col">Token</th>
+                                    <th class="col">Instrument</th>
+                                    <th class="col">Amount</th>
+                                    <th class="col">Fee</th>
+                                    <th class="col">PnL</th>
+                                    <th class="col">Balance change</th>
+                                    <th class="col">Balance</th>
+                                    <th class="col">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assetsTable">
+                                {% for order in trading_history %}
+                                    <tr class="white-space-no-wrap" idNum="{{order.id}}">
+                                        <td class="pe-2 timestamp">{{order.timestamp}}</td>
+                                        <td class="pe-2">{{order.type}}</td>
+                                        <td class="pe-2">{{order.side}}</td>
+                                        <td class="pe-2">{{order.maker_taker}}</td>
+                                        <td class="pe-2">{{order.currency}}</td>
+                                        <td class="pe-2">{{order.symbol}}</td>
+                                        <td class="pe-2">{{order.amount|float|round(4)|abs}} {{order.currency}}</td>
+                                        <td class="pe-2">{{order.fee}} {{order.feeCcy}}</td>
+                                        <td class="pe-2">{{order.pnl|float|round(4)}} {{order.currency}}</td>
+                                        <td class="pe-2">{{order.balChg|float|round(4)}} {{order.currency}}</td>
+                                        <td class="pe-2">{{order.bal|float|round(4)}} {{order.currency}}</td>
+                                        <td class="pe-2">{{order.notes}}</td>
+                                    </tr>
+                               {% endfor %}
+                            </tbody>
+                        </table>
+                            {% if total_pages > 1 %}
+                            <ul class="pagination">
+                                {% if current_page > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('history_trades_history', exchange_name='okex', page=current_page-1) }}">
+                                        «
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% for page_num in range(1, total_pages + 1) %}
+                                <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('history_trades_history', exchange_name='okex', page=page_num) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                {% if current_page < total_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('history_trades_history', exchange_name='okex', page=current_page+1) }}">
+                                        »
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                            {% endif %}
+                      </div>
+                   </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+        document.querySelectorAll(".timestamp").forEach(e=>{
+            e.innerHTML =  Intl.DateTimeFormat('en-us',{
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }).format(e.innerHTML)
+        })
+    </script>
+</html>

@@ -1,0 +1,147 @@
+/*
+
+
+USDT
+0
+
+
+1
+Max safety orders count
+
+0
+Max active safety orders count
+
+0
+Safety order volume scale
+
+1
+Safety order step scale
+
+*/
+let lang_data_bot_create = {
+    'en':[
+        'Main Settings',
+        'Name',
+        'Bot type',
+        'Pairs',
+        'Strategy',
+        'Strategy',
+        'Long',
+        'Short',
+        'Profit currency',
+        'Base order size',
+        'Strategy',
+        'Deal start condition',
+        'Conditions Guide',
+        'Add condition (works on the "AND" condition)',
+        'Take profit',
+        'Percent %',
+        'Conditions',
+        'Target profit (%)',
+        'Take profit type',
+        'Percentage From Base Order',
+        'Percentage From Total Volume',  
+        'Trailing Take Profit',
+        'Minimum Profit',
+        'Minimum Profit (%)',
+        'Minimum Profit type',
+        'Percentage From Base Order',
+        'Percentage From Total Volume',
+        'Add condition (works on the "AND" condition)',
+        'Stop Loss',
+        'Stop Loss',
+        'Stop Loss action',
+        'Close Deal',
+        'Close Deal & Stop Bot',
+        
+        'Stop Loss timeout',
+        'Sec',
+        'Trailing Stop Loss',
+        'Safety Orders',
+        "View Example",
+        'Price deviation to open safety orders (% from initial order)',
+        'Max safety orders count',
+        'Max active safety orders count',
+        'Safety order volume scale',
+        'Safety order step scale',
+        'Advanced Settings',
+        'Don\'t start deal(s) if the daily volume is less than',
+        'Minimum price to open deal',
+        'Maximum price to open deal',
+        'Close deal after timeout',
+        'The time after which, deal will be closed automatically',
+        'Hrs',
+        'Min',
+        'Days',
+        'Bot Info',
+        'Balance',
+        'Max amount for bot usage<br> (Based on current rate)',
+        'Max safety order price deviation',
+        '% of total balance to be used by the bot',
+        'Create Bot',
+        'Edit Bot',
+    ],
+    'ar':[
+        'الإعدادات الرئيسية',
+        'الإسم',
+        'نوع البوت',
+        'عملة المداولة',
+        'الإستراتيجية',
+        'إستراتيجية',
+        'طوبلة',
+        'قصيرة',
+        'عملة الربح',
+        'حجم الطلب الأساسي',
+        'إستراتيجية',
+        'شروط بدء الصفقة',
+        'دليل الشروط',
+        'إضافة شرط (يعمل على شرط "و")',
+        'الربح المستهدف',
+        'النسبة %',
+        'الشروط',
+        'الربح المستهدف (%)',
+        'نوع الربح المستهدف',
+        'النسبة من الطلب الأساسي',
+        'النسبة من الحجم الكلي',
+        'الربح المتحرك',
+        'الربح الأدنى',
+        'الربح الأدنى (%)',
+        'نوع الربح الأدنى',
+        'النسبة من الطلب الأساسي',
+        'النسبة من الحجم الكلي',
+        'إضافة شرط (يعمل على شرط "و")',
+        'وقف الخسارة',
+        'وقف الخسارة',
+        'عند وقف الخسارة',
+        'إغلاق الصفقة',
+        'إغلاق الصفقة وإيقاف البوت',
+        
+        'وقت إيقاف الخسارة',
+        'ثانية',
+        'الوقف المتحرك',
+        'الصفقات الآمنة',
+        "عرض صورة توضيحية",
+        'إنحراف سعر الطلب الآمن لفتح الصفقات (% من الطلب الأولي)',
+        'الحد الأقصى لعدد الصفقات الآمنة',
+        'الحد الأقصى لعدد الصفقات الآمنة النشطة',
+        'حجم الصفقات الآمنة',
+        'حجم الخطوة للصفقات الآمنة',
+        'الإعدادات المتقدمة',
+        'لا تبدأ الصفقة (الصفقات) إذا كان حجم التداول اليومي أقل من',
+        'الحد الأدنى لسعر فتح الصفقة',
+        'الحد الأقصى لسعر فتح الصفقة',
+        'إغلاق الصفقة بعد فترة',
+        'الوقت الذي سيتم فيه إغلاق الصفقة تلقائياً',
+        'ساعة',
+        'دقيقة',
+        'يوم',
+        'معلومات البوت',
+        'الرصيد',
+        'الحد الأقصى لكمية البوت<br> (بناءً على السعر الحالي)',
+        'الحد الأقصى لإنحراف سعر الطلب الآمن',
+        '% من الرصيد الكلي ليتم إستخدامه من قبل البوت',
+        'إنشاء بوت',
+        'تعديل بوت',
+    ]
+}
+

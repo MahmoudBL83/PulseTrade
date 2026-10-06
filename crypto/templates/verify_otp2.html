@@ -1,0 +1,75 @@
+
+
+<!doctype html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>COINEX | Verify OTP</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/static/images/logo2.png" />
+    <link rel="stylesheet" href="/static/assets/css/libs.min.css">
+    <link rel="stylesheet" href="/static/assets/css/coinex.css?v=1.0.0">  
+  </head>
+  <body class="" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+    <!-- loader Start -->
+    <div id="loading">
+      <div class="loader simple-loader">
+        <div class="loader-body"></div>
+      </div>   
+    </div>
+    <!-- loader END -->
+
+    <div style="background-repeat: no-repeat;background-size: cover;" >  
+      <img src="/static/images/Hexagon.png" style="position: fixed;top:0;
+      left: 0;width: fit-content;height: 100%;filter: grayscale(1);min-height: 100%;min-width: 100%;opacity: 0.2;">
+        <div class="wrapper">
+          <section class="vh-100 bg-image">
+              <div class="container h-100">
+                  <div class="row justify-content-center h-100 align-items-center">
+                      <div class="col-md-5 mt-5">
+                          <div class="card" style="background: #20202296;-webkit-backdrop-filter:blur(2px);backdrop-filter: blur(2px);">
+                              <div class="card-body">
+                                  <div class="auth-form">
+                                    <form method="POST" action="{{ url_for('verify_otp') }}">
+                                      <div class="text-center">
+                                          <h2 class="text-start mb-4 card-header" style="background: transparent;
+                                          padding: 18px;
+                                          border-radius: 6px;">Verify OTP</h2>
+                                      </div>
+                                      <div>
+                                          <p class="mt-3 text-center">Check your email, you will find the otp code there</p>
+                                          <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" name="otp" id="floatingInput">
+                                                <label for="floatingInput">OTP</label>
+                                            </div>
+                                      </div>
+                                      <div class="text-center" style="">
+                                          <button type="submit" class="btn btn-primary btn-sm mt-3" style="width: 100%;
+                                          margin-bottom: 10px;">Verify</button>
+                                      </div>
+                                      <small class="form-text text-muted text-center">Didn't receive the OTP? <a href="{{ url_for('resend_otp') }}">Resend OTP</a></small>
+                                    </form>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+        </div>
+      </div>
+      
+    
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+  </body>
+</html>

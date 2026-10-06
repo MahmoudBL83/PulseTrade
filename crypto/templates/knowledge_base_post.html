@@ -1,0 +1,61 @@
+{% extends 'base_client.html' %}    
+{% block title %}PulseTrade | {{post.title}}{% endblock %}
+{% block content %}
+<div class="container-fluid content-inner pb-0 row" style="padding:0;min-height: fit-content;">
+    <div class="left-side-bar col-lg-3 col-12" style="height: fit-content;">
+        <ul class="sc-9257a52-1 ctHPSx" style="margin-bottom: 0;">
+            <li class="sc-9257a52-0 bUdEpD  {% if not cat_now %}active{% endif %}"><a href="{{url_for('kb_cat_all')}}"><span class="sc-9257a52-2 nsFvg title_cat" title_ar="الكل">All</span></a></li>
+            {% for cat in cats %}
+            {% if cat.posts.all()|count > 0 %}
+            <li class="sc-9257a52-0 bUdEpD {% if cat.id == cat_now.id %}active{% endif %}"><a href="{{url_for('kb_cat',category_id=cat.id)}}"><span class="sc-9257a52-2 nsFvg title_cat" title_ar="{{cat.title_ar}}">{{cat.title}}</span></a></li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-lg-9 col-12">  
+        <div class="wrapper" style="">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" style="background: transparent;">
+                    <li class="breadcrumb-item"><a href="{{url_for('kb_cat_all')}}" id="breadcrumb_head">Knowledge Base</a></li>
+                    <li class="breadcrumb-item"><a href="{{url_for('kb_cat',category_id=post.category.id)}}" class="title_cat" title_ar="{{post.category.title_ar}}">{{post.category.title}}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{post.title}}</li>
+                </ol>
+            </nav>
+            <h1 style="margin: 10px 0 50px 0;" class="card-header">{{post.title}}</h1>
+            {{post.content|safe}}
+        </div>
+    </div>
+</div>
+</div>
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+        if(localStorage.getItem('lang') == 'ar'){
+            document.querySelectorAll(".title_cat").forEach(e=>{
+                e.innerHTML = e.getAttribute('title_ar')
+            })
+            breadcrumb_head.innerHTML = "المدونة"
+        }
+
+        document.querySelectorAll(".postCard").forEach(e=>{
+            if(e.getAttribute('lang') == localStorage.getItem('lang')){
+                e.classList.remove("hidden")
+            }
+        })
+    </script>
+
+</html>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% include 'base_admin.html' %}
+    <div class="container-fluid content-inner pb-0">
+        <div class="row g-4">
+            {% for sub in subscriptions %}
+            <div class="col-sm-12 col-lg-4" sub_id="{{sub.id}}">
+                <div class="card" style="height: 100%;">
+                    <div class="card-header d-flex justify-content-between flex-wrap">
+                        <div class="header-title">
+                            <h4 class="card-title mb-2">
+                                <input class="name_en" style="background-color: transparent;border:0;color:white;" value="{{sub.type}}">
+                            </h4>  
+                            <h4 class="card-title mb-2">
+                                <input class="name_ar" style="background-color: transparent;border:0;color:white;" value="{{sub.type_ar}}">
+                            </h4>      
+                        </div>
+                    </div>
+
+                    <div class="card-body">   
+                        <div class="row">
+                            <div class="col-12 col-sm-12">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control price_sub" value="{{sub.price}}">
+                                    <label for="floatingInput">Price</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control max_sma" value="{{sub.max_sma}}">
+                                    <label for="floatingInput">Max SMAs</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-12">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control max_bots" value="{{sub.max_bots}}">
+                                    <label for="floatingInput">Max Bots</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control stripe_id" value="{{sub.stripe_id}}">
+                                    <label for="floatingInput">Stripe ID</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control trial_days" value="{{sub.trial_days}}">
+                                    <label for="floatingInput">Trial Days</label>
+                                </div>
+                            </div>
+                            
+                        </div>       
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+            <div class="col-12">
+                <button class="btn btn-outline-primary w-100" id="sub_save">Save</button>
+            </div>
+
+        </div>
+    </div>
+</main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+   
+    <script>
+      sub_save.addEventListener("click",async function(){
+        let oldHTML = this.innerHTML
+        this.setAttribute("disabled","disabled")
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>'
+        for (let i = 0; i < document.querySelectorAll(".max_sma").length; i++) {
+            let max_sma = document.querySelectorAll(".max_sma")[i].value;
+            let max_bots = document.querySelectorAll(".max_bots")[i].value;
+            let sub_id= document.querySelectorAll(".max_sma")[i].closest(".col-lg-4").getAttribute("sub_id");
+            let price = document.querySelectorAll(".price_sub")[i].value;
+            let stripe_id = document.querySelectorAll(".stripe_id")[i].value;
+            let data = {
+                max_sma:max_sma,
+                max_bots:max_bots,
+                id:sub_id,
+                price:price,
+                stripe_id:stripe_id,
+                name_en:document.querySelectorAll(".name_en")[i].value,
+                name_ar:document.querySelectorAll(".name_ar")[i].value,
+                trial_days:document.querySelectorAll(".trial_days")[i].value
+            }
+            let response = await fetch("/admin/pricing",{
+                method:"POST",
+                body:JSON.stringify(data),
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            })
+            let result = await response.json();
+            if(result.ok){
+                swal("Success","Pricing Updated","success")
+                this.removeAttribute("disabled")
+                this.innerHTML = oldHTML
+            } 
+        }
+              
+      })
+
+      document.querySelectorAll(".stripe_id")[0].parentElement.classList.add("hidden")
+      document.querySelectorAll('.trial_days')[0].parentElement.classList.add("hidden")
+    </script>
+    
+  </body>
+</html>

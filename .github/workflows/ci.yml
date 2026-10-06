@@ -1,0 +1,13 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m compileall -q crypto wsgi.py api
+      - run: SECRET_KEY=x JWT_SECRET_KEY=x SECURITY_PASSWORD_SALT=x FERNET_KEY=$(python -c "from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())") VERCEL=1 python -c "import os;os.environ['VERCEL']='1';from crypto import app;print(sorted([str(r) for r in app.url_map.iter_rules()])[:5])"

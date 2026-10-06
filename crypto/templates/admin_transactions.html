@@ -1,0 +1,230 @@
+{% include 'base_admin.html' %}
+      <div class="container-fluid content-inner pb-0">
+         <div class="row">
+            <div class="col-lg-4">
+               <div class="card">
+                  <div class="card-header">
+                     <div class="header-title" style="">
+                        <h4 class="card-title">Filters</h4>
+                     </div>
+                  </div>
+                  <div class="card-body" id="tickets_list" style="max-height: calc(100vh - 400px);overflow: hidden scroll;margin-top: 14px;">
+                     <!--div class="btn-group btn-check-group takeProfitGroup" ticket_type="all" role="group" aria-label="Basic checkbox toggle button group">
+                        <input type="checkbox" class="btn-check" id="">
+                        <label class="btn btn-sm btn-secondary active rounded-start" for="">All</label>
+            
+                        <input type="checkbox" class="btn-check" id="">
+                        <label class="btn btn-sm btn-secondary " for="">New</label>
+                     </div-->
+                  <div class="form-floating mb-3">
+                     <select class="form-control" id="exchange_filter">
+                        <option value="all">all</option>
+                        {% for exchange in exchanges %}
+                           <option value="{{ exchange.exchange }}">{{ exchange.exchange }}</option>
+                        {% endfor %}
+                     </select>
+                     <label for="floatingInput">Exchanges</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                     <select class="form-control" id="type_filter">
+                        <option value="all">all</option>
+                        <option value="buy">Buy</option>
+                        <option value="sell">Sell</option>
+                        <option value="withdraw">Withdraw</option>
+                     </select>
+                     <label for="floatingInput">Type</label>
+                  </div>
+               </div>
+               </div>
+            </div>
+            <div class="col-lg-8">
+               <div class="card">
+                  <div class="card-header">
+                     <h4 class="card-title text-white">Transactions Datatable</h4>
+                  </div>
+                  <div class="d-flex mt-3 ms-4 me-4 justify-content-between">
+                     <!--select class="form-select-custom" style="padding:10px 15px 10px 15px;color:#fff;background-color:#202022;background-repeat: no-repeat;
+                        background-position: right 1rem center;
+                        
+                        background-size: 16px 12px;
+                        border: 1px solid #69697a;
+                        border-radius: .5rem;" id="validationDefault04" required>
+                        <option selected disabled value="">10</option>
+                        <option>20</option>
+                        <option>30</option>
+                        <option>40</option>
+                     </select-->
+                  </div>
+                     <div class="card-body">
+                        <div class="table-responsive">
+                           <table class="table" id="assets_table">
+                              <thead class="">
+                                 <tr>
+                                    <th>Time</th>
+                                       <th>Value</th>
+                                       <th>Type</th>
+                                       <th>Exchange</th>
+                                       <th>Amount</th>
+                                       <th>Symbol</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 {% for transaction in transactions|reverse %}
+                                       <tr>
+                                          <td class="readDate">{{ transaction.created_at }}</td>
+                                          <td>${{ transaction.value|round(2) }}</td>
+                                          <td>{{ transaction.type }}</td>
+                                          <td>{{ transaction.exchange }}</td>
+                                          <td>{{ transaction.amount }}</td>
+                                          <td>{{ transaction.symbol }}</td>
+                                       </tr>
+                                 {% endfor %}
+                              </tbody>
+                           </table>
+                           <div class="d-flex justify-content-between flex-wrap card-header" style="margin:0;align-items: center;">
+                                 <div class="dataTables_info" id="example_info" role="status" aria-live="polite">Showing 1 to {% if transactions|count <= 10 %} {{transactions|count}} {% else %} 10 {% endif %} of {{ transactions|count }} entries</div>
+                                    <ul class="pagination" style="margin:0;"></ul>
+                                 </div>
+                           </div>
+                     </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+   
+    <script>
+        function readDate(utcDate){
+                  return  Intl.DateTimeFormat('en-us',{
+                     year: "numeric",
+                     month: "numeric",
+                     day: "numeric",
+                     hour: "numeric",
+                     minute: "numeric",
+                     second: "numeric",
+                     hour12: false,
+                     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                  }).format(new Date(utcDate))
+            }
+
+            document.querySelectorAll(".readDate").forEach(function(element){
+                element.innerHTML = readDate(element.innerHTML)
+            })
+
+        let currentPage2 = 0
+        const pageSize = 10
+
+         if (!assets_table.nextElementSibling.querySelector(".pagination").innerHTML)
+         for(let i=1;i<=Math.ceil((assets_table.querySelectorAll("tr").length-1)/pageSize);i++){
+            assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+            `<li class="page-item ${i==1?'active':''}">
+               <a class="page-link" href="#" data-page="${i}">${i}</a>
+            </li>`
+            );
+         }
+         
+         if (currentPage2 == 0) currentPage2 = 1;
+
+         function showPage(pageNumber) {
+            [...assets_table.querySelectorAll("tbody tr")]
+            .filter(e=>!e.classList.contains("hidden"))
+            .forEach(tr => tr.style.display = "none");
+
+            [...assets_table.querySelectorAll("tbody tr")]
+            .filter(e=>e.classList.contains("hidden"))
+            .forEach(tr => tr.style.display = "");
+
+            [...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden"))
+            .filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize)
+            .forEach(tr => tr.style.display = "");
+
+            currentPage2 = pageNumber;
+         }
+
+         assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+            link.addEventListener("click", event => {
+               event.preventDefault();
+               assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                  link.parentElement.classList.remove("active");
+               })
+               event.target.parentElement.classList.add("active");
+               const pageNumber = parseInt(event.target.getAttribute("data-page"));
+               showPage(pageNumber);
+            });
+         });
+
+         showPage(currentPage2);
+
+         type_filter.addEventListener("change",function(){
+            currentPage2 = 1;
+            assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "");
+            [...assets_table.querySelectorAll("tbody tr")].filter(e=>{
+               (e.querySelectorAll("td")[3].innerHTML == exchange_filter.value || exchange_filter.value == "all") && (e.querySelectorAll("td")[2].innerHTML == type_filter.value || type_filter.value == "all") ? e.classList.remove("hidden") : e.classList.add("hidden")
+            });
+            assets_table.nextElementSibling.querySelector(".pagination").innerHTML = ''
+            for(let i=1;i<=Math.ceil(([...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden")).length)/pageSize);i++){
+               assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+            showPage(currentPage2)
+         })
+
+         exchange_filter.addEventListener("change",function(){
+            currentPage2 = 1;
+            assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "");
+            [...assets_table.querySelectorAll("tbody tr")].filter(e=>{
+               (e.querySelectorAll("td")[3].innerHTML == exchange_filter.value || exchange_filter.value == "all") && (e.querySelectorAll("td")[2].innerHTML == type_filter.value || type_filter.value == "all") ? e.classList.remove("hidden") : e.classList.add("hidden")
+            })
+            assets_table.nextElementSibling.querySelector(".pagination").innerHTML = ''
+            for(let i=1;i<=([...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden")).length)/pageSize;i++){
+               assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+            showPage(currentPage2)
+         })
+    </script>
+    
+  </body>
+</html>

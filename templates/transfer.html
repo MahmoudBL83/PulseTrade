@@ -1,0 +1,195 @@
+{% include 'base.html' %}
+      <div class="container-fluid content-inner pb-0" style="padding:0">
+        <div style="background-image: url('/static/assets/images/auth/01.png')" >  
+            <div class="wrapper">
+                <div class="d-grid grid-1-auto gap-card" style="overflow: scroll;">
+                    <div class="wallet-overview-page-title-btn-group css-jgknod" style="opacity: 1; visibility: visible;direction: rtl;display: flex;gap: 10px;text-align: center;padding: 31px;justify-content: center;">
+                        <a href="{{ url_for('crypto_convert') }}" class="btn btn-secondary">Convert</a>
+                        <a href="{{ url_for('crypto_transfer') }}" class="btn btn-primary">Transfer</a>
+                        <a href="{{ url_for('crypto_withdraw') }}" class="btn btn-secondary">Withdraw</a>
+                        <a href="{{ url_for('crypto_deposit') }}" class="btn btn-secondary">Deposit</a>
+                        <a href="{{ url_for('crypto_buy') }}" class="btn btn-secondary">Buy/Sell</a>
+                    </div>                 
+                 </div>
+                <section class="vh-100 bg-image">
+                    <div class="container h-100">
+                        <div class="row justify-content-center h-100 align-items-start">
+                            <div class="col-md-5 mt-5">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form id="transfer">
+                                        <div class="auth-form">
+                                            <div class="text-center">
+                                                <h2>Transfer</h2>
+                                                <p>Transfer your crypto assets to another wallet</p>
+                                                <span id="convert" style="cursor: pointer;">
+                                                    <svg width="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M16.8397 20.1642V6.54639" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M20.9173 16.0681L16.8395 20.1648L12.7617 16.0681" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M6.91102 3.83276V17.4505" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                    <path d="M2.8335 7.92894L6.91127 3.83228L10.9891 7.92894" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>                                
+                                                    </svg> 
+                                                </span>                           
+                                            </div>
+                                            <br>
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select disabled class="form-control mb-3" name="target_asset">
+                                                                <option value="Fiat and Spot">Fiat and Spot</option>
+                                                                <option value="Funding">Funding</option>
+                                                            </select>
+                                                            <label for="floatingInput">From</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select disabled class="form-control mb-3" name="source_asset">
+                                                                <option value="Funding">Funding</option>
+                                                                <option value="Fiat and Spot">Fiat and Spot</option>
+                                                            </select>
+                                                            <label for="floatingInput">To</label>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control" id="floatingInput" name="amount" placeholder="0.00">
+                                                            <label for="floatingInput">Amount</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3">
+                                                            <select class="form-control mb-3" name="coin" id="currencies">
+                                                            </select>
+                                                            <label for="floatingInput">Of</label>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+
+                                                 <input type="hidden" name="side" value="funding"/>
+                                                
+                                            </div>
+                                            <div class="">
+                                                <div class="d-grid gap-card grid-cols-1">
+                                                    <button class="btn btn-success" type="submit">
+                                                       <span>Convert</span>
+                                                       <svg class="rotate-45" width="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.75 11.7256L4.75 11.7256" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.7002 5.70124L19.7502 11.7252L13.7002 17.7502" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                                    </button>
+                                                    <button class="btn btn-success hidden" type="button" disabled="">
+                                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </button>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+          </div>
+    </div>
+
+    </script>
+  </body>
+  <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+    <script>
+        document.querySelector("#transfer").addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            const form = event.target;
+            form.querySelectorAll("button")[0].classList.add("hidden");
+            form.querySelectorAll("button")[1].classList.remove("hidden");
+            const data = {
+                exchange: selectedExchangeMain.value,
+                amount: form.elements.amount.value,
+                side: form.elements.side.value,
+                symbol: form.elements.coin.value,
+            };
+
+            console.log(data)
+
+            fetch('/api/v1/transfer/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                form.querySelectorAll("button")[0].classList.remove("hidden");
+                form.querySelectorAll("button")[1].classList.add("hidden");
+                console.log(data)
+                if (data.ok){
+                    // Show a success message with SweetAlert
+                    swal('Success', data.message, 'success');
+                }
+                else{
+                    // Show an error message with SweetAlert
+                    swal('Error', data.message, 'error');
+                }
+                
+            })
+            .catch(error => {
+                // Show an error message with SweetAlert
+                swal('Error', error.message, 'error');
+            });
+        });
+
+        convert.addEventListener("click",function(){
+            let form = document.querySelector("#transfer")
+            if (form.elements.side.value=="funding"){
+                form.elements.side.value = "spot"
+                form.elements.source_asset.value = "Fiat and Spot"
+                form.elements.target_asset.value = "Funding"
+            }
+            else{
+                form.elements.side.value = "funding"
+                form.elements.source_asset.value = "Funding"
+                form.elements.target_asset.value = "Fiat and Spot"
+            }
+        })
+
+        /**********************************************/$
+
+        selectedExchangeMain.addEventListener("change",async function(){
+            get_currecies(this.value)
+        })
+
+        async function get_currecies(x){
+                currencies.innerHTML = '<option value=""></option>'
+                currencies.setAttribute("disabled","disabled")
+                await fetch(`/api/v1/markets/${x}`)
+                .then(res=>res.json())
+                .then(res=>{
+                    currencies.removeAttribute("disabled")
+                    Object.keys(res.base).forEach(symbol => {
+                                currencies.insertAdjacentHTML("beforeend",`
+                                    <option value="${symbol}">${symbol}</option>
+                                `)
+                    });
+                })
+        }
+
+        get_currecies(selectedExchangeMain.value)
+
+        
+    </script>
+</html>

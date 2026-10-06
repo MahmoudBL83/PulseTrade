@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+instance/
+*.db
+*.pem
+*.key
+# Data dumps (regenerated at runtime, too large for git)
+pricesData/
+volumesData/
+rsiData/
+stochData/
+stochData2/
+orders/
+trades/
+output/
+24changes/
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+# Vercel
+.vercel/

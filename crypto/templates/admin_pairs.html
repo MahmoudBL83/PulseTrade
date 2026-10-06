@@ -1,0 +1,212 @@
+{% include 'base_admin.html' %}
+    <div class="container-fluid content-inner pb-0">
+<div>
+   <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header" style="display: flex;justify-content: space-between;align-items: center;">
+                    <h4 class="card-title text-white">Working Pairs (Live Indicators)</h4>
+                </div>
+                <div class="d-flex mt-3 ms-4 me-4 justify-content-between">
+                    <div class="form-outline w-100">
+                        <input type="search" id="search_filter" class="form-control ms-1" placeholder="Search.." aria-label="Search" />
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table" id="assets_table">
+                            <thead class="">
+                                <tr>
+                                    <th>Pair</th>
+                                    <th style="text-align: end;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="d-flex justify-content-between flex-wrap card-header" style="margin:0;align-items: center;">
+                            <div class="dataTables_info" id="example_info" role="status" aria-live="polite">Showing 1 to {% if users|count <= 10 %} {{users|count}} {% else %} 10 {% endif %} of {{ users|count }} entries</div>
+                            <ul class="pagination" style="margin:0;"></ul>
+                        </div>
+                    </div>
+                </div>
+             </div>
+         </div>
+      </div>
+   </div>
+</div>
+      </div>
+      
+      <div class="modal fade" id="exampleModal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                 </button>
+              </div>
+              <div class="modal-body">
+                 <!--send mail (subject - body)-->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="subject_mail" placeholder="Subject">
+                        <label for="floatingInput">Subject</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea class="form-control" placeholder="Leave a comment here" id="body_mail" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Body</label>
+                    </div>
+              </div>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="button" class="btn btn-primary" id="send_mail">Save changes</button>
+              </div>
+           </div>
+        </div>
+     </div>
+
+          </main>
+     
+    <!-- Wrapper End-->
+    <!-- offcanvas start -->
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/static/assets/js/libs.min.js"></script>
+    <!-- widgetchart JavaScript -->
+    <script src="/static/assets/js/charts/widgetcharts.js"></script>
+    <!-- fslightbox JavaScript -->
+    <script src="/static/assets/js/fslightbox.js"></script>
+    <!-- app JavaScript -->
+    <script src="/static/assets/js/app.js"></script>
+    <!-- apexchart JavaScript -->
+    <script src="/static/assets/js/charts/apexcharts.js"></script>
+
+
+    <script>
+        var pairs = JSON.parse('{{ pairs|tojson }}');
+        example_info.innerHTML = `Showing 1 to ${(pairs.length<=10 ? pairs.length: 10 )} of ${pairs.length} entries`
+        var itemsPerPage = 10;
+        var totalPages = Math.ceil(pairs.length / itemsPerPage);
+        var currentPage = 1;
+    
+        function paginateUsers() {
+            // Update the table body with paginated pairs
+            var tableBody = document.querySelector('tbody');
+            tableBody.innerHTML = '';
+            console.log(pairs)
+            pairs.forEach(e=>{
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${e.pair}</td>
+                    <td style="direction: rtl;">
+                        <div class="mb-3 form-check form-switch" style="display: inline;margin-left: 15px;">
+                            <input class="form-check-input toggle_exchange" type="checkbox" ${ e.isActive ? 'checked="true"':''}>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            })                    
+            
+
+
+            document.querySelectorAll(".toggle_exchange").forEach(e=>{
+                e.addEventListener("change",async function(){
+            
+                    let response = await fetch("/toggle_pair",{
+                        method:"POST",
+                        body:JSON.stringify({
+                            pair:this.parentElement.parentElement.parentElement.querySelector("td").textContent,
+                            status:this.checked
+                        }),
+                        headers:{
+                            "Content-Type":"application/json"
+                        }
+                    })
+                    let result = await response.json();
+                    if(result.ok){
+                        swal("Success","Pair Status Changed","success")
+                    } else {
+                        swal("Error",result.message,"error")
+                    }
+                })
+            
+            })
+        }
+
+
+
+        paginateUsers()
+
+        let currentPage2 = 0
+        const pageSize = 10
+
+         if (!assets_table.nextElementSibling.querySelector(".pagination").innerHTML)
+         for(let i=1;i<=Math.ceil((assets_table.querySelectorAll("tr").length-1)/pageSize);i++){
+            assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+            `<li class="page-item ${i==1?'active':''}">
+               <a class="page-link" href="#" data-page="${i}">${i}</a>
+            </li>`
+            );
+         }
+         
+         if (currentPage2 == 0) currentPage2 = 1;
+
+         function showPage(pageNumber) {
+            [...assets_table.querySelectorAll("tbody tr")]
+            .filter(e=>!e.classList.contains("hidden"))
+            .forEach(tr => tr.style.display = "none");
+
+            [...assets_table.querySelectorAll("tbody tr")]
+            .filter(e=>e.classList.contains("hidden"))
+            .forEach(tr => tr.style.display = "");
+
+            [...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden"))
+            .filter((e,i)=>i<pageNumber*pageSize&&i>=pageNumber * pageSize - pageSize)
+            .forEach(tr => tr.style.display = "");
+
+            currentPage2 = pageNumber;
+         }
+
+         assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+            link.addEventListener("click", event => {
+               event.preventDefault();
+               assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                  link.parentElement.classList.remove("active");
+               })
+               event.target.parentElement.classList.add("active");
+               const pageNumber = parseInt(event.target.getAttribute("data-page"));
+               showPage(pageNumber);
+            });
+         });
+
+         showPage(currentPage2);
+
+         search_filter.addEventListener("input",function(){
+            currentPage2 = 1;
+            assets_table.querySelectorAll("tbody tr").forEach(tr => tr.style.display = "");
+            [...assets_table.querySelectorAll("tbody tr")].filter(e=>{
+               (e.querySelectorAll("td")[0].innerHTML.toLowerCase().includes(search_filter.value.toLowerCase()) || search_filter.value == "") ? e.classList.remove("hidden") : e.classList.add("hidden")
+            });
+            assets_table.nextElementSibling.querySelector(".pagination").innerHTML = ''
+            for(let i=1;i<=Math.ceil(([...assets_table.querySelectorAll("tbody tr")].filter((e,i)=>!e.classList.contains("hidden")).length)/pageSize);i++){
+               assets_table.nextElementSibling.querySelector(".pagination").insertAdjacentHTML("beforeend",
+               `<li class="page-item ${i==1?'active':''}">
+                  <a class="page-link" href="#" data-page="${i}">${i}</a>
+               </li>`
+               );
+            }
+            assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+               link.addEventListener("click", event => {
+                  event.preventDefault();
+                  assets_table.nextElementSibling.querySelector(".pagination").querySelectorAll(".page-link").forEach(link => {
+                     link.parentElement.classList.remove("active");
+                  })
+                  event.target.parentElement.classList.add("active");
+                  const pageNumber = parseInt(event.target.getAttribute("data-page"));
+                  showPage(pageNumber);
+               });
+            });
+            showPage(currentPage2)
+         })
+
+    </script>
+  </body>
+</html>
