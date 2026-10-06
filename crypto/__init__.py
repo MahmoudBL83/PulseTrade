@@ -205,14 +205,14 @@ IS_VERCEL = IS_VERCEL_EARLY
 socketio = SocketIO(app, async_mode='threading')
 #socketio = SocketIO(app, async_mode='gevent')
 
-    socketio.init_app(app, cors_allowed_origins="*")
-    _frontend = os.environ.get('FRONTEND_URL', 'https://pulse-trade-zeta.vercel.app').rstrip('/')
-    cors = CORS(app, resources={r"/api/*": {"origins": [_frontend, "http://localhost:5000", "http://127.0.0.1:5000"]}})
-    app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    app.config['SESSION_COOKIE_SECURE'] = IS_VERCEL_EARLY
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
+socketio.init_app(app, cors_allowed_origins="*")
+_frontend = os.environ.get('FRONTEND_URL', 'https://pulse-trade-zeta.vercel.app').rstrip('/')
+cors = CORS(app, resources={r"/api/*": {"origins": [_frontend, "http://localhost:5000", "http://127.0.0.1:5000"]}})
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = IS_VERCEL_EARLY
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
 # Initialize Flask-Login's LoginManager
 login_manager = LoginManager(app)
