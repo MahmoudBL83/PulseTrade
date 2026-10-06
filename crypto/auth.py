@@ -40,6 +40,12 @@ from flask_jwt_extended import (
 from functools import wraps
 import math
 
+
+def mail_verification_required():
+    """Kill-switch: REQUIRE_EMAIL_VERIFICATION=1 enforces email verification
+    on login/register. Default 0 (off) until real SMTP creds are configured."""
+    return os.environ.get('REQUIRE_EMAIL_VERIFICATION', '0') == '1'
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -524,7 +530,7 @@ def login():
             user = User.query.filter_by(email=email).first()
 
             if user and user.check_password(password):
-                if user.is_verified == False:
+                if mail_verification_required() and user.is_verified == False:
                     token = generate_verification_token(user.email)
                     send_otp_email(
                         user.email,
@@ -631,15 +637,19 @@ def register():
         subscription.users.append(user)
         db.session.add(user)
         db.session.commit()
-        # Generate the verification token
-        token = generate_verification_token(user.email)
+        if mail_verification_required():
+            # Generate the verification token
+            token = generate_verification_token(user.email)
 
-        try:
-            send_otp_email(user.email, None,"PulseTrade Email Verification","PulseTrade Email Verification: click this link to complete the verification process:",f'http://127.0.0.1:5000/verify_email/{token}')
-        except Exception as e:
-            # Mail not configured (no MAIL_* env) — account already created,
-            # user can verify later via /resend_otp once mail works.
-            print(f"verification email skipped: {e}")
+            try:
+                send_otp_email(user.email, None,"PulseTrade Email Verification","PulseTrade Email Verification: click this link to complete the verification process:",f'http://127.0.0.1:5000/verify_email/{token}')
+            except Exception as e:
+                # Mail server not configured — account already created,
+                # user can verify later via /resend_otp once mail works.
+                print(f"verification email skipped: {e}")
+        else:
+            user.is_verified = True
+            db.session.commit()
 
         return jsonify({'message':'Registration successful. Please check your email to verify your account.','ok':True})
     

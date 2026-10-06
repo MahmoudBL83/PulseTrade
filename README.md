@@ -35,8 +35,7 @@ docker compose up --build
 # web :8000, worker runs celery, postgres + redis included
 ```
 
-## Demo mode (no API keys)
-```bash
+## Demo mode (no API keys)```bash
 DEMO=1 python run.py
 # then visit /api/demo/seed once to create catalog rows
 ```
@@ -44,6 +43,12 @@ DEMO=1 python run.py
 - `/openOrders/`, `/lastTrades/` return synthetic book/trades.
 - `/api/demo/status` reports mode. Real exchange paths untouched.
 - Full endpoint list: `openapi.yaml`.
+
+## Email verification (off by default)
+- `REQUIRE_EMAIL_VERIFICATION=0` (default): register auto-verifies, login never
+  blocks on mail. Use this until real SMTP creds exist.
+- Set `REQUIRE_EMAIL_VERIFICATION=1` + `MAIL_USERNAME`/`MAIL_PASSWORD` to enforce
+  verification emails again. No code change needed.
 
 ## Repo hygiene
 - Secrets: none committed. All via env (`crypto/__init__.py`, `models.py`,
