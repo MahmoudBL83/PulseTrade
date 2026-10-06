@@ -65,8 +65,18 @@ def make_celery(app):
     celery.Task = ContextTask
     return celery
 
-app = Flask(__name__, template_folder="templates")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///crypto.db")
+IS_VERCEL_EARLY = bool(os.environ.get("VERCEL"))
+_flask_kwargs = {"template_folder": "templates"}
+if IS_VERCEL_EARLY:
+    # Vercel filesystem is read-only except /tmp; keep Flask instance dir there.
+    _flask_kwargs["instance_path"] = "/tmp/instance"
+app = Flask(__name__, **_flask_kwargs)
+if IS_VERCEL_EARLY:
+    # Absolute sqlite path under /tmp bypasses instance_path creation.
+    # Ephemeral per invocation — set DATABASE_URL (Postgres) for real persistence.
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:////tmp/crypto.db")
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///crypto.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATION"] = False
 app.config['SESSION_PERMANENT'] = True
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
@@ -166,7 +176,7 @@ mail = Mail(app)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-change-me")
 db = SQLAlchemy(app)
 
-IS_VERCEL = bool(os.environ.get("VERCEL"))
+IS_VERCEL = IS_VERCEL_EARLY
 socketio = SocketIO(app, async_mode='threading')
 #socketio = SocketIO(app, async_mode='gevent')
 
