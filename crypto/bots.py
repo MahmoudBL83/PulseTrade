@@ -681,13 +681,15 @@ def bot_func_all(page):
                         bot = current_user.bots.filter(Bot.id==bot.id).first()
                         if bot.units == 0:
                             db.session.commit()
-                            break
-                        
+                            continue
+
                         if bot.Close_deal_after_timeout:
-                            elapsed_time = time.time() - start_time
-                            if elapsed_time > bot.timeout:
-                                db.session.commit()
-                                break
+                            deal_start = bot.last_open_trade_time
+                            if deal_start is not None and bot.timeout:
+                                elapsed_time = (datetime.utcnow() - deal_start).total_seconds()
+                                if elapsed_time > bot.timeout:
+                                    db.session.commit()
+                                    continue
 
                         '''if bot.deal_started and bot.take_profit: 
                             break'''
@@ -713,7 +715,7 @@ def bot_func_all(page):
                         bot.price_now = price
                         #db.session.commit()
                         if (check_indicators_condition(bot.conds, symbol, exchange_name,bot.id) or bot.without_conds == True) and bot.deal_started == False and (bot.max_price is None or price <= bot.max_price) and (bot.min_price is None or price >= bot.min_price) and (bot.min_volume is None or volume >= bot.min_volume) and price > 0:
-                            if ((bot.cooldown_between_deals > 0 and bot.cooldown_between_deals - (datetime.utcnow() - bot.last_open_trade_time).seconds <= 0) or (bot.cooldown_between_deals == 0)) and (bot.total_trades <= bot.open_deals_and_stop or bot.open_deals_and_stop == 0):
+                            if (((bot.cooldown_between_deals or 0) > 0 and (bot.cooldown_between_deals or 0) - (datetime.utcnow() - bot.last_open_trade_time).seconds <= 0) or ((bot.cooldown_between_deals or 0) == 0)) and ((bot.total_trades or 0) <= (bot.open_deals_and_stop or 0) or (bot.open_deals_and_stop or 0) == 0):
                                 
                                 if bot.strategy.lower()=='long':
                                     bot.stop_loss_price = price - price * float(bot.stop_loss_price_percent)/100
@@ -1057,6 +1059,8 @@ def bot_func_all(page):
                     continue
 
 def check_indicators_condition(conds,symbol,exchange,bot_id):
+    if not conds:
+        return False
     MACDisTrue1 = True
     MACDisTrue2 = True
     RSIisTrue = True
@@ -1177,9 +1181,11 @@ def check_indicators_condition(conds,symbol,exchange,bot_id):
                 middle_band = data.to_dict(orient='records')[-1]['middle_band']
                 lower_band = data.to_dict(orient='records')[-1]['lower_band']
                 close = data.to_dict(orient='records')[-1]['close']
-                bb_percentage = (close - lower_band) / (upper_band - lower_band)
-                crossing_up = (bb_percentage < float(cond_data["Signal Value"])) & (bb_percentage >= float(cond_data["Signal Value"]))
-                crossing_down = (bb_percentage > float(cond_data["Signal Value"])) & (bb_percentage <= float(cond_data["Signal Value"]))
+                records = data.to_dict(orient='records')[-2:]
+                prev_bb_percentage = ((records[0]['close'] - records[0]['lower_band']) / (records[0]['upper_band'] - records[0]['lower_band'])) if records[0]['upper_band'] != records[0]['lower_band'] else 0
+                bb_percentage = (close - lower_band) / (upper_band - lower_band) if upper_band != lower_band else 0
+                crossing_up = (prev_bb_percentage < float(cond_data["Signal Value"])) & (bb_percentage >= float(cond_data["Signal Value"]))
+                crossing_down = (prev_bb_percentage > float(cond_data["Signal Value"])) & (bb_percentage <= float(cond_data["Signal Value"]))
                 greater_than = bb_percentage > float(cond_data["Signal Value"])
                 less_than = bb_percentage < float(cond_data["Signal Value"])
                 cond['value'] = bb_percentage

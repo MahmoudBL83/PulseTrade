@@ -46,6 +46,9 @@ def mail_verification_required():
     on login/register. Default 0 (off) until real SMTP creds are configured."""
     return os.environ.get('REQUIRE_EMAIL_VERIFICATION', '0') == '1'
 
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://pulse-trade-zeta.vercel.app').rstrip('/')
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -272,9 +275,9 @@ def admin_pricing_post():
     name_ar = request.json.get('name_ar')
     trial_days = request.json.get('trial_days')
     if max_sma == None:
-        max_sma = math.inf
+        max_sma = 10**9
     if max_bots == None:
-        max_bots = math.inf
+        max_bots = 10**9
     id = request.json.get('id')
     subscription = Subscription.query.filter(Subscription.id == id).first()
     subscription.max_sma = max_sma
@@ -548,7 +551,7 @@ def login():
                         None,
                         "PulseTrade Email Verification",
                         "PulseTrade Email Verification: click this link to complete the verification process:",
-                        f'http://127.0.0.1:5000/verify_email/{token}',
+                        f'{FRONTEND_URL}/verify_email/{token}',
                     )
                     return jsonify({"message": "Please Check your email to verify your email address", "ok": False})
                 
@@ -647,13 +650,18 @@ def register():
         user.subType_id = subscription.id
         subscription.users.append(user)
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            # Concurrent duplicate-email race (unique constraint) or flush error.
+            db.session.rollback()
+            return jsonify({'message': 'Email already taken.', 'ok': False})
         if mail_verification_required():
             # Generate the verification token
             token = generate_verification_token(user.email)
 
             try:
-                send_otp_email(user.email, None,"PulseTrade Email Verification","PulseTrade Email Verification: click this link to complete the verification process:",f'http://127.0.0.1:5000/verify_email/{token}')
+                send_otp_email(user.email, None,"PulseTrade Email Verification","PulseTrade Email Verification: click this link to complete the verification process:",f'{FRONTEND_URL}/verify_email/{token}')
             except Exception as e:
                 # Mail server not configured — account already created,
                 # user can verify later via /resend_otp once mail works.

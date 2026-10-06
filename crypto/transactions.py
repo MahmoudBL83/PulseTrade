@@ -113,9 +113,18 @@ def crypto_transfer():
     exchange_name = current_user.exchanges.filter(Exchange.isActive == True).first().name
     exchange = connectExchange(exchange_name)
     if request.method == 'POST':
-        amount = request.json['amount']
-        side = request.json['side']
-        symbol = request.json['symbol']
+        try:
+            amount = float(request.json['amount'])
+        except (KeyError, TypeError, ValueError):
+            return jsonify({'message': 'Invalid amount'}), 400
+        if not (amount > 0):
+            return jsonify({'message': 'Amount must be positive'}), 400
+        side = request.json.get('side') or ''
+        symbol = request.json.get('symbol') or ''
+        if side not in ('funding', 'spot'):
+            return jsonify({'message': f'Invalid side: {side}'}), 400
+        if not symbol or '/' in str(symbol):
+            return jsonify({'message': f'Invalid symbol: {symbol}'}), 400
 
         try:
             if side == 'funding':
@@ -185,11 +194,17 @@ def crypto_convert():
     if request.method == 'POST':
         try:
             # Extract the parameters from the JSON request
-            amount = request.json['amount']
+            amount = float(request.json['amount'])
+            if not (amount > 0):
+                return jsonify({'message': 'Amount must be positive'}), 400
             order_type = request.json['order_type']
-            source_asset = request.json['source_asset']
-            target_asset = request.json['target_asset']
+            source_asset = str(request.json['source_asset']).upper()
+            target_asset = str(request.json['target_asset']).upper()
+            if not source_asset or not target_asset or source_asset == target_asset:
+                return jsonify({'message': 'Invalid asset pair'}), 400
             side = str(request.json['side'])
+            if side not in ('1', '0', 'buy', 'sell'):
+                return jsonify({'message': f'Invalid side: {side}'}), 400
 
 
             # Create the exchange object with the API credentials
@@ -203,13 +218,16 @@ def crypto_convert():
                 if order_type == 'market':
                     order = exchange.create_order(symbol, 'market', ('sell' if side=="1" else "buy"), amount)
                     db.session.add(Transaction(user_id=current_user.id,exchange=exchange_name,symbol=symbol,type=('sell' if side=="1" else "buy"),amount=amount,value=exchange.fetch_order(order['id'],symbol=symbol)['price']))
+                    db.session.commit()
                     if side == '1':
                         send_notification(f'Conversion completed on {exchange_name} to convert {amount} {source_asset} to {float(exchange.fetch_order(order["id"],symbol)["price"])*float(amount)} {target_asset}***Convert')
                     else:
                         send_notification(f'Conversion completed on {exchange_name} to convert {float(exchange.fetch_order(order["id"],symbol)["price"])*float(amount)} {target_asset} to {amount} {source_asset}***Convert')
                 elif order_type == 'limit':
                     # Additional parameters for limit orders
-                    price = request.json['price']
+                    price = float(request.json['price'])
+                    if not (price > 0):
+                        return jsonify({'message': 'Limit orders require a positive price'}), 400
                     order = exchange.create_order(symbol, 'limit', ('sell' if side=="1" else "buy"), amount, price)
                     if side == '1':
                         send_notification(f'Conversion started on {exchange_name} to convert {amount} {source_asset} to {float(price)*float(amount)} {target_asset}***Convert')
@@ -263,8 +281,12 @@ def crypto_withdraw():
     exchange = connectExchange(exchange_name)
     if request.method == 'POST':
         try:
-            amount = request.json['amount']
-            recipient_address = request.json['recipient_address']
+            amount = float(request.json['amount'])
+            if not (amount > 0):
+                return jsonify({'message': 'Amount must be positive'}), 400
+            recipient_address = (request.json.get('recipient_address') or '').strip()
+            if not recipient_address:
+                return jsonify({'message': 'Recipient address is required'}), 400
             currency = request.json['currency']
             network_user = request.json['network']
             if exchange.fetch_currencies() is None:

@@ -29,12 +29,22 @@ def place_order():
         # Parse the order parameters from the request body
         symbol = str(request.json['symbol']).upper()
         order_type = str(request.json['type']).lower()
+        if order_type not in ('limit', 'market', 'cond.limit', 'cond.market'):
+            return jsonify({'message': f'Unsupported order type: {order_type}', 'ok': False}), 400
         if request.json['order_price']:
             order_price = float(request.json['order_price'])
         else:
             order_price = 0
         amount = float(request.json['amount'])
         side = str(request.json['side']).lower()
+        if side not in ('buy', 'sell'):
+            return jsonify({'message': f'Unsupported side: {side}', 'ok': False}), 400
+        if not (amount > 0):
+            return jsonify({'message': 'Amount must be positive', 'ok': False}), 400
+        if order_type in ('limit', 'cond.limit') and not (order_price > 0):
+            return jsonify({'message': 'Limit orders require a positive price', 'ok': False}), 400
+        if '/' not in symbol:
+            return jsonify({'message': f'Invalid symbol: {symbol}', 'ok': False}), 400
 
         # Place the order on the exchange and return the order details as a JSON object
         if order_type == 'limit':
@@ -56,8 +66,11 @@ def place_order():
             })
             send_notification(f'Trigger Quick {side} order started on {exchange_name} for {symbol} with {float(request.json["trigger_price"]) * amount} {symbol.split("/")[1]} ***Conditional Market {side} Order')
             current_user.append_to_open_orders([buy_trade['id'], symbol,'Trigger Sell'])
+        else:
+            return jsonify({'message': f'Unsupported order type: {order_type}', 'ok': False}), 400
 
-        db.session.add(Transaction(user_id=current_user.id,exchange=exchange_name,symbol=symbol,type=side,amount=amount,value=order_price))
+        recorded_price = buy_trade_price if order_type == 'market' else order_price
+        db.session.add(Transaction(user_id=current_user.id,exchange=exchange_name,symbol=symbol,type=side,amount=amount,value=recorded_price))
         db.session.commit()
         return jsonify({'message': 'The operation was successful', 'ok': True, 'order': buy_trade})
     

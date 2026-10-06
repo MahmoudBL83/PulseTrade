@@ -50,9 +50,9 @@ class Transaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     exchange = db.Column(db.String(120))
     amount = db.Column(db.Float)
-    symbol = db.Column(db.String(10))
+    symbol = db.Column(db.String(32))
     status = db.Column(db.Boolean, default = True)
-    err_msg = db.Column(db.JSON, default = "")
+    err_msg = db.Column(db.JSON, default=None)
     #linked bot
     bot_id = db.Column(db.Integer, db.ForeignKey('bots.bot_id'))
     bot = db.relationship('Bot', back_populates='transactions')
@@ -78,7 +78,7 @@ class Transaction(db.Model):
             'err_msg': self.err_msg,
         }
     
-    def __init__(self, type, user_id, exchange, amount, symbol, value=0, err_msg="", status=True, bot_id=None, sma_id=None):
+    def __init__(self, type, user_id, exchange, amount, symbol, value=0, err_msg=None, status=True, bot_id=None, sma_id=None):
         amount = float(amount)
         self.type = type
         self.user_id = user_id
@@ -778,9 +778,9 @@ class Exchange(db.Model,UserMixin):
     owner_id = db.Column(db.Integer(),db.ForeignKey('users.id'))
     owner = db.relationship('User')
     name = db.Column(db.String(120))
-    api_key = db.Column(db.String(120))
-    api_secret = db.Column(db.String(120))
-    password = db.Column(db.String(120))
+    api_key = db.Column(db.String(512))
+    api_secret = db.Column(db.String(512))
+    password = db.Column(db.String(512))
     demo = db.Column(db.Boolean,default=False)
     isActive = db.Column(db.Boolean,default=False)
 

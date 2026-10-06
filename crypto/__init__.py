@@ -509,6 +509,10 @@ def _init_db():
         from sqlalchemy import text as _text
         for _ddl in (
             "ALTER TABLE users ALTER COLUMN password_hash TYPE VARCHAR(512)",
+            "ALTER TABLE exchanges ALTER COLUMN api_key TYPE VARCHAR(512)",
+            "ALTER TABLE exchanges ALTER COLUMN api_secret TYPE VARCHAR(512)",
+            "ALTER TABLE exchanges ALTER COLUMN password TYPE VARCHAR(512)",
+            "ALTER TABLE transaction ALTER COLUMN symbol TYPE VARCHAR(32)",
         ):
             try:
                 with db.engine.begin() as _conn:

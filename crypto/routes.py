@@ -24,6 +24,8 @@ from datetime import timedelta
 from crypto import get_current_user
 stripe.api_key = os.environ.get('STRIPE_API_KEY', '')
 
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://pulse-trade-zeta.vercel.app').rstrip('/')
+
 
 
 @app.route("/docs/")
@@ -66,8 +68,8 @@ def create_all():
         db.session.add(Category(title=x))'''
     if Subscription.query.count() < 3:
         db.session.add(Subscription(type='free',max_bots=5,max_sma=10))
-        db.session.add(Subscription(type='advanced',max_bots=25,max_sma=math.inf))
-        db.session.add(Subscription(type='pro',max_bots=100,max_sma=math.inf))
+        db.session.add(Subscription(type='advanced',max_bots=25,max_sma=10**9))
+        db.session.add(Subscription(type='pro',max_bots=100,max_sma=10**9))
     '''for exchange in ccxt.exchanges:
         db.session.add(Exchange2(exchange=exchange))
         db.session.commit()
@@ -469,8 +471,8 @@ def create_checkout_session():
             except:
                 pass'''
         '''checkout_session = stripe.checkout.Session.create(
-            success_url='http://3.88.63.152:8000/checkout_success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url='http://3.88.63.152:8000/cancel',
+            success_url='http://127.0.0.1:5000/checkout_success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url='http://127.0.0.1:5000/cancel',
             payment_method_types=['card','paypal'],
             mode='subscription',
             line_items=[{
@@ -495,8 +497,8 @@ def create_checkout_session():
         sub_col = Subscription.query.filter(Subscription.stripe_id==request.json['price_id']).first()
         if sub_col.trial_days > 0:
             checkout_session = stripe.checkout.Session.create(
-                success_url='http://3.88.63.152:8000/checkout_success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url='http://3.88.63.152:8000/cancel',
+                success_url=f'{FRONTEND_URL}/checkout_success?session_id={{CHECKOUT_SESSION_ID}}',
+                cancel_url=f'{FRONTEND_URL}/cancel',
                 payment_method_types=['card','paypal'],
                 mode='subscription',
                 line_items=[{
@@ -511,15 +513,14 @@ def create_checkout_session():
             )
         else:
             checkout_session = stripe.checkout.Session.create(
-                success_url='http://3.88.63.152:8000/checkout_success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url='http://3.88.63.152:8000/cancel',
+                success_url=f'{FRONTEND_URL}/checkout_success?session_id={{CHECKOUT_SESSION_ID}}',
+                cancel_url=f'{FRONTEND_URL}/cancel',
                 payment_method_types=['card','paypal'],
                 mode='subscription',
                 line_items=[{
                     'price': request.json['price_id'],
                     'quantity': 1,
                 }],
-                allow_promotion_codes=True,
                 customer=current_user.stripe_customer_id,
             )
         current_user.sub_date = datetime.utcnow()
@@ -597,7 +598,7 @@ def create_checkout_session_tap():
                         "order": request.json['price_id'],
                     },
                     "source": { "id": "src_all" },
-                    "redirect": { "url": f"http://3.88.63.152:8000/checkout_success_tab?session_id={request.json['price_id']}" }
+                    "redirect": { "url": f"{FRONTEND_URL}/checkout_success_tab?session_id={request.json['price_id']}" }
                 }
                 headers = {
                     "accept": "application/json",
@@ -625,7 +626,7 @@ def create_checkout_session_tap():
                         "order": request.json['price_id'],
                     },
                     "source": { "id": "src_all" },
-                    "redirect": { "url": f"http://3.88.63.152:8000/checkout_success_tab?session_id={request.json['price_id']}" }
+                    "redirect": { "url": f"{FRONTEND_URL}/checkout_success_tab?session_id={request.json['price_id']}" }
                 }
                 headers = {
                     "accept": "application/json",
