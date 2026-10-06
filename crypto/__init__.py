@@ -564,7 +564,35 @@ def stop_data_stream():
 
 @app.route('/api/health')
 def api_health():
-    return {"status": "ok", "vercel": IS_VERCEL, "demo": bool(os.environ.get("DEMO"))}
+    try:
+        from sqlalchemy import inspect as _inspect
+        tables = sorted(_inspect(db.engine).get_table_names())
+    except Exception as e:
+        tables = [f"error: {e}"]
+    return {
+        "status": "ok",
+        "vercel": IS_VERCEL,
+        "demo": bool(os.environ.get("DEMO")),
+        "build": "e1d07ac+tables-guard",
+        "db_tables": len(tables),
+        "has_subscriptions": "subscriptions" in tables,
+    }
+
+
+_tables_ready = False
+
+@app.before_request
+def _ensure_tables():
+    """Serverless instances each have their own ephemeral /tmp; make sure
+    tables exist in this instance before serving. No-op when already ready."""
+    global _tables_ready
+    if _tables_ready:
+        return
+    try:
+        db.create_all()
+        _tables_ready = True
+    except Exception as e:
+        print(f"ensure_tables failed: {e}")
 
 
 @app.route('/api/cron/<job>')
