@@ -137,7 +137,7 @@ def jwt_required(fn):
             except Exception:
                 expiration_time = None
             invoice_paid = invoice_list[0]['paid'] if invoice_list else True
-            is_free = (user.subType_id == 1)
+            is_free = (user.subType_id == 1) or (getattr(getattr(user, 'subType', None), 'type', '') == 'free')
             expired = bool(expiration_time and current_time > expiration_time)
             if invoice_paid or is_free or request.endpoint == 'create_checkout_session':
                 if expired and not is_free and not (invoice_list and invoice_paid):
@@ -205,8 +205,14 @@ IS_VERCEL = IS_VERCEL_EARLY
 socketio = SocketIO(app, async_mode='threading')
 #socketio = SocketIO(app, async_mode='gevent')
 
-socketio.init_app(app, cors_allowed_origins="*")
-cors = CORS(app)
+    socketio.init_app(app, cors_allowed_origins="*")
+    _frontend = os.environ.get('FRONTEND_URL', 'https://pulse-trade-zeta.vercel.app').rstrip('/')
+    cors = CORS(app, resources={r"/api/*": {"origins": [_frontend, "http://localhost:5000", "http://127.0.0.1:5000"]}})
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = IS_VERCEL_EARLY
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
 # Initialize Flask-Login's LoginManager
 login_manager = LoginManager(app)

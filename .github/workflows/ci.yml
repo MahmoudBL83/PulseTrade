@@ -10,4 +10,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: python -m compileall -q crypto wsgi.py api
+      - name: secret scan
+        run: |
+          ! grep -rEn "2odabahaa|mzdkqpflejakjled|526af4fbd93bc393a6392db7|sk_test_51NzIN6|AIzaSyCy3nFZyl|AIzaSyD11IUa00|hf_byPxtOKREZdQALBXC|kxDtCIn7F_SBhfirpwzK4MnaflmujcbtEWwuEqwFqi4|XKokBfNWv6FIYuTMg5sLPjhJ|GOCSPX|password == '123'" --include='*.py' --include='*.yaml' --include='*.json' --exclude-dir=static --exclude-dir=templates . || (echo 'leaked secret pattern found' && exit 1)
       - run: SECRET_KEY=x JWT_SECRET_KEY=x SECURITY_PASSWORD_SALT=x FERNET_KEY=$(python -c "from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())") VERCEL=1 python -c "import os;os.environ['VERCEL']='1';from crypto import app;print(sorted([str(r) for r in app.url_map.iter_rules()])[:5])"

@@ -126,6 +126,18 @@ def delete_bot():
         print(e)
         pass
 
+    # Cancel leftover open safety orders so no ghost orders stay on the exchange.
+    try:
+        for safety in list(getattr(bot, 'safetyOrders', []) or []):
+            if safety.isOpened and not safety.isClosed and not safety.isFilled and safety.orderId:
+                try:
+                    exchange.cancel_order(str(safety.orderId), bot.symbol)
+                except Exception as e:
+                    print(f"safety cancel skipped {safety.orderId}: {e}")
+                safety.isClosed = True
+    except Exception as e:
+        print(e)
+
     bot.is_hidden = True
     #db.session.delete(bot)
     db.session.commit()

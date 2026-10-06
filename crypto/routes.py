@@ -456,7 +456,8 @@ def change_subscription():
 @jwt_required
 def get_subscription():
     current_user = get_current_user()
-    return jsonify(current_user.subType.type)
+    sub = getattr(current_user, 'subType', None) if current_user else None
+    return jsonify(sub.type if sub else 'free')
 
 @app.route("/api/v1/create_checkout_session", methods=['POST'])
 @jwt_required
@@ -471,8 +472,8 @@ def create_checkout_session():
             except:
                 pass'''
         '''checkout_session = stripe.checkout.Session.create(
-            success_url='http://127.0.0.1:5000/checkout_success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url='http://127.0.0.1:5000/cancel',
+            success_url='https://example.com/checkout_success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url='https://example.com/cancel',
             payment_method_types=['card','paypal'],
             mode='subscription',
             line_items=[{

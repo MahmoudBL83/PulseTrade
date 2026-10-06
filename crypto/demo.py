@@ -4,7 +4,7 @@ without exchange API keys or local JSON dumps.
 Enabled with DEMO=1. Additive only — real paths untouched.
 """
 import os
-from flask import jsonify
+from flask import jsonify, send_from_directory
 from crypto import app, db
 
 
@@ -84,6 +84,15 @@ def demo_seed():
             db.session.add(Exchange2(exchange=name, isActive=(name == "binance")))
     db.session.commit()
     return jsonify({"status": "seeded", "demo": True})
+
+
+@app.route("/favicon.ico")
+def favicon():
+    directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
+    for candidate in ("logo2.png", "logo.png"):
+        if os.path.isfile(os.path.join(directory, candidate)):
+            return send_from_directory(directory, candidate)
+    return ("", 204)
 
 
 # Disabled AI routes (crypto/gpt.py references g4f, which is not installed).

@@ -193,3 +193,13 @@ paths:
     post: { summary: IP check setting, responses: { '200': { description: ok } } }
   /api/v1/logout:
     post: { summary: Revoke session/JWT, responses: { '200': { description: ok } } }
+  /gpt:
+    post: { summary: Disabled (410, no AI backend), responses: { '410': { description: gone } } }
+  /binggpt/:
+    get: { summary: Disabled (410, no AI backend), responses: { '410': { description: gone } } }
+  /bardgpt/:
+    get: { summary: Disabled (410, no AI backend), responses: { '410': { description: gone } } }
+  /llamagpt/:
+    get: { summary: Disabled (410, no AI backend), responses: { '410': { description: gone } } }
+  /chat/completions:
+    post: { summary: Disabled (410, no AI backend), responses: { '410': { description: gone } } }

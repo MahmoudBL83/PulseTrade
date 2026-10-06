@@ -49,6 +49,12 @@ def mail_verification_required():
 
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://pulse-trade-zeta.vercel.app').rstrip('/')
 
+
+def mail_configured():
+    """True only when SMTP creds exist — OTP-by-mail flows must not gate
+    logins on unconfigured deploys (user would never receive the code)."""
+    return bool(os.environ.get('MAIL_USERNAME') and os.environ.get('MAIL_PASSWORD'))
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -544,7 +550,7 @@ def login():
             user = User.query.filter_by(email=email).first()
 
             if user and user.check_password(password):
-                if mail_verification_required() and user.is_verified == False:
+                if mail_verification_required() and not user.is_verified:
                     token = generate_verification_token(user.email)
                     send_otp_email(
                         user.email,
@@ -555,8 +561,9 @@ def login():
                     )
                     return jsonify({"message": "Please Check your email to verify your email address", "ok": False})
                 
-                #if user.ip_check == "true" and ( user.last_ip is None or user.last_ip != request.remote_addr):
-                if user.ip_check == "true":
+                # IP-check OTP only when the flag is on AND mail can actually
+                # deliver the code; otherwise fall through to direct login.
+                if user.ip_check in (True, "true", 1) and mail_configured():
                     client_ip = request.remote_addr
                     
                     # Perform IP address validation
@@ -703,7 +710,7 @@ def reset_password_token(token):
     # Verify the reset password token
     try:
         s = Serializer(app.config['SECRET_KEY'])
-        user = User.query.get(s.loads(token)['user_id'])
+        user = User.query.get(s.loads(token, max_age=600)['user_id'])
     except (BadSignature, SignatureExpired):
         flash('Invalid or expired token. Please request a new password reset.')
         return redirect(url_for('reset_password'))
