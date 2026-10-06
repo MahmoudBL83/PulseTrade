@@ -621,6 +621,11 @@ def register():
 
         user = User(email=email, password=password, firstName=firstName, lastName=lastName)
         subscription = Subscription.query.filter_by(type="free").first()
+        if subscription is None:
+            # Fresh DB without seed data — create the default free plan inline.
+            subscription = Subscription(type='free', max_bots=5, max_sma=10)
+            db.session.add(subscription)
+            db.session.flush()
         user.subType = subscription
         user.subType_id = subscription.id
         subscription.users.append(user)
@@ -629,7 +634,12 @@ def register():
         # Generate the verification token
         token = generate_verification_token(user.email)
 
-        send_otp_email(user.email, None,"PulseTrade Email Verification","PulseTrade Email Verification: click this link to complete the verification process:",f'http://127.0.0.1:5000/verify_email/{token}')
+        try:
+            send_otp_email(user.email, None,"PulseTrade Email Verification","PulseTrade Email Verification: click this link to complete the verification process:",f'http://127.0.0.1:5000/verify_email/{token}')
+        except Exception as e:
+            # Mail not configured (no MAIL_* env) — account already created,
+            # user can verify later via /resend_otp once mail works.
+            print(f"verification email skipped: {e}")
 
         return jsonify({'message':'Registration successful. Please check your email to verify your account.','ok':True})
     
@@ -739,7 +749,11 @@ def send_password_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except Exception as e:
+        # Mail server not configured — don't crash the request.
+        print(f"password-reset email skipped: {e}")
 
 def generate_otp(email):
     totp = pyotp.TOTP("JBSWY3DPEHPK3PXP", interval=300)
@@ -1342,7 +1356,13 @@ The PulseTrade Team <br/><br/>
 </html>
 
     '''
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        # Mail server not configured — log and let the flow continue.
+        print(f"otp email to {to_email} skipped: {e}")
+        return False
 
 
 
