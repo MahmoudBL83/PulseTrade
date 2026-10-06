@@ -474,7 +474,13 @@ def update_symbol_indicator2(symbols,exchange):
 from crypto.models import Exchange2,Pair,Bot, User
 from crypto.models import SmartTrade as SmartTrade2
 
-
+# Fresh DBs (first Vercel boot, new Postgres) have no tables yet.
+# create_all is a no-op when tables already exist.
+with app.app_context():
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"db.create_all failed: {e}")
 
 exchanges = []
 with app.app_context():
