@@ -7,7 +7,7 @@ from crypto import app,db,celery, jwt_required
 from crypto.models import User, Exchange, Bot, SafetyOrder, Post, Pair, Transaction
 from crypto.notify import send_notification
 from crypto.dataStream_indicators import fetch_data,fetch_data2
-import talib
+from crypto.talib_compat import talib
 from crypto.exchanges import connectExchange
 from time import sleep
 import time

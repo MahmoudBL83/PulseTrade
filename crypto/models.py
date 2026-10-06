@@ -9,7 +9,19 @@ from crypto import db,login_manager,scheduler
 from datetime import datetime, timedelta
 import ccxt
 import numpy as np
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+try:
+    from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+except ImportError:  # itsdangerous>=2.1 removed it; emulate via URLSafeTimedSerializer
+    from itsdangerous import URLSafeTimedSerializer as _URLSafeSerializer
+
+    class Serializer(_URLSafeSerializer):
+        def __init__(self, secret_key, expires_in=3600, **kwargs):
+            super().__init__(secret_key, **kwargs)
+            self.expires_in = expires_in
+
+        def loads(self, token, **kwargs):
+            kwargs.setdefault('max_age', self.expires_in)
+            return super().loads(token, **kwargs)
 from crypto import app
 from crypto.functions import getPrice_assets
 import time
@@ -174,7 +186,8 @@ class User(UserMixin, db.Model):
 
     def get_reset_password_token(self):
         s = Serializer(app.config['SECRET_KEY'], expires_in=600)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
+        token = s.dumps({'user_id': self.id})
+        return token.decode('utf-8') if isinstance(token, bytes) else token
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

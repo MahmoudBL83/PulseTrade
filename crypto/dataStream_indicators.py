@@ -1,5 +1,5 @@
 from pandas import DataFrame as df
-import talib
+from crypto.talib_compat import talib
 from tenacity import retry, wait_fixed
 import ccxt
 import attr

@@ -1,7 +1,7 @@
 import numpy
 from pandas import DataFrame as df
 from datetime import datetime as dt
-import talib
+from crypto.talib_compat import talib
 from logzero import logger
 from tenacity import retry, wait_fixed
 import ccxt
@@ -13,7 +13,7 @@ from pyti.relative_strength_index import relative_strength_index as rsi
 import numpy
 from pandas import DataFrame as df
 from datetime import datetime as dt
-import talib
+from crypto.talib_compat import talib
 from logzero import logger
 from tenacity import retry, wait_fixed
 import time

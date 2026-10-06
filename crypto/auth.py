@@ -9,7 +9,20 @@ import ipaddress
 import json
 import datetime
 from flask_httpauth import HTTPBasicAuth
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired, URLSafeTimedSerializer
+try:
+    from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+except ImportError:  # itsdangerous>=2.1 removed it; emulate via URLSafeTimedSerializer
+    from itsdangerous import URLSafeTimedSerializer as _URLSafeSerializer
+
+    class Serializer(_URLSafeSerializer):
+        def __init__(self, secret_key, expires_in=3600, **kwargs):
+            super().__init__(secret_key, **kwargs)
+            self.expires_in = expires_in
+
+        def loads(self, token, **kwargs):
+            kwargs.setdefault('max_age', self.expires_in)
+            return super().loads(token, **kwargs)
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from crypto.notify import send_notification
 import ccxt
 import stripe
