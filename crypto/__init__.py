@@ -102,24 +102,28 @@ def jwt_required(fn):
     def wrapper(*args, **kwargs):
         
         if current_user.is_authenticated or verify_jwt_in_request(optional=True):
-            #check invoices
-            invoices = stripe.Invoice.list(customer=current_user.stripe_customer_id)
-                
-            # Extract relevant information from each invoice
+            #check invoices (skipped when Stripe not configured — demo/public deploys)
             invoice_list = []
-            for invoice in invoices.data:
-                invoice_data = {
-                    'invoice_id': invoice.id,
-                    'amount_due': invoice.amount_due,
-                    'status': invoice.status,
-                    'created': invoice.created,
-                    'billing_reason': invoice.billing_reason,
-                    'paid': invoice.paid,
-                    'currency': invoice.currency,
-                    'url': invoice.lines.url,
-                    # Add other relevant invoice information here
-                }
-                invoice_list.append(invoice_data)
+            if stripe.api_key and getattr(current_user, 'stripe_customer_id', None):
+                try:
+                    invoices = stripe.Invoice.list(customer=current_user.stripe_customer_id)
+
+                    # Extract relevant information from each invoice
+                    for invoice in invoices.data:
+                        invoice_data = {
+                            'invoice_id': invoice.id,
+                            'amount_due': invoice.amount_due,
+                            'status': invoice.status,
+                            'created': invoice.created,
+                            'billing_reason': invoice.billing_reason,
+                            'paid': invoice.paid,
+                            'currency': invoice.currency,
+                            'url': invoice.lines.url,
+                            # Add other relevant invoice information here
+                        }
+                        invoice_list.append(invoice_data)
+                except Exception as e:
+                    print(f"stripe invoice check skipped: {e}")
             #check if its subscription didn't exceeded one month
             current_time = datetime.utcnow()
             expiration_time = current_user.sub_date + timedelta(days=30)
