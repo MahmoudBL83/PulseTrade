@@ -48,7 +48,10 @@ def connect_exchange():
     password = request.json['password']
     demo = request.json['demo']
     exchange = None
-    
+
+    if exchange_name not in ccxt.exchanges:
+        return jsonify({'status': 'error', 'message': f'Unsupported exchange: {exchange_name}'})
+
     #check if user has linked an exchange before with the same name
     if current_user.exchanges.filter(Exchange.name==exchange_name).first():
         return jsonify({
@@ -57,16 +60,19 @@ def connect_exchange():
         })
     else:
         # Initialize the exchange API client with the provided credentials
+        _opts = {'timeout': 10000, 'enableRateLimit': True}
         if password:
             exchange = getattr(ccxt, exchange_name)({
                 'apiKey': api_key,
                 'secret': secret_key,
                 'password':password,
+                **_opts,
             })
         else:
             exchange = getattr(ccxt, exchange_name)({
                 'apiKey': api_key,
                 'secret': secret_key,
+                **_opts,
             })
         if demo:
             exchange.set_sandbox_mode(True)

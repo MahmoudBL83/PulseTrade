@@ -333,9 +333,13 @@ class Indicator:
         except Exception as e:
             logger.exception(e)
 
-symbols = search()
-symbols2 = [symbol['symbol'][:symbol['symbol'].index(symbol['currency_code'])] + '/' + symbol['currency_code'] for symbol in symbols if symbol['currency_code'] == 'USDT' and '.P' not in symbol['symbol']]
-symbols2 = symbols2[:10]
+try:
+    symbols = search()
+    symbols2 = [symbol['symbol'][:symbol['symbol'].index(symbol['currency_code'])] + '/' + symbol['currency_code'] for symbol in symbols if symbol['currency_code'] == 'USDT' and '.P' not in symbol['symbol']]
+    symbols2 = symbols2[:10]
+except Exception as e:
+    print(f"symbol catalog unavailable: {e}")
+    symbols, symbols2 = [], []
 
 def update_symbol_data(symbol, intervals,exchanges):
     indicator = Indicator(

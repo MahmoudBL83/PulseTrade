@@ -86,7 +86,7 @@ app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'true').lower() == '
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', '')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', '')
 
-from flask import request
+from flask import request, jsonify
 import stripe
 
 scheduler = BackgroundScheduler(timezone="utc")
@@ -100,13 +100,19 @@ jwt = JWTManager(app)
 def jwt_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        
-        if current_user.is_authenticated or verify_jwt_in_request(optional=True):
+        user = get_current_user()
+        if user is None or getattr(user, 'is_anonymous', False):
+            # API callers get JSON, page loads get the login redirect.
+            if request.path.startswith('/api/'):
+                return jsonify({"message": "authentication required", "ok": False}), 401
+            return redirect(url_for('login'))
+
+        if user.is_authenticated or verify_jwt_in_request(optional=True):
             #check invoices (skipped when Stripe not configured — demo/public deploys)
             invoice_list = []
-            if stripe.api_key and getattr(current_user, 'stripe_customer_id', None):
+            if stripe.api_key and getattr(user, 'stripe_customer_id', None):
                 try:
-                    invoices = stripe.Invoice.list(customer=current_user.stripe_customer_id)
+                    invoices = stripe.Invoice.list(customer=user.stripe_customer_id)
 
                     # Extract relevant information from each invoice
                     for invoice in invoices.data:
@@ -126,16 +132,25 @@ def jwt_required(fn):
                     print(f"stripe invoice check skipped: {e}")
             #check if its subscription didn't exceeded one month
             current_time = datetime.utcnow()
-            expiration_time = current_user.sub_date + timedelta(days=30)
-            if (invoice_list[0]['paid'] if len(invoice_list) else True) or current_user.subType_id == 1 or request.endpoint == 'create_checkout_session':
+            try:
+                expiration_time = user.sub_date + timedelta(days=30) if user.sub_date else None
+            except Exception:
+                expiration_time = None
+            invoice_paid = invoice_list[0]['paid'] if invoice_list else True
+            is_free = (user.subType_id == 1)
+            expired = bool(expiration_time and current_time > expiration_time)
+            if invoice_paid or is_free or request.endpoint == 'create_checkout_session':
+                if expired and not is_free and not (invoice_list and invoice_paid):
+                    return redirect(url_for('pricing'))  # subscription exceeded one month
                 #check all the apis of the all the user's exchanges if they are active and if they are not remove them
-                for exchange in current_user.exchanges:
+                for exchange in user.exchanges:
                     # try to connect to the exchange to check if the api is valid
                     try:
+                        api_key, api_secret, password = exchange.get_creds()
                         exchange2 = getattr(ccxt, exchange.name)({
-                            'apiKey': exchange.api_key,
-                            'secret': exchange.api_secret,
-                            'password': exchange.password if exchange.password else None
+                            'apiKey': api_key,
+                            'secret': api_secret,
+                            'password': password if password else None
                         })
                         if exchange.demo:
                             exchange2.set_sandbox_mode(True)
@@ -144,18 +159,18 @@ def jwt_required(fn):
                             pass
                         else:
                             # if the api is invalid remove it
-                            crypto.notify.send_notification(current_user.email, f"Your API for {exchange.name} is invalid, please update it.")
-                            current_user.exchanges.remove(exchange)
+                            crypto.notify.send_notification(user.email, f"Your API for {exchange.name} is invalid, please update it.")
+                            user.exchanges.remove(exchange)
                             db.session.commit()
 
 
                     except Exception as e:
                         print(e)
                         # if the api is invalid remove it
-                        crypto.notify.send_notification(current_user.email, f"Your API for {exchange.name} is invalid, please update it.")
-                        current_user.exchanges.remove(exchange)
+                        crypto.notify.send_notification(user.email, f"Your API for {exchange.name} is invalid, please update it.")
+                        user.exchanges.remove(exchange)
                         db.session.commit()
-                if current_user.is_authenticated:
+                if user.is_authenticated:
                     # User is authenticated using Flask-Login
                     return fn(*args, **kwargs)
                 else:
@@ -165,7 +180,9 @@ def jwt_required(fn):
                         return fn(*args, **kwargs)
             else:
                 return redirect(url_for('pricing')) # Redirect to pricing if subscription exceeded one month
-            
+
+        if request.path.startswith('/api/'):
+            return jsonify({"message": "authentication required", "ok": False}), 401
         return redirect(url_for('login'))  # Redirect to login if not authenticated
 
     return wrapper
@@ -514,26 +531,44 @@ with app.app_context():
 
 print(exchanges)
 
+def _safe_delay(task, *args):
+    """Dispatch a celery task; log and skip when the broker is unreachable
+    instead of 500ing the HTTP request."""
+    try:
+        task.delay(*args)
+        return True
+    except Exception as e:
+        print(f"celery dispatch skipped: {e}")
+        return False
+
+
 @app.route('/start_data_stream')
 @auth2.login_required
 def run_data_stream():
-    num_bots = Bot.query.filter(Bot.is_hidden == False).count()
+    if IS_VERCEL:
+        # No broker/worker on serverless — .delay() would raise Kombu errors.
+        return jsonify({"status": "disabled_on_serverless"}), 202
+    try:
+        num_bots = Bot.query.filter(Bot.is_hidden == False).count()
+    except Exception as e:
+        print(f"celery dispatch skipped: {e}")
+        return jsonify({"status": "dispatch_failed"}), 502
     #every 100 bots will be runned in a seperate thread
     chunk_size = 100
     for i in range(0, int(num_bots/chunk_size) + 1):
-        bots.bot_func_all.delay((i+1))
-    
+        _safe_delay(bots.bot_func_all, (i+1))
+
     num_smas = SmartTrade2.query.count()
     #every 100 smas will be runned in a seperate thread
     chunk_size = 100
     for i in range(0, int(num_smas/chunk_size)+1):
-        smartTrade.smart_trade_bot_all.delay((i+1))
-        
-    notify.monitor_orders.delay()
+        _safe_delay(smartTrade.smart_trade_bot_all, (i+1))
+
+    _safe_delay(notify.monitor_orders)
     chunk_size2 = 20
     for exchange in exchanges:
         #price
-        update_price_data.delay(None, exchange)
+        _safe_delay(update_price_data, None, exchange)
 
         pairs2 = []
         pairs = []
@@ -541,29 +576,26 @@ def run_data_stream():
             for currency in getattr(ccxt, exchange)().fetch_markets():
                 if currency['spot']:
                     pairs2.append(currency['symbol'])
-            
-            
+
+
         except Exception as e:
             pass
         for pair in Pair.query.filter(Pair.isActive).all():
             pairs.append(pair.serialize()['pair'])
 
         #price
-        update_price_data.delay(None, exchange)
+        _safe_delay(update_price_data, None, exchange)
 
         #tradingview indicators
-        try:
-            update_symbol_indicator.delay(pairs2, exchange)
-        except Exception as e:
-            pass
-        
+        _safe_delay(update_symbol_indicator, pairs2, exchange)
+
         #olhcv
         if int(len(pairs)/chunk_size2) > 1:
             for i in range(0, int(len(pairs)/chunk_size2)):
-                update_symbol_indicator2.delay(pairs[i*chunk_size2:(i+1)*chunk_size2], exchange)
+                _safe_delay(update_symbol_indicator2, pairs[i*chunk_size2:(i+1)*chunk_size2], exchange)
         else:
-            update_symbol_indicator2.delay(pairs, exchange)
-        
+            _safe_delay(update_symbol_indicator2, pairs, exchange)
+
     return "runned"
 
 @app.route('/stop_data_stream')
@@ -631,7 +663,7 @@ def api_cron(job):
         from crypto.models import Bot as _Bot
         num = _Bot.query.filter(_Bot.is_hidden == False).count()
         for i in range(0, int(num / 100) + 1):
-            _bots.bot_func_all.delay((i + 1))
+            _safe_delay(_bots.bot_func_all, (i + 1))
     return {"status": "dispatched", "job": job}
 
 

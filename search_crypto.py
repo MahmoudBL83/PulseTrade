@@ -1,4 +1,5 @@
 import json
+import os
 from bs4 import BeautifulSoup
 import requests
 
@@ -36,7 +37,8 @@ def search():
         print(f"Error: {response.status_code}")'''
     
     symbols = []
-    with open("search_crypto.json", "r") as f:
+    _here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(_here, "search_crypto.json"), "r") as f:
         symbols_file = json.load(f)
         for symbol in symbols_file:
             if(symbol != "GNO" and symbol != "ANKR" and symbol != "MX" and symbol != "OSMO" and symbol != "EDU" and symbol != "TEL" and symbol != "MLK" and symbol != "FLUX" and symbol != "PENDLE" and symbol != "RXD" and symbol != "HEX" and symbol != "HOT" and symbol != "EVER" and symbol != "RXD" and symbol != "AURA" and symbol != "HOPR" and symbol != "POWR" and symbol != "WNXM" and symbol != "DERO" and symbol != "SWTH" and symbol != "TLM" and symbol != "OCEAN" and symbol != "FOR" and symbol != "PRE" and symbol != "SOUL" and symbol != "HIVE" and symbol != "POOLX" and symbol != "LADYS" and symbol != "CRTS" and symbol != "BSCPAD" and symbol != "BONK" and symbol != "SQUIDGROW" and symbol != "EGG" and symbol != "XPLA" and symbol != "FARM" and symbol != "KWENTA" and symbol != "SIDUS" and symbol != "BTG" and symbol != "LAZIO" and symbol != "FRAX" and symbol != "PSP" and symbol != "CHR" and symbol != "MLT" and symbol != "CPOOL" and symbol != "POND" and symbol != "DERC" and symbol != "ARKM" and symbol != "AMB" and symbol != "ZANO" and symbol != "WRLD" and symbol != "CHESS" and symbol != "VIB" and symbol != "AGLA" and symbol != "FET" and symbol != "BAN" and symbol != "ALPH" and symbol != "UFT" and symbol != "GNS" and symbol != "ROSE" and symbol != "BFC" and symbol != "STRAX" and symbol != "USDJ" and symbol != "GYEN" and symbol != "DIMO" and symbol != "RBN" and symbol != "VEGA" and symbol != "TITAN"and symbol != "KLV"and symbol != "WTC" and symbol != "BBF" and symbol != "BETA" and symbol != "SUKU" and symbol != "GRV" and symbol != "FX" and symbol != "BIT" and symbol != "GUSD" and symbol != "MIOTA" and symbol != "HT" and symbol != "TUSD" and symbol != "TWT" and symbol != "VET" and symbol != "QNT" and symbol != "USDD" and symbol != "MIOT" and symbol != "BUSD" and symbol != "BUS" and symbol != "KAVA" and symbol != "KCS" and symbol != "XDC" and symbol != "FXS" and symbol != "USDP" and symbol != "GT" and symbol != "RUNE" and symbol != "RNDR" and symbol != "CAKE" and symbol != "USDT" and symbol != "PAXG" and symbol != "BSV" and symbol != "BSH" and symbol != "INJ"):

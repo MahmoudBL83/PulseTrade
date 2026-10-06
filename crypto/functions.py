@@ -17,16 +17,21 @@ def connectExchange(exchange_name=None,id=None):
         else:
             return redirect(url_for('exchanges'))
     api_key,api_secret,password = current_user2.exchanges.filter(models.Exchange.name==exchange_name).first().get_creds()
+    if exchange_name not in ccxt.exchanges:
+        raise ValueError(f"unsupported exchange: {exchange_name}")
+    _opts = {'timeout': 10000, 'enableRateLimit': True}
     if current_user2.exchanges.filter(models.Exchange.name==exchange_name).first().password:
         exchange = getattr(ccxt, exchange_name)({
             'apiKey': api_key,
             'secret': api_secret,
             'password': password,
+            **_opts,
         })
     else:
         exchange = getattr(ccxt, exchange_name)({
             'apiKey': api_key,
             'secret': api_secret,
+            **_opts,
         })
 
     if current_user2.exchanges.filter(models.Exchange.name==exchange_name).first().demo:

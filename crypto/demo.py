@@ -68,7 +68,8 @@ def demo_status():
 
 
 @app.route("/api/demo/seed")
-def demo_seed():    """Create tables + minimal catalog rows (subscriptions, exchanges).
+def demo_seed():
+    """Create tables + minimal catalog rows (subscriptions, exchanges).
     Safe to call repeatedly. Requires DEMO=1."""
     if not is_demo():
         return jsonify({"error": "DEMO=1 required"}), 403

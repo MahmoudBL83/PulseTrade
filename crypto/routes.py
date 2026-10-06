@@ -571,7 +571,7 @@ def create_checkout_session_tap():
                     "Authorization": "Bearer " + os.environ.get('TAP_API_KEY', '')
                 }
 
-                current_user.stripe_customer_id = requests.post("https://api.tap.company/v2/customers", json=payload, headers=headers).json()["id"]
+                current_user.stripe_customer_id = requests.post("https://api.tap.company/v2/customers", json=payload, headers=headers, timeout=(5, 15)).json()["id"]
                 db.session.commit()
                 
             # Now create the checkout session using the new customer ID
@@ -605,7 +605,7 @@ def create_checkout_session_tap():
                     "Authorization": "Bearer " + os.environ.get('TAP_API_KEY', '')
                 }
 
-                res = requests.post(url, json=payload, headers=headers)
+                res = requests.post(url, json=payload, headers=headers, timeout=(5, 15))
             else:
                 payload = {
                     "amount": 1,
@@ -633,7 +633,7 @@ def create_checkout_session_tap():
                     "Authorization": "Bearer " + os.environ.get('TAP_API_KEY', '')
                 }
 
-                res = requests.post(url, json=payload, headers=headers)
+                res = requests.post(url, json=payload, headers=headers, timeout=(5, 15))
 
             #session['subscription_type'] = request.json['subscription_type']
             
@@ -877,12 +877,16 @@ def order_book_history():
     exchange = request.args.get("exchange")
     market = request.args.get("market")
     pair = request.args.get("pair")
-    exchangeNow = getattr(ccxt, exchange)()
-    time.sleep(exchangeNow.describe()['rateLimit']/1000)
+    if exchange not in ccxt.exchanges:
+        return jsonify({"error": f"unsupported exchange: {exchange}"}), 400
+    exchangeNow = getattr(ccxt, exchange)({'timeout': 10000, 'enableRateLimit': True})
     order_book = exchangeNow.fetch_order_book(symbol=pair+"/"+market,limit=1)
 
     if order_book:
-        socketio.emit('last_order', json.dumps(order_book))
+        try:
+            socketio.emit('last_order', json.dumps(order_book))
+        except Exception as e:
+            print(f"socketio emit skipped: {e}")
     return "true"
 
 @app.route('/api/v1/last_trades_history')
@@ -890,11 +894,16 @@ def last_trades_history():
     exchange = request.args.get("exchange")
     market = request.args.get("market")
     pair = request.args.get("pair")
-    exchangeNow = getattr(ccxt, exchange)()
-    time.sleep(exchangeNow.describe()['rateLimit']/1000)
-    last_trades = exchangeNow.fetch_trades(symbol=pair+"/"+market,limit=1)[0]
+    if exchange not in ccxt.exchanges:
+        return jsonify({"error": f"unsupported exchange: {exchange}"}), 400
+    exchangeNow = getattr(ccxt, exchange)({'timeout': 10000, 'enableRateLimit': True})
+    trades = exchangeNow.fetch_trades(symbol=pair+"/"+market,limit=1) or []
+    last_trades = trades[0] if trades else None
     if last_trades:
-        socketio.emit('last_trade', json.dumps(last_trades))
+        try:
+            socketio.emit('last_trade', json.dumps(last_trades))
+        except Exception as e:
+            print(f"socketio emit skipped: {e}")
     return "true"
 
 @app.route('/api/v1/live_balance')
@@ -963,7 +972,10 @@ def live_price():
         price = 0'''
 
     if price and stream == "true":
-        socketio.emit('live_price', json.dumps([current_user.id,price]))
+        try:
+            socketio.emit('live_price', json.dumps([current_user.id,price]))
+        except Exception as e:
+            print(f"socketio emit skipped: {e}")
     return jsonify(price)
 
 async def fetch_price(current_user2,exchange_name,symbol):
@@ -1127,7 +1139,10 @@ def indicators():
     interval = request.args.get("interval")
     #indicators = update_symbol_data(pair+'/'+market,interval,exchange,connectExchange(exchange),current_user.id)
     indicators = update_symbol_data2(pair+'/'+market,interval,exchange)
-    socketio.emit('indicators', json.dumps(indicators))
+    try:
+        socketio.emit('indicators', json.dumps(indicators))
+    except Exception as e:
+        print(f"socketio emit skipped: {e}")
     return "true"
 
                  
