@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, request, jsonify
 import os
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 try:  # optional .env support for local development (never overrides real env)
     from dotenv import load_dotenv
@@ -109,7 +109,8 @@ app.config['JSON_SORT_KEYS'] = False
 # Long-lived caching for static assets (fingerprinted React assets are immutable).
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(days=7)
 
-scheduler = BackgroundScheduler(timezone="utc")
+# tzinfo object, not a string: zone names are case-sensitive on Linux (no "utc" file in tzdata).
+scheduler = BackgroundScheduler(timezone=timezone.utc)
 
 celery = make_celery(app)
 
