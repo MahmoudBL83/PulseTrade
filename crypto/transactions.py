@@ -1,10 +1,41 @@
 from flask import render_template, request, redirect, url_for, jsonify
 import ccxt
-from flask_login import login_required,current_user
-from crypto import app, db,jwt_required
+from crypto import app, db,jwt_required, get_current_user
 from crypto.models import Exchange, Post, Transaction
 from crypto.notify import send_notification
-from crypto.exchanges import connectExchange
+from crypto.exchanges import connectExchange, nav_context
+from crypto.cache import TTLCache
+from crypto import market
+
+_meta_cache = TTLCache(ttl=600)
+
+
+def _body():
+    return request.get_json(silent=True) or {}
+
+
+def _has(exchange, feature):
+    try:
+        return bool(exchange.describe()['has'].get(feature))
+    except Exception:
+        return False
+
+
+def _unsupported(user):
+    return render_template('404.html', **nav_context(user)), 404
+
+
+def _active_name(user):
+    row = user.exchanges.filter(Exchange.isActive == True).first() or user.exchanges.first()
+    return row.name if row else None
+
+
+def _cached(key, fn):
+    hit = _meta_cache.get(key)
+    if hit is None:
+        hit = _meta_cache.set(key, fn())
+    return hit
+
 
 @app.route('/api/v1/deposit/', methods=['POST','GET'])
 @jwt_required
@@ -22,55 +53,43 @@ def crypto_deposit():
         }
         deposit is the response from the exchange
     '''
-    if current_user.exchanges.filter(Exchange.isActive==True).first() is None:
-        if request.method == 'POST':
-            return jsonify('message','No active exchange found')
-        else:
-            return redirect(url_for('exchanges'))
-        
-    exchange_name = current_user.exchanges.filter(Exchange.isActive == True).first().name
-    exchange = connectExchange(exchange_name)
+    current_user = get_current_user()
+    exchange = connectExchange()
+    exchange_name = _active_name(current_user)
     if request.method == 'POST':
         try:
-            symbol = request.json['symbol']
-            network = request.json['network']
-            if 'fetchDepositAddress' in exchange.describe()['has']:
-                if exchange.fetch_currencies() is None or exchange.describe()['has']['fetchDepositAddress'] == False:
-                    return jsonify({'message': 'Depsoit is not possible'})
-            else:
-                return jsonify({'message': 'Depsoit is not possible'})
-                
+            body = _body()
+            symbol = body['symbol']
+            network = body.get('network')
+            if not _has(exchange, 'fetchDepositAddress'):
+                return jsonify({'message': 'Depsoit is not possible', 'ok': False})
             # Initiate deposit with exchange
-            deposit = exchange.fetch_deposit_address(symbol, {'network': network})
-            '''print(deposit)
-            send_notification(f'Deposit completed on {exchange_name} for {symbol}***Deposit')'''
-            print(deposit)
+            deposit = exchange.fetch_deposit_address(symbol, {'network': network} if network else {})
             return jsonify({'message':f"Send only {symbol} to this address {deposit['address']}",
                             'ok':True,
                             'address':deposit['address'],
-                            'tag':deposit['tag'] if 'tag' in deposit else None
+                            'tag':deposit.get('tag'),
+                            'network': deposit.get('network') or network,
                             })
-        
         except ccxt.InsufficientFunds as e:
-            return jsonify({'message': f'Error Depositing order on {exchange_name}: Insufficient funds. {str(e)}'})
+            return jsonify({'message': f'Error Depositing order on {exchange_name}: Insufficient funds. {str(e)}', 'ok': False})
         except ccxt.InvalidOrder as e:
-            return jsonify({'message': f'Error Depositing order on {exchange_name}: Invalid order. {str(e)}'})
+            return jsonify({'message': f'Error Depositing order on {exchange_name}: Invalid order. {str(e)}', 'ok': False})
         except ccxt.NetworkError as e:
-            return jsonify({'message': f'Error Depositing order on {exchange_name}: Network error. {str(e)}'})
+            return jsonify({'message': f'Error Depositing order on {exchange_name}: Network error. {str(e)}', 'ok': False})
         except ccxt.ExchangeError as e:
-            return jsonify({'message': f'Error Depositing order on {exchange_name}: Exchange error. {str(e)}'})
+            return jsonify({'message': f'Error Depositing order on {exchange_name}: Exchange error. {str(e)}', 'ok': False})
         except ccxt.BaseError as e:
-            return jsonify({'message': f'Error Depositing order on {exchange_name}: {str(e)}'})
-    
-    if exchange.describe()['has']['fetchDepositAddress']:
-        return render_template('deposit.html',
-                            exchanges = current_user.exchanges.all(),
-                            current_user=current_user,posts = Post.query.all(),
-                            notifications=current_user.notifications.all(),
-                            deposits = connectExchange().fetch_deposits() if 'fetchDeposits' in exchange.describe()['has'] and exchange.describe()['has']['fetchDeposits'] else [],
-                        )
-    else:
-        return render_template('404.html',exchanges=current_user.exchanges.all())
+            return jsonify({'message': f'Error Depositing order on {exchange_name}: {str(e)}', 'ok': False})
+
+    if not _has(exchange, 'fetchDepositAddress'):
+        return _unsupported(current_user)
+    try:
+        deposits = exchange.fetch_deposits() if _has(exchange, 'fetchDeposits') else []
+    except Exception as e:
+        print(f"fetch_deposits failed: {e}")
+        deposits = []
+    return render_template('deposit.html', deposits=deposits, **nav_context(current_user))
 
 #get all deposits history
 @app.route('/api/v1/deposits/', methods=['POST','GET'])
@@ -93,7 +112,13 @@ def crypto_deposits():
         }
     ]
     '''
-    return jsonify(connectExchange().fetch_deposits())
+    exchange = connectExchange()
+    if not _has(exchange, 'fetchDeposits'):
+        return jsonify([])
+    try:
+        return jsonify(exchange.fetch_deposits())
+    except ccxt.BaseError as e:
+        return jsonify({'message': str(e), 'ok': False}), 502
 
 @app.route('/api/v1/transfer/', methods=['POST', 'GET'])
 @jwt_required
@@ -105,26 +130,25 @@ def crypto_transfer():
         side: the side of the transfer (funding or spot)
         symbol: the symbol of the coin to transfer
     '''
-    if current_user.exchanges.filter(Exchange.isActive==True).first() is None:
-        if request.method == 'POST':
-            return jsonify('message','No active exchange found')
-        else:
-            return redirect(url_for('exchanges'))
-    exchange_name = current_user.exchanges.filter(Exchange.isActive == True).first().name
-    exchange = connectExchange(exchange_name)
+    current_user = get_current_user()
+    exchange = connectExchange()
+    exchange_name = _active_name(current_user)
     if request.method == 'POST':
+        body = _body()
         try:
-            amount = float(request.json['amount'])
+            amount = float(body['amount'])
         except (KeyError, TypeError, ValueError):
-            return jsonify({'message': 'Invalid amount'}), 400
+            return jsonify({'message': 'Invalid amount', 'ok': False}), 400
         if not (amount > 0):
-            return jsonify({'message': 'Amount must be positive'}), 400
-        side = request.json.get('side') or ''
-        symbol = request.json.get('symbol') or ''
+            return jsonify({'message': 'Amount must be positive', 'ok': False}), 400
+        side = body.get('side') or ''
+        symbol = body.get('symbol') or ''
         if side not in ('funding', 'spot'):
-            return jsonify({'message': f'Invalid side: {side}'}), 400
+            return jsonify({'message': f'Invalid side: {side}', 'ok': False}), 400
         if not symbol or '/' in str(symbol):
-            return jsonify({'message': f'Invalid symbol: {symbol}'}), 400
+            return jsonify({'message': f'Invalid symbol: {symbol}', 'ok': False}), 400
+        if not _has(exchange, 'transfer'):
+            return jsonify({'message': f'{exchange_name} does not support internal transfers', 'ok': False}), 400
 
         try:
             if side == 'funding':
@@ -133,205 +157,144 @@ def crypto_transfer():
             else:
                 result = exchange.transfer(symbol, amount, "funding","spot")
                 send_notification(f'Transfer completed on {exchange_name} for {amount} {symbol} from funding to spot***Transfer')
+            if result.get('id'):
+                return jsonify({'message': f'Transfer successful. ID: {result["id"]}','ok':True})
+            return jsonify({'message': 'Transfer failed', 'ok': False})
+        except ccxt.BaseError as e:
+            return jsonify({'message': str(e), 'ok': False})
 
-
-            if result['id']:
-                message = f'Transfer successful. ID: {result["id"]}'
-                return jsonify({'message': message,'ok':True})
-            else:
-                return jsonify({'message': 'Transfer failed'})
-
-        except ccxt.InsufficientFunds as e:
-            return jsonify({'message': str(e)})
-
-        except ccxt.ExchangeError as e:
-            return jsonify({'message': str(e)})
-
-        except ccxt.NetworkError as e:
-            return jsonify({'message': str(e)})
-
-        except Exception as e:
-            return jsonify({'message': 'An error occurred. Please try again later.'})
-    if 'transfer' in exchange.describe()['has']:
-        if exchange.describe()['has']['transfer']:
-            try:
-                transfers = exchange.fetch_transfers()[::-1]
-                formatted_transfers = []
-                for order in transfers:
-                    formatted_transfer = {
-                        'id': order['id'],
-                        'amount': round(float(order['amount']),4),
-                        'currency': order['currency'],
-                        'from': 'spot' if order['fromAccount']=='trading' else order['fromAccount'],
-                        'to': 'spot' if order['toAccount']=='trading' else order['toAccount'],
-                        'timestamp': order['timestamp'],
-                    }
-                    if order['toAccount'] == 'funding' or order['fromAccount'] == 'funding' or True:
-                        formatted_transfers.append(formatted_transfer)
-            except:
-                formatted_transfers = []
-
-            return render_template('transfer.html',
-                                        transfers = formatted_transfers,
-                                        exchanges=current_user.exchanges.all(),
-                                        current_user=current_user,
-                                        posts = Post.query.all(),
-                                        notifications=current_user.notifications.all()
-                                    )
-    else:
-        return render_template('404.html',exchanges=current_user.exchanges.all())
+    if not _has(exchange, 'transfer'):
+        return _unsupported(current_user)
+    formatted_transfers = []
+    try:
+        for order in (exchange.fetch_transfers() if _has(exchange, 'fetchTransfers') else [])[::-1]:
+            formatted_transfers.append({
+                'id': order.get('id'),
+                'amount': round(float(order.get('amount') or 0),4),
+                'currency': order.get('currency'),
+                'from': 'spot' if order.get('fromAccount')=='trading' else order.get('fromAccount'),
+                'to': 'spot' if order.get('toAccount')=='trading' else order.get('toAccount'),
+                'timestamp': order.get('timestamp'),
+            })
+    except Exception as e:
+        print(f"fetch_transfers failed: {e}")
+    return render_template('transfer.html', transfers=formatted_transfers, **nav_context(current_user))
 
 @app.route('/api/v1/convert/', methods=['POST','GET'])
 @jwt_required
 def crypto_convert():
-    if current_user.exchanges.filter(Exchange.isActive==True).first() is None:
-        if request.method == 'POST':
-            return jsonify('message','No active exchange found')
-        else:
-            return redirect(url_for('exchanges'))
-    exchange_name = current_user.exchanges.filter(Exchange.isActive == True).first().name
-    
+    current_user = get_current_user()
+    exchange = connectExchange()
+    exchange_name = _active_name(current_user)
+
     if request.method == 'POST':
+        body = _body()
         try:
             # Extract the parameters from the JSON request
-            amount = float(request.json['amount'])
+            amount = float(body['amount'])
             if not (amount > 0):
-                return jsonify({'message': 'Amount must be positive'}), 400
-            order_type = request.json['order_type']
-            source_asset = str(request.json['source_asset']).upper()
-            target_asset = str(request.json['target_asset']).upper()
+                return jsonify({'message': 'Amount must be positive', 'ok': False}), 400
+            order_type = body['order_type']
+            source_asset = str(body['source_asset']).upper()
+            target_asset = str(body['target_asset']).upper()
             if not source_asset or not target_asset or source_asset == target_asset:
-                return jsonify({'message': 'Invalid asset pair'}), 400
-            side = str(request.json['side'])
+                return jsonify({'message': 'Invalid asset pair', 'ok': False}), 400
+            side = str(body['side'])
             if side not in ('1', '0', 'buy', 'sell'):
-                return jsonify({'message': f'Invalid side: {side}'}), 400
-
-
-            # Create the exchange object with the API credentials
-            exchange = connectExchange(exchange_name)
-            # Construct the symbol based on the chosen assets
+                return jsonify({'message': f'Invalid side: {side}', 'ok': False}), 400
+            selling = side in ('1', 'sell')
+            order_side = 'sell' if selling else 'buy'
             symbol = f"{source_asset}/{target_asset}"
-            
-            # Check if the exchange supports the specified trading pair
-            if exchange.describe()['has']['createOrder']:
-                # Set the order type based on the parameter
-                if order_type == 'market':
-                    order = exchange.create_order(symbol, 'market', ('sell' if side=="1" else "buy"), amount)
-                    db.session.add(Transaction(user_id=current_user.id,exchange=exchange_name,symbol=symbol,type=('sell' if side=="1" else "buy"),amount=amount,value=exchange.fetch_order(order['id'],symbol=symbol)['price']))
-                    db.session.commit()
-                    if side == '1':
-                        send_notification(f'Conversion completed on {exchange_name} to convert {amount} {source_asset} to {float(exchange.fetch_order(order["id"],symbol)["price"])*float(amount)} {target_asset}***Convert')
-                    else:
-                        send_notification(f'Conversion completed on {exchange_name} to convert {float(exchange.fetch_order(order["id"],symbol)["price"])*float(amount)} {target_asset} to {amount} {source_asset}***Convert')
-                elif order_type == 'limit':
-                    # Additional parameters for limit orders
-                    price = float(request.json['price'])
-                    if not (price > 0):
-                        return jsonify({'message': 'Limit orders require a positive price'}), 400
-                    order = exchange.create_order(symbol, 'limit', ('sell' if side=="1" else "buy"), amount, price)
-                    if side == '1':
-                        send_notification(f'Conversion started on {exchange_name} to convert {amount} {source_asset} to {float(price)*float(amount)} {target_asset}***Convert')
-                    else:
-                        send_notification(f'Conversion started on {exchange_name} to convert {float(price)*float(amount)} {target_asset} to {amount} {source_asset}***Convert')
-                    current_user.append_to_open_orders([order['id'], symbol,'convert'])
-                else:
-                    return jsonify({'message': 'Invalid order type. Supported types: market, limit.'})
-                # Return the order details as JSON response
-                return jsonify({'message': f"Conversion order created on {exchange_name}.",'ok':True, 'order': order})
-            else:
-                return jsonify({'message': f"{exchange_name} does not support the {symbol} trading pair."})
-        except ccxt.InsufficientFunds as e:
-            return jsonify({'message': f'Error creating order on {exchange_name}: Insufficient funds. {str(e)}'})
-        except ccxt.InvalidOrder as e:
-            return jsonify({'message': f'Error creating order on {exchange_name}: Invalid order. {str(e)}'})
-        except ccxt.NetworkError as e:
-            return jsonify({'message': f'Error creating order on {exchange_name}: Network error. {str(e)}'})
-        except ccxt.ExchangeError as e:
-            return jsonify({'message': f'Error creating order on {exchange_name}: Exchange error. {str(e)}'})
-        except ccxt.BaseError as e:
-            return jsonify({'message': f'Error creating order on {exchange_name}: {str(e)}'})
-        
-        
-    
-    exchange = connectExchange()
-    
-    pairs = []
-    for currency in exchange.fetch_markets():
-        if currency['active'] and currency['spot']:
-            pairs.append(currency['symbol'])
 
-    return render_template('convert.html',
-                           exchanges = current_user.exchanges.all(),
-                           current_user=current_user,
-                           posts = Post.query.all(),
-                           notifications=current_user.notifications.all(),
-                           pairs = pairs,
-                           )
+            if not _has(exchange, 'createOrder'):
+                return jsonify({'message': f"{exchange_name} does not support the {symbol} trading pair.", 'ok': False})
+            if order_type == 'market':
+                order = exchange.create_order(symbol, 'market', order_side, amount)
+                try:
+                    fetched = exchange.fetch_order(order['id'], symbol=symbol)
+                    fill = float(fetched.get('average') or fetched.get('price') or 0)
+                except Exception:
+                    fill = float(order.get('average') or order.get('price') or 0)
+                db.session.add(Transaction(user_id=current_user.id,exchange=exchange_name,symbol=symbol,type=order_side,amount=amount,value=fill))
+                db.session.commit()
+                if selling:
+                    send_notification(f'Conversion completed on {exchange_name} to convert {amount} {source_asset} to {fill*amount} {target_asset}***Convert')
+                else:
+                    send_notification(f'Conversion completed on {exchange_name} to convert {fill*amount} {target_asset} to {amount} {source_asset}***Convert')
+            elif order_type == 'limit':
+                price = float(body['price'])
+                if not (price > 0):
+                    return jsonify({'message': 'Limit orders require a positive price', 'ok': False}), 400
+                order = exchange.create_order(symbol, 'limit', order_side, amount, price)
+                if selling:
+                    send_notification(f'Conversion started on {exchange_name} to convert {amount} {source_asset} to {price*amount} {target_asset}***Convert')
+                else:
+                    send_notification(f'Conversion started on {exchange_name} to convert {price*amount} {target_asset} to {amount} {source_asset}***Convert')
+                current_user.append_to_open_orders([order['id'], symbol,'convert'])
+                db.session.commit()
+            else:
+                return jsonify({'message': 'Invalid order type. Supported types: market, limit.', 'ok': False})
+            return jsonify({'message': f"Conversion order created on {exchange_name}.",'ok':True, 'order': order})
+        except ccxt.InsufficientFunds as e:
+            return jsonify({'message': f'Error creating order on {exchange_name}: Insufficient funds. {str(e)}', 'ok': False})
+        except ccxt.InvalidOrder as e:
+            return jsonify({'message': f'Error creating order on {exchange_name}: Invalid order. {str(e)}', 'ok': False})
+        except ccxt.NetworkError as e:
+            return jsonify({'message': f'Error creating order on {exchange_name}: Network error. {str(e)}', 'ok': False})
+        except ccxt.ExchangeError as e:
+            return jsonify({'message': f'Error creating order on {exchange_name}: Exchange error. {str(e)}', 'ok': False})
+        except ccxt.BaseError as e:
+            return jsonify({'message': f'Error creating order on {exchange_name}: {str(e)}', 'ok': False})
+
+    try:
+        pairs = [m['symbol'] for m in exchange.fetch_markets() if m.get('active', True) and m.get('spot')]
+    except Exception as e:
+        print(f"convert page markets unavailable: {e}")
+        pairs = market.symbols(exchange_name)
+    return render_template('convert.html', pairs=pairs, **nav_context(current_user))
 
 
 @app.route('/api/v1/withdraw/', methods=['POST','GET'])
 @jwt_required
 def crypto_withdraw():
-    if current_user.exchanges.filter(Exchange.isActive==True).first() is None:
-        if request.method == 'POST':
-            return jsonify('message','No active exchange found')
-        else:
-            return redirect(url_for('exchanges'))
-    exchange_name = current_user.exchanges.filter(Exchange.isActive == True).first().name
-    exchange = connectExchange(exchange_name)
+    current_user = get_current_user()
+    exchange = connectExchange()
+    exchange_name = _active_name(current_user)
     if request.method == 'POST':
+        body = _body()
         try:
-            amount = float(request.json['amount'])
+            amount = float(body['amount'])
             if not (amount > 0):
-                return jsonify({'message': 'Amount must be positive'}), 400
-            recipient_address = (request.json.get('recipient_address') or '').strip()
+                return jsonify({'message': 'Amount must be positive', 'ok': False}), 400
+            recipient_address = (body.get('recipient_address') or '').strip()
             if not recipient_address:
-                return jsonify({'message': 'Recipient address is required'}), 400
-            currency = request.json['currency']
-            network_user = request.json['network']
-            if exchange.fetch_currencies() is None:
-                return jsonify({'message': 'Withdraw is not possible'})
-
-            # Specify the network parameter for each exchange
-            params = {'network': network_user}
-            # Add additional elif statements for other exchanges as needed
-
-            # Execute the withdrawal and check the response for errors
-            response = exchange.withdraw(currency, amount, recipient_address,None, params)
-            if 'info' in response and 'status' in response['info'] and response['info']['status'] == '0':
-                error_msg = "User identity verification is required for this withdrawal"
-                return jsonify({"message": error_msg}), 400
-            elif 'error' in response:
-                error_msg = response['error']
-                return jsonify({"message": error_msg}), 400
-            else:
-                # The response will contain information about the withdrawal, such as the ID of the withdrawal and its status
-                print(response)
-                send_notification(f'Withdraw completed on {exchange_name} for {amount} {currency}***Withdraw')
-                return jsonify({"message": "withdraw done",'ok':True})
+                return jsonify({'message': 'Recipient address is required', 'ok': False}), 400
+            currency = body['currency']
+            network_user = body.get('network')
+            if not _has(exchange, 'withdraw'):
+                return jsonify({'message': 'Withdraw is not possible', 'ok': False})
+            params = {'network': network_user} if network_user else {}
+            response = exchange.withdraw(currency, amount, recipient_address, body.get('tag'), params)
+            info = response.get('info') if isinstance(response, dict) else None
+            if isinstance(info, dict) and info.get('status') == '0':
+                return jsonify({"message": "User identity verification is required for this withdrawal", 'ok': False}), 400
+            if isinstance(response, dict) and response.get('error'):
+                return jsonify({"message": response['error'], 'ok': False}), 400
+            send_notification(f'Withdraw completed on {exchange_name} for {amount} {currency}***Withdraw')
+            return jsonify({"message": "withdraw done",'ok':True})
         except ccxt.NetworkError as e:
-            # Handle network errors (e.g. connection issues)
-            error_msg = f"Network error: {str(e)}"
-            return jsonify({"message": error_msg}), 500
-        except ccxt.ExchangeError as e:
-            # Handle exchange errors (e.g. invalid parameters, insufficient funds)
-            error_msg = f"Exchange error: {str(e)}"
-            return jsonify({"message": error_msg}), 400
-        except Exception as e:
-            # Handle other errors (e.g. unexpected errors)
-            error_msg = f"Unexpected error: {str(e)}"
-            return jsonify({"message": error_msg}), 500
-    if 'withdraw' in exchange.describe()['has']:
-        if exchange.describe()['has']['withdraw']:
-            return render_template('withdraw.html',
-                                        exchanges = current_user.exchanges.all(),
-                                        current_user=current_user,posts = Post.query.all(),
-                                        notifications=current_user.notifications.all(),
-                                        withdrawals = connectExchange().fetch_withdrawals() if 'fetchWithdrawals' in exchange.describe()['has'] and exchange.describe()['has']['fetchWithdrawals'] else [],
-                                )
-    else:
-        return render_template('404.html',exchanges=current_user.exchanges.all())
-    
+            return jsonify({"message": f"Network error: {str(e)}", 'ok': False}), 502
+        except ccxt.BaseError as e:
+            return jsonify({"message": f"Exchange error: {str(e)}", 'ok': False}), 400
+    if not _has(exchange, 'withdraw'):
+        return _unsupported(current_user)
+    try:
+        withdrawals = exchange.fetch_withdrawals() if _has(exchange, 'fetchWithdrawals') else []
+    except Exception as e:
+        print(f"fetch_withdrawals failed: {e}")
+        withdrawals = []
+    return render_template('withdraw.html', withdrawals=withdrawals, **nav_context(current_user))
+
 #get all withdrawals history
 @app.route('/api/v1/withdrawals/', methods=['POST','GET'])
 @jwt_required
@@ -353,101 +316,69 @@ def crypto_withdrawals():
         }
     ]
     '''
-    return jsonify(connectExchange().fetch_withdrawals() if 'fetchWithdrawals' in connectExchange().describe()['has'] and connectExchange().describe()['has']['fetchWithdrawals'] else [])
+    exchange = connectExchange()
+    if not _has(exchange, 'fetchWithdrawals'):
+        return jsonify([])
+    try:
+        return jsonify(exchange.fetch_withdrawals())
+    except ccxt.BaseError as e:
+        return jsonify({'message': str(e), 'ok': False}), 502
 
 @app.route('/api/v1/precision/<exchange_name>', methods=['POST','GET'])
 @jwt_required
 def get_precision(exchange_name):
-    symbol = request.json['symbol']
+    symbol = _body().get('symbol') or request.args.get('symbol')
+    if not symbol:
+        return jsonify({'message': 'Missing field: symbol', 'ok': False}), 400
     exchange = connectExchange(exchange_name)
-    if exchange.fetch_markets() is None:
-        return jsonify([])
-    print(symbol)
-    #load markets first
-    exchange.load_markets()
-    print(exchange.market(symbol))
-    print(exchange.market(symbol)['precision'])
-    amount = exchange.market(symbol)['precision']['amount']
-    price = exchange.market(symbol)['precision']['price']
-
-    return jsonify({'amount':amount,'price':price})
+    try:
+        exchange.load_markets()
+        precision = exchange.market(symbol).get('precision') or {}
+    except Exception as e:
+        return jsonify({'message': f'Unknown market {symbol}: {e}', 'ok': False}), 400
+    return jsonify({'amount':precision.get('amount'),'price':precision.get('price')})
 
 
 @app.route('/api/v1/currencies/<exchange_name>', methods=['POST','GET'])
 @jwt_required
 def get_currencies(exchange_name):
     '''
-    the currencies are returned in the following format:
-    {
-        "active": true,
-        "code": "ETHW",
-        "deposit": true,
-        "fee": 0.01,
-        "id": "ETHW",
-        "limits": {
-            "amount": {
-                "max": null,
-                "min": null
-            },
-            "deposit": {
-                "max": null,
-                "min": 0
-            },
-            "withdraw": {
-                "max": null,
-                "min": 0.01
-            }
-        },
-        "name": "ETHW",
-        "networks": {
-            "ETHW": {
-                "active": true,
-                "deposit": true,
-                "fee": 0.01,
-                "id": "ETHW",
-                "info": {
-                    "chain": "ETHW",
-                    "chainDeposit": "1",
-                    "chainType": "ETHW",
-                    "chainWithdraw": "1",
-                    "confirmation": "50",
-                    "depositMin": "0",
-                    "minAccuracy": "8",
-                    "withdrawFee": "0.01",
-                    "withdrawMin": "0.01",
-                    "withdrawPercentageFee": "0"
-                },
-                "limits": {
-                    "deposit": {
-                        "max": null,
-                        "min": 0
-                    },
-                    "withdraw": {
-                        "max": null,
-                        "min": 0.01
-                    }
-                },
-                "network": "ETHW",
-                "precision": 1e-8,
-                "withdraw": true
-            }
-        },
-        "precision": 1e-8,
-        "withdraw": true
-    }
+    the currencies are returned as a list of ccxt currency structures:
+    {"code": "ETHW", "name": "ETHW", "deposit": true, "withdraw": true, "fee": 0.01,
+     "networks": {...}, "limits": {...}, "precision": 1e-8, ...}
     '''
     exchange = connectExchange(exchange_name)
-    if exchange.fetch_currencies() is None:
+    try:
+        currencies = _cached(("currencies", exchange_name, getattr(exchange, 'user_id', None) or 0), exchange.fetch_currencies)
+    except Exception as e:
+        print(f"fetch_currencies failed: {e}")
+        currencies = None
+    if not currencies:
         return jsonify([])
-    
-    return jsonify(list(map(lambda x: x[1],exchange.fetch_currencies().items())))
+    return jsonify(list(currencies.values()))
 
 @app.route('/api/v1/fees', methods=['POST','GET'])
 @jwt_required
 def get_fees():
-    code = request.args.get('code')
+    code = request.args.get('code') or _body().get('code')
+    if not code:
+        return jsonify({'message': 'Missing field: code', 'ok': False}), 400
     exchange = connectExchange()
-    return jsonify(exchange.fetch_deposit_withdraw_fees([code]))
+    try:
+        return jsonify(exchange.fetch_deposit_withdraw_fees([code]))
+    except Exception as e:
+        return jsonify({'message': f'Fees unavailable: {e}', 'ok': False}), 502
+
+
+def _markets(exchange_name):
+    exchange = connectExchange(exchange_name)
+    try:
+        return exchange.fetch_markets() or []
+    except Exception as e:
+        print(f"fetch_markets failed: {e}")
+        return [{"symbol": s, "base": s.split("/")[0], "quote": s.split("/")[1], "spot": True, "active": True}
+                for s in market.symbols(exchange_name)]
+
 
 @app.route('/api/v1/markets/<exchange_name>', methods=['POST','GET'])
 @jwt_required
@@ -455,38 +386,15 @@ def get_markets(exchange_name):
     '''
     the markets are returned in the following format:
     {
-        "base": {
-            "1INCH": "1INCH",
-            "1SOL": "1SOL",
-            "3P": "3P",
-            ...
-        },
-        "quote": {
-            "BRZ": "BRZ",
-            "BTC": "BTC",
-            ...
-        }
+        "base": {"1INCH": "1INCH", "1SOL": "1SOL", ...},
+        "quote": {"BRZ": "BRZ", "BTC": "BTC", ...}
     }
     '''
-    exchange = connectExchange(exchange_name)
-
-    if exchange.fetch_markets() is None:
-        return jsonify([])
-    
-    currencies = exchange.fetch_markets()
-    return jsonify({"base": {key: value for key, value in zip([currency["base"] for currency in currencies], [currency["base"] for currency in currencies])}, "quote": {key: value for key, value in zip([currency["quote"] for currency in currencies], [currency["quote"] for currency in currencies])}})
+    currencies = _markets(exchange_name)
+    return jsonify({"base": {c["base"]: c["base"] for c in currencies if c.get("base")},
+                    "quote": {c["quote"]: c["quote"] for c in currencies if c.get("quote")}})
 
 @app.route('/api/v1/all_markets/<exchange_name>', methods=['POST','GET'])
 @jwt_required
 def get_all_markets(exchange_name):
-    exchange = connectExchange(exchange_name)
-
-    if exchange.fetch_markets() is None:
-        return jsonify([])
-    pairs = []
-    for currency in exchange.fetch_markets():
-        if currency['active'] and currency['spot']:
-            pairs.append(currency['symbol'])
-
-    return jsonify(pairs)
-
+    return jsonify([c['symbol'] for c in _markets(exchange_name) if c.get('active', True) and c.get('spot')])

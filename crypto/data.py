@@ -5,15 +5,58 @@ from crypto import app
 import math
 from search_crypto import search
 
+def _computed_price_payload(symbol_val, interval, exchange):
+    """/getPrice/ payload computed from market data + the TA engine, used when
+    the TradingView socket workers have not written pricesData files."""
+    from crypto import market, ta
+    sym = market.normalize_symbol(symbol_val)
+    t = market.ticker(exchange, sym)
+    a = ta.analysis(exchange, sym, interval if interval in market.TIMEFRAMES else "15m")
+    ind = a["indicators"]
+
+    def v(key, digits=2, scale=1.0):
+        val = ind.get(key)
+        return round(val / scale, digits) if isinstance(val, (int, float)) else 0
+
+    price = t["last"]
+    out = {
+        "symbol": symbol_val, "price": price, "volume": t["baseVolume"],
+        "market_cap_dominance": 0, "price_change": t["percentage"], "market_cap": 0,
+        "percent_change_24h": t["percentage"], "circulating_supply": 0, "cmc_rank": 0,
+        "total_supply": 0, "max_supply": 0, "full_market_cap": 0,
+        "bp": v("BBPower"), "adx": v("ADX"), "ao": v("AO"), "cci": v("CCI20"), "wpr": v("W.R"),
+        "ma": v("SMA20"), "stoch": v("Stoch.K"), "obv": 0, "bb_middle": v("BB.middle"),
+        "bb_lower": v("BB.lower"), "bb_upper": v("BB.upper"), "trix": 0, "macd": v("MACD.macd"),
+        "rsi": v("RSI"), "source": t.get("source"),
+    }
+    for n in (10, 20, 30, 50, 100, 200):
+        out[f"ema{n}"], out[f"sma{n}"] = v(f"EMA{n}"), v(f"SMA{n}")
+    out.update({
+        "rsi_signal": rsi_signal(out["rsi"]),
+        "macd_signal": macd_signal(out["macd"], v("MACD.signal")),
+        "wpr_signal": wpr_signal(out["wpr"]), "cci_signal": cci_signal(out["cci"]),
+        "adx_signal": adx_signal(out["adx"]), "ma_signal": ma_signal(price, out["ma"]),
+        "stoch_signal": stoch_signal(out["stoch"], v("Stoch.D")),
+    })
+    for n in (10, 20, 30, 50, 100, 200):
+        out[f"sma{n}_signal"] = ma_signal(price, out[f"sma{n}"])
+        out[f"ema{n}_signal"] = ma_signal(price, out[f"ema{n}"])
+    if os.environ.get("DEMO", "0") == "1":
+        out["demo"] = True
+    return out
+
+
 @app.route("/getPrice/")
 def getPrice():
     symbol_val = request.args.get('symbol')
-    interval = request.args.get('interval')
-    exchange = request.args.get('exchange')
+    interval = request.args.get('interval') or "15m"
+    interval = interval.strip('"\'')
+    exchange = request.args.get('exchange') or "okx"
+    if not symbol_val:
+        return jsonify({"error": "symbol parameter is required"}), 400
+    symbol_val = "".join(ch for ch in symbol_val if ch.isalnum()).upper()
     symbol = f"OKX:{symbol_val}"
-    if symbol is None:
-        return jsonify({"error": "symbol parameter is required"})
-    
+
     # check if symbol exists in prices3.json
     if os.path.isfile("pricesData/"+f"OKX{symbol_val}.json"):
         with open("pricesData/"+f"OKX{symbol_val}.json", "r") as f:
@@ -146,43 +189,46 @@ def getPrice():
                     "ema100_signal": ma_signal(price,ema100),
                     "ema200_signal": ma_signal(price,ema200),
                 })
-            else:
-                if os.environ.get("DEMO", "0") == "1":
-                    from crypto.demo import demo_price_payload
-                    return jsonify(demo_price_payload(symbol_val))
-                return jsonify({"error": f"{symbol} not found"})
-    else:
-        if os.environ.get("DEMO", "0") == "1":
-            from crypto.demo import demo_price_payload
-            return jsonify(demo_price_payload(symbol_val))
-        return jsonify({"error": "Data not found"})
-    
+    return jsonify(_computed_price_payload(symbol_val, interval, exchange))
+
+
+def _safe_name(value):
+    return "".join(ch for ch in str(value or "") if ch.isalnum() or ch in "-_").upper()[:40]
+
 @app.route("/openOrders/")
 def openOrders():
-    symbol = request.args.get("symbol")
-    exchange = request.args.get("exchange")
-    side = request.args.get("side")
+    symbol = _safe_name(request.args.get("symbol"))
+    exchange = _safe_name(request.args.get("exchange")).lower()
+    side = _safe_name(request.args.get("side")).lower()
+    if not symbol:
+        return jsonify({"error": "symbol parameter is required"}), 400
     try:
         with open(f"orders/{side}_{symbol}_{exchange}.json", "r") as f:
             return json.load(f)
-    except FileNotFoundError:
-        if os.environ.get("DEMO", "0") == "1":
-            from crypto.demo import DEMO_ORDERBOOK
-            return jsonify({**DEMO_ORDERBOOK, "demo": True})
-        return jsonify({"error": "Data not found"}), 404
+    except (FileNotFoundError, ValueError):
+        # Same shape as the worker files: a list of {price, amount} records for
+        # one side, ordered so the legacy page's reverse() puts the best first.
+        from crypto import market
+        book = market.order_book(exchange or None, symbol, 20)
+        if side == "sell":
+            levels = sorted(book["asks"], key=lambda l: l[0], reverse=True)
+        else:
+            levels = sorted(book["bids"], key=lambda l: l[0])
+        return jsonify([{"price": p, "amount": a, "side": side or "buy"} for p, a in levels])
 
 @app.route("/lastTrades/")
 def lastTrades():
-    symbol = request.args.get("symbol")
-    exchange = request.args.get("exchange")
+    symbol = _safe_name(request.args.get("symbol"))
+    exchange = _safe_name(request.args.get("exchange")).lower()
+    if not symbol:
+        return jsonify({"error": "symbol parameter is required"}), 400
     try:
         with open(f"trades/{symbol}_{exchange}.json", "r") as f:
             return json.load(f)
-    except FileNotFoundError:
-        if os.environ.get("DEMO", "0") == "1":
-            from crypto.demo import DEMO_TRADES
-            return jsonify({"trades": DEMO_TRADES, "demo": True})
-        return jsonify({"error": "Data not found"}), 404
+    except (FileNotFoundError, ValueError):
+        from crypto import market
+        # oldest first, like the worker files (the page reverses it)
+        return jsonify(market.trades(exchange or None, symbol, 30)[::-1])
 
 ##############################################################################
 

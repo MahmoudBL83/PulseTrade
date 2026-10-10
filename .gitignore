@@ -25,3 +25,9 @@ output/
 .idea/
 # Vercel
 .vercel/
+.pytest_cache/
+# Frontend (the production build in crypto/static/app IS committed so
+# Vercel/Docker can serve it without a Node build step)
+node_modules/
+frontend/dist/
+*.tsbuildinfo

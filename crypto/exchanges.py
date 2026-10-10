@@ -1,33 +1,50 @@
 from flask import render_template, request, redirect, url_for, jsonify
 import ccxt
-from flask_login import login_required,current_user
-from crypto import app,db, jwt_required
-from crypto.models import Exchange,Exchange2, Post, User
+from crypto import app,db, jwt_required, auth_required
+from crypto.models import Exchange,Exchange2, Post, User, Notification, PAPER_EXCHANGE
 from crypto import get_current_user
+from crypto.functions import connectExchange, build_exchange, CCXT_OPTIONS  # noqa: F401 (re-exported)
+
+
+def nav_context(user):
+    """Context every legacy dashboard page needs for its header/sidebar.
+    Notifications and posts are capped so pages stay fast for old accounts."""
+    notes = user.notifications.order_by(Notification.id.desc()).limit(50).all()[::-1]
+    return {
+        "exchanges": user.exchanges.all(),
+        "current_user": user,
+        "notifications": notes,
+        "posts": Post.query.order_by(Post.created_at.desc()).limit(8).all()[::-1],
+    }
+
+
+_TEST_URL_CACHE = {}
+
+
+def _has_testnet(name):
+    if name not in _TEST_URL_CACHE:
+        try:
+            _TEST_URL_CACHE[name] = 'test' in getattr(ccxt, name)().describe()['urls']
+        except Exception:
+            _TEST_URL_CACHE[name] = False
+    return _TEST_URL_CACHE[name]
+
 
 @app.route('/exchanges')
 @jwt_required
 def exchanges():
-    #exchange = connectExchange()
     current_user = get_current_user()
     exchanges_json = []
     for exchange in Exchange2.query.filter(Exchange2.isActive).all():
+        if exchange.exchange not in ccxt.exchanges:
+            continue
         ex = exchange.serialize()
-        
-        exchangeNow = getattr(ccxt,exchange.exchange)()
-        if 'test' in exchangeNow.describe()['urls']:
-            test = True
-        else:
-            test = False
-        ex['test'] = test
+        ex['test'] = _has_testnet(exchange.exchange)
         exchanges_json.append(ex)
 
     return render_template("exchanges.html",
                             exchanges2 = exchanges_json,
-                            exchanges = current_user.exchanges.all(),
-                            current_user=current_user,
-                            notifications=current_user.notifications.all(),
-                            posts = Post.query.all()
+                            **nav_context(current_user),
                         )
 
 @app.route('/api/v1/exchanges/')
@@ -37,20 +54,47 @@ def get_exchanges():
     # return all exchanges of user by its id as api from outside the flask app
     return jsonify([exchange.serialize() for exchange in current_user.exchanges.all()])
 
+
+def _activate(user, exchange_name):
+    for exchange in user.exchanges.all():
+        exchange.isActive = exchange.name == exchange_name
+    user.exchange = exchange_name
+
+
+def connect_paper(user):
+    """Attach the simulated paper exchange to ``user`` (idempotent)."""
+    row = user.exchanges.filter(Exchange.name == PAPER_EXCHANGE).first()
+    if row is None:
+        row = Exchange(name=PAPER_EXCHANGE, demo=False, isActive=True, owner_id=user.id)
+        row.set_creds(None, None, None)
+        db.session.add(row)
+        from crypto.paper import get_account
+        get_account(user.id)
+    _activate(user, PAPER_EXCHANGE)
+    db.session.commit()
+    return row
+
+
 # Define an endpoint to connect to an exchange
 @app.route('/api/v1/connect/', methods=['POST'])
+@auth_required
 def connect_exchange():
     current_user = get_current_user()
-    # Parse the API key and secret from the request body
-    api_key = request.json['api_key']
-    secret_key = request.json['api_secret']
-    exchange_name = request.json['exchange_name']
-    password = request.json['password']
-    demo = request.json['demo']
-    exchange = None
+    body = request.get_json(silent=True) or {}
+    exchange_name = str(body.get('exchange_name') or '').strip()
+    if exchange_name == PAPER_EXCHANGE:
+        connect_paper(current_user)
+        return jsonify({'status': 'success', 'message': 'Paper trading account connected', 'ok': True})
+
+    api_key = str(body.get('api_key') or '').strip()
+    secret_key = str(body.get('api_secret') or '').strip()
+    password = str(body.get('password') or '').strip()
+    demo = bool(body.get('demo'))
 
     if exchange_name not in ccxt.exchanges:
-        return jsonify({'status': 'error', 'message': f'Unsupported exchange: {exchange_name}'})
+        return jsonify({'status': 'error', 'message': f'Unsupported exchange: {exchange_name}'}), 400
+    if not api_key or not secret_key:
+        return jsonify({'status': 'error', 'message': 'API key and secret are required'}), 400
 
     #check if user has linked an exchange before with the same name
     if current_user.exchanges.filter(Exchange.name==exchange_name).first():
@@ -58,149 +102,109 @@ def connect_exchange():
             'status': 'error',
             'message': f'You have already linked {exchange_name} API',
         })
-    else:
-        # Initialize the exchange API client with the provided credentials
-        _opts = {'timeout': 10000, 'enableRateLimit': True}
-        if password:
-            exchange = getattr(ccxt, exchange_name)({
-                'apiKey': api_key,
-                'secret': secret_key,
-                'password':password,
-                **_opts,
-            })
-        else:
-            exchange = getattr(ccxt, exchange_name)({
-                'apiKey': api_key,
-                'secret': secret_key,
-                **_opts,
-            })
-        if demo:
-            exchange.set_sandbox_mode(True)
 
+    # Initialize the exchange API client with the provided credentials
+    opts = {'apiKey': api_key, 'secret': secret_key, **CCXT_OPTIONS}
+    if password:
+        opts['password'] = password
+    exchange = getattr(ccxt, exchange_name)(opts)
+    if demo:
         try:
-            exchange.load_markets()
-            exchange.fetch_balance()
-            
-            activeExchange = Exchange(api_key=api_key,api_secret=secret_key,name=exchange_name,password=password,demo=demo,isActive=True)
-            activeExchange.set_creds(api_key,secret_key,password)
+            exchange.set_sandbox_mode(True)
+        except Exception:
+            return jsonify({'status': 'error', 'message': f'{exchange_name} has no testnet'}), 400
 
-            if len(current_user.exchanges.filter(Exchange.isActive==True).all())==0:
-                activeExchange.isActive = True
+    try:
+        exchange.load_markets()
+        exchange.fetch_balance()
 
-            db.session.add(activeExchange)
-            current_user.exchanges.append(activeExchange)
-            current_user.exchange = exchange_name
-            db.session.commit()
-            exchanges = current_user.exchanges.all()
-            for exchange in exchanges:
-                exchange.isActive = False
+        activeExchange = Exchange(name=exchange_name,demo=demo,isActive=True)
+        activeExchange.set_creds(api_key,secret_key,password)
+        db.session.add(activeExchange)
+        current_user.exchanges.append(activeExchange)
+        db.session.flush()
+        _activate(current_user, exchange_name)
+        db.session.commit()
+        return jsonify({
+            'status': 'success',
+            'message': f'Connected to {exchange_name} API',
+            'ok': True,
+        })
+    except ccxt.AuthenticationError:
+        return jsonify({'status': 'error', 'message': 'Invalid API credentials'})
+    except ccxt.RequestTimeout:
+        return jsonify({'status': 'error', 'message': 'Request timeout'})
+    except ccxt.ExchangeNotAvailable:
+        return jsonify({'status': 'error', 'message': 'Exchange not available'})
+    except ccxt.NetworkError:
+        return jsonify({'status': 'error', 'message': 'Network error occurred'})
+    except ccxt.ExchangeError:
+        return jsonify({'status': 'error', 'message': f'Failed to connect to {exchange_name} API'})
+    except RuntimeError as e:  # FERNET_KEY missing
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    except Exception as e:
+        print(f"connect {exchange_name} failed: {e}")
+        return jsonify({'status': 'error', 'message': 'An unexpected error occurred'})
 
-            current_user.exchanges.filter_by(name=exchange_name).first().isActive = True
-            current_user.exchange = exchange_name
-            db.session.commit()
-            return jsonify({
-                'status': 'success',
-                'message': f'Connected to {exchange_name} API',
-                'ok': True,
-            })
-        except ccxt.AuthenticationError:
-            return jsonify({
-                'status': 'error',
-                'message': 'Invalid API credentials',
-            })
-        except ccxt.ExchangeError:
-            return jsonify({
-                'status': 'error',
-                'message': f'Failed to connect to {exchange_name} API',
-            })
-
-        except ccxt.NetworkError as network_error:
-            return jsonify({
-                'status': 'error',
-                'message': 'Network error occurred',
-            })
-        except ccxt.RequestTimeout as timeout_error:
-            return jsonify({
-                'status': 'error',
-                'message': 'Request timeout',
-            })
-        except ccxt.ExchangeNotAvailable as unavailable_error:
-            return jsonify({
-                'status': 'error',
-                'message': 'Exchange not available',
-            })
-        except Exception as e:
-            return jsonify({
-                'status': 'error',
-                'message': 'An unexpected error occurred',
-            })
-    
 
 # Define an endpoint to disconnect from an exchange
 @app.route('/api/v1/disconnect/', methods=['POST'])
+@auth_required
 def disconnect_exchange():
     current_user = get_current_user()
-    exchange_name = request.json['exchange_name']
-    db.session.delete(current_user.exchanges.filter(Exchange.name==exchange_name).first())
+    exchange_name = (request.get_json(silent=True) or {}).get('exchange_name')
+    row = current_user.exchanges.filter(Exchange.name==exchange_name).first()
+    if row is None:
+        return jsonify({'status': 'error', 'message': f'{exchange_name} is not connected', 'ok': False}), 404
+    was_active = row.isActive
+    db.session.delete(row)
+    db.session.flush()
+    if was_active:
+        nxt = current_user.exchanges.first()
+        if nxt is not None:
+            _activate(current_user, nxt.name)
+        else:
+            current_user.exchange = None
     db.session.commit()
     return jsonify({
         'status': 'success',
-        'message': f'discineected from {exchange_name} API',
+        'message': f'disconnected from {exchange_name} API',
+        'ok': True,
     })
 
 # Define an endpoint to get the user's connected exchanges
 @app.route('/api/v1/fav_exchange/', methods=['POST'])
+@auth_required
 def fav_exchange():
     current_user = get_current_user()
-    exchange_name = request.json['exchange_name']
-    exchanges = current_user.exchanges.all()
-    for exchange in exchanges:
-        exchange.isActive = False
-
-    current_user.exchanges.filter_by(name=exchange_name).first().isActive = True
-    current_user.exchange = exchange_name
+    exchange_name = (request.get_json(silent=True) or {}).get('exchange_name')
+    if current_user.exchanges.filter_by(name=exchange_name).first() is None:
+        return jsonify({'status': 'error', 'message': f'{exchange_name} is not connected', 'ok': False}), 404
+    _activate(current_user, exchange_name)
     db.session.commit()
     return jsonify({
         'status': 'success',
         'message': f'{exchange_name} is now your favorite exchange',
+        'ok': True,
     })
 
-def connectExchange(exchange_name=None,id=None):
-    if id:
-        current_user2 = User.query.get(id)
-    else:
-        current_user2 = current_user
-    if exchange_name is None:
-        if current_user2.exchanges.filter(Exchange.isActive==True).first():
-            exchange_name = current_user2.exchanges.filter(Exchange.isActive==True).first().name
-        else:
-            return redirect(url_for('exchanges'))
-    api_key,api_secret,password = current_user2.exchanges.filter(Exchange.name==exchange_name).first().get_creds()
-    if current_user2.exchanges.filter(Exchange.name==exchange_name).first().password:
-        exchange = getattr(ccxt, exchange_name)({
-            'apiKey': api_key,
-            'secret': api_secret,
-            'password': password,
-        })
-    else:
-        exchange = getattr(ccxt, exchange_name)({
-            'apiKey': api_key,
-            'secret': api_secret,
-        })
-
-    if current_user2.exchanges.filter(Exchange.name==exchange_name).first().demo:
-            exchange.set_sandbox_mode(True)
-    
-    return exchange
-
-#demo mode 
+#demo mode
 @app.route('/api/v1/demo/', methods=['POST'])
+@auth_required
 def demo():
     current_user = get_current_user()
-    message = 'You are now in demo mode' if request.json['demo'] else 'You are now in live mode'
-    current_user.demo = request.json['demo']
+    enabled = bool((request.get_json(silent=True) or {}).get('demo'))
+    message = 'You are now in demo mode' if enabled else 'You are now in live mode'
+    current_user.demo = enabled
+    if enabled:
+        connect_paper(current_user)
+    else:
+        live = current_user.exchanges.filter(Exchange.name != PAPER_EXCHANGE).first()
+        if live is not None:
+            _activate(current_user, live.name)
     db.session.commit()
     return jsonify({
         'status': 'success',
         'message': message,
+        'ok': True,
     })

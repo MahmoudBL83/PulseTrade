@@ -7,9 +7,15 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg2://pulse:pulse@db:5432/pulse
       REDIS_URL: redis://redis:6379/0
+      # The web process runs bots, smart trades, alerts and paper orders.
+      ENGINE: scheduler
+      START_SCHEDULER: "1"
+      TRUST_PROXY: "1"
     depends_on:
       - db
       - redis
+  # Optional legacy data-stream workers (/start_data_stream). Bots are NOT run
+  # here unless you switch ENGINE=celery on both services.
   worker:
     build: .
     command: celery -A crypto.celery worker -l info -P gevent -c 8
@@ -17,6 +23,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg2://pulse:pulse@db:5432/pulse
       REDIS_URL: redis://redis:6379/0
+      ENGINE: scheduler
     depends_on:
       - db
       - redis

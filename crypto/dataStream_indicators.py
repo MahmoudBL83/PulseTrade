@@ -813,78 +813,101 @@ def fetch_data(symbol,exchange,interval):
             return result.loc[:, [
                 'time', 'open', 'high', 'low', 'close', 'volume'
             ]]
+        # No OHLCV worker file: build the frame from the market data service.
+        from crypto import ta
+        return ta.frame(exchange, symbol, interval, 300)
 
 def fetch_data2(symbol,exchange,interval):
         file_name = f"stochData/stoch_{symbol.replace('/','')}_{interval}_{exchange}.json"
         if os.path.isfile(file_name):
-            with open(file_name, "r") as f:
-                return json.load(f)[symbol.replace('/','')]
+            try:
+                with open(file_name, "r") as f:
+                    return json.load(f)[symbol.replace('/','')]
+            except (OSError, ValueError, KeyError):
+                pass
+        # No screener worker file: compute a TradingView-style analysis locally.
+        from crypto import ta
+        return ta.analysis(exchange, symbol, interval)
 
 def update_symbol_data2(symbol,interval,exchange):
         file_name = f"stochData/stoch_{symbol.replace('/','')}_{interval}_{exchange}.json"
+        res = None
         if os.path.isfile(file_name):
-            with open(file_name, "r") as f:
-                try:
+            try:
+                with open(file_name, "r") as f:
                     res = json.load(f)[symbol.replace('/','')]
-                    
-                    return json.dumps({
-                        "ema200": res['indicators']["EMA200"] if res['indicators']["EMA200"] else 0,
-                        "ema100": res['indicators']["EMA100"] if res['indicators']["EMA100"] else 0,
-                        "ema50": res['indicators']["EMA50"] if res['indicators']["EMA50"] else 0,
-                        "ema30": res['indicators']["EMA30"] if res['indicators']["EMA30"] else 0,
-                        "ema20": res['indicators']["EMA20"] if res['indicators']["EMA20"] else 0,
-                        "ema10": res['indicators']["EMA10"] if res['indicators']["EMA10"] else 0,
-                        "sma200": res['indicators']["SMA200"] if res['indicators']["SMA200"] else 0,
-                        "sma100": res['indicators']["SMA100"] if res['indicators']["SMA100"] else 0,
-                        "sma50": res['indicators']["SMA50"] if res['indicators']["SMA50"] else 0,
-                        "sma30": res['indicators']["SMA30"] if res['indicators']["SMA30"] else 0,
-                        "sma20": res['indicators']["SMA20"] if res['indicators']["SMA20"] else 0,
-                        "sma10": res['indicators']["SMA10"] if res['indicators']["SMA10"] else 0,
-                        "adx": res['indicators']["ADX"] if res['indicators']["ADX"] else 0,
-                        "cci": res['indicators']["CCI20"] if res['indicators']["CCI20"] else 0,
-                        "wpr": res['indicators']["W.R"] if res['indicators']["W.R"] else 0,
-                        "ichimoku_base_line": res['indicators']["Ichimoku.BLine"] if res['indicators']["Ichimoku.BLine"] else 0,
-                        "stoch": res['indicators']["Stoch.K"] if res['indicators']["Stoch.K"] else 0,
-                        "macd": res['indicators']["MACD.macd"] if res['indicators']["MACD.macd"] else 0,
-                        "rsi": res['indicators']["RSI"] if res['indicators']["RSI"] else 0,
-                        "stoch_rsi": res['indicators']["Stoch.RSI.K"] if res['indicators']["Stoch.RSI.K"] else 0,
-                        "vwma": res['indicators']["VWMA"] if res['indicators']["VWMA"] else 0,
-                        "ao": res['indicators']["AO"] if res['indicators']["AO"] else 0,
-                        "uo": res['indicators']["UO"] if res['indicators']["UO"] else 0,
-                        "bbp_bull": res['indicators']["BBPower"] if res['indicators']["BBPower"] else 0,
-                        "bbp_bear": res['indicators']["BBPower"] if res['indicators']["BBPower"] else 0,
-                        "momentum": res['indicators']["Mom"] if res['indicators']["Mom"] else 0,
-                        "hma": res['indicators']["HullMA9"] if res['indicators']["HullMA9"] else 0,
-                        "rsi_signal": res["signals"]["RSI"] if 'RSI' in res["signals"] else '',
-                        "stoch_rsi_signal": res["signals"]["Stoch.RSI"] if 'Stoch.RSI' in res["signals"] else "",
-                        "ichimoku_base_line_signal": res["signals2"]["Ichimoku"] if 'Ichimoku' in res["signals2"] else "",
-                        "vwma_signal": res["signals2"]["VWMA"] if 'VWMA' in res["signals2"] else "",
-                        "macd_signal": res["signals"]["MACD"] if 'MACD' in res["signals"] else "",
-                        "wpr_signal": res["signals"]["W%R"] if 'W%R' in res["signals"] else "",
-                        "cci_signal": res["signals"]["CCI"] if 'CCI' in res["signals"] else "",
-                        "adx_signal": res["signals"]["ADX"] if 'ADX' in res["signals"] else "",
-                        "stoch_signal": res["signals"]["STOCH.K"] if 'STOCH.K' in res["signals"] else "",
-                        "sma10_signal": res["signals2"]["SMA10"] if 'SMA10' in res["signals2"] else "",
-                        "sma20_signal": res["signals2"]["SMA20"] if 'SMA20' in res["signals2"] else "",
-                        "sma30_signal": res["signals2"]["SMA30"] if 'SMA30' in res["signals2"] else "",
-                        "sma50_signal": res["signals2"]["SMA50"] if 'SMA50' in res["signals2"] else "",
-                        "sma100_signal": res["signals2"]["SMA100"] if 'SMA100' in res["signals2"] else "",
-                        "sma200_signal": res["signals2"]["SMA200"] if 'SMA200' in res["signals2"] else "",
-                        "ema10_signal": res["signals2"]["EMA10"] if 'EMA10' in res["signals2"] else "",
-                        "ema20_signal": res["signals2"]["EMA20"] if 'EMA20' in res["signals2"] else "",
-                        "ema30_signal": res["signals2"]["EMA30"] if 'EMA30' in res["signals2"] else "",
-                        "ema50_signal": res["signals2"]["EMA50"] if 'EMA50' in res["signals2"] else "",
-                        "ema100_signal": res["signals2"]["EMA100"] if 'EMA100' in res["signals2"] else "",
-                        "ema200_signal": res["signals2"]["EMA200"] if 'EMA200' in res["signals2"] else "",
-                        "bbp_signal": res["signals"]["BBP"] if 'BBP' in res["signals"] else "",
-                        "ao_signal": res["signals"]["AO"] if 'AO' in res["signals"] else "",
-                        "uo_signal": res["signals"]["UO"] if 'UO' in res["signals"] else "",
-                        "momentum_signal": res["signals"]["Mom"] if 'Mom' in res["signals"] else "",
-                        "hma_signal": res["signals2"]["HullMA"] if 'HullMA' in res["signals2"] else "",
-                    })
-                except Exception as e:
-                    logger.exception(e)
-                    return json.dumps({})
+            except (OSError, ValueError, KeyError) as e:
+                logger.warning(f"bad indicator file {file_name}: {e}")
+        if res is None:
+            from crypto import ta
+            res = ta.analysis(exchange, symbol, interval)
+        res = dict(res)
+        try:
+            # copy (never mutate the cached analysis) and turn missing values into 0
+            res['indicators'] = {k: (0 if v is None else v) for k, v in (res.get('indicators') or {}).items()}
+            res['indicators'].setdefault('Ichimoku.BLine', 0)
+            for _k in ('EMA200','EMA100','EMA50','EMA30','EMA20','EMA10','SMA200','SMA100','SMA50','SMA30',
+                       'SMA20','SMA10','ADX','CCI20','W.R','Stoch.K','MACD.macd','RSI','Stoch.RSI.K','VWMA',
+                       'AO','UO','BBPower','Mom','HullMA9'):
+                res['indicators'].setdefault(_k, 0)
+            return json.dumps({
+                "ema200": res['indicators']["EMA200"] if res['indicators']["EMA200"] else 0,
+                "ema100": res['indicators']["EMA100"] if res['indicators']["EMA100"] else 0,
+                "ema50": res['indicators']["EMA50"] if res['indicators']["EMA50"] else 0,
+                "ema30": res['indicators']["EMA30"] if res['indicators']["EMA30"] else 0,
+                "ema20": res['indicators']["EMA20"] if res['indicators']["EMA20"] else 0,
+                "ema10": res['indicators']["EMA10"] if res['indicators']["EMA10"] else 0,
+                "sma200": res['indicators']["SMA200"] if res['indicators']["SMA200"] else 0,
+                "sma100": res['indicators']["SMA100"] if res['indicators']["SMA100"] else 0,
+                "sma50": res['indicators']["SMA50"] if res['indicators']["SMA50"] else 0,
+                "sma30": res['indicators']["SMA30"] if res['indicators']["SMA30"] else 0,
+                "sma20": res['indicators']["SMA20"] if res['indicators']["SMA20"] else 0,
+                "sma10": res['indicators']["SMA10"] if res['indicators']["SMA10"] else 0,
+                "adx": res['indicators']["ADX"] if res['indicators']["ADX"] else 0,
+                "cci": res['indicators']["CCI20"] if res['indicators']["CCI20"] else 0,
+                "wpr": res['indicators']["W.R"] if res['indicators']["W.R"] else 0,
+                "ichimoku_base_line": res['indicators']["Ichimoku.BLine"] if res['indicators']["Ichimoku.BLine"] else 0,
+                "stoch": res['indicators']["Stoch.K"] if res['indicators']["Stoch.K"] else 0,
+                "macd": res['indicators']["MACD.macd"] if res['indicators']["MACD.macd"] else 0,
+                "rsi": res['indicators']["RSI"] if res['indicators']["RSI"] else 0,
+                "stoch_rsi": res['indicators']["Stoch.RSI.K"] if res['indicators']["Stoch.RSI.K"] else 0,
+                "vwma": res['indicators']["VWMA"] if res['indicators']["VWMA"] else 0,
+                "ao": res['indicators']["AO"] if res['indicators']["AO"] else 0,
+                "uo": res['indicators']["UO"] if res['indicators']["UO"] else 0,
+                "bbp_bull": res['indicators']["BBPower"] if res['indicators']["BBPower"] else 0,
+                "bbp_bear": res['indicators']["BBPower"] if res['indicators']["BBPower"] else 0,
+                "momentum": res['indicators']["Mom"] if res['indicators']["Mom"] else 0,
+                "hma": res['indicators']["HullMA9"] if res['indicators']["HullMA9"] else 0,
+                "rsi_signal": res["signals"]["RSI"] if 'RSI' in res["signals"] else '',
+                "stoch_rsi_signal": res["signals"]["Stoch.RSI"] if 'Stoch.RSI' in res["signals"] else "",
+                "ichimoku_base_line_signal": res["signals2"]["Ichimoku"] if 'Ichimoku' in res["signals2"] else "",
+                "vwma_signal": res["signals2"]["VWMA"] if 'VWMA' in res["signals2"] else "",
+                "macd_signal": res["signals"]["MACD"] if 'MACD' in res["signals"] else "",
+                "wpr_signal": res["signals"]["W%R"] if 'W%R' in res["signals"] else "",
+                "cci_signal": res["signals"]["CCI"] if 'CCI' in res["signals"] else "",
+                "adx_signal": res["signals"]["ADX"] if 'ADX' in res["signals"] else "",
+                "stoch_signal": res["signals"]["STOCH.K"] if 'STOCH.K' in res["signals"] else "",
+                "sma10_signal": res["signals2"]["SMA10"] if 'SMA10' in res["signals2"] else "",
+                "sma20_signal": res["signals2"]["SMA20"] if 'SMA20' in res["signals2"] else "",
+                "sma30_signal": res["signals2"]["SMA30"] if 'SMA30' in res["signals2"] else "",
+                "sma50_signal": res["signals2"]["SMA50"] if 'SMA50' in res["signals2"] else "",
+                "sma100_signal": res["signals2"]["SMA100"] if 'SMA100' in res["signals2"] else "",
+                "sma200_signal": res["signals2"]["SMA200"] if 'SMA200' in res["signals2"] else "",
+                "ema10_signal": res["signals2"]["EMA10"] if 'EMA10' in res["signals2"] else "",
+                "ema20_signal": res["signals2"]["EMA20"] if 'EMA20' in res["signals2"] else "",
+                "ema30_signal": res["signals2"]["EMA30"] if 'EMA30' in res["signals2"] else "",
+                "ema50_signal": res["signals2"]["EMA50"] if 'EMA50' in res["signals2"] else "",
+                "ema100_signal": res["signals2"]["EMA100"] if 'EMA100' in res["signals2"] else "",
+                "ema200_signal": res["signals2"]["EMA200"] if 'EMA200' in res["signals2"] else "",
+                "bbp_signal": res["signals"]["BBP"] if 'BBP' in res["signals"] else "",
+                "ao_signal": res["signals"]["AO"] if 'AO' in res["signals"] else "",
+                "uo_signal": res["signals"]["UO"] if 'UO' in res["signals"] else "",
+                "momentum_signal": res["signals"]["Mom"] if 'Mom' in res["signals"] else "",
+                "hma_signal": res["signals2"]["HullMA"] if 'HullMA' in res["signals2"] else "",
+            })
+        except Exception as e:
+            logger.exception(e)
+            return json.dumps({})
 
 
 def get_timestamps(interval):

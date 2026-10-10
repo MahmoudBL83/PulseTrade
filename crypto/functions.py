@@ -1,243 +1,123 @@
 import json
-from flask import redirect, url_for
+import os
 import ccxt
 from flask_login import current_user
 from crypto import models
-import asyncio
+from crypto import market
+from crypto.errors import ApiError, ExchangeNotConnected
+
+CCXT_OPTIONS = {'timeout': 10000, 'enableRateLimit': True}
+
+
+def build_exchange(exchange_row):
+    """Instantiate a client for a user's connected exchange row (models.Exchange).
+    Paper accounts get the built-in simulator; everything else goes to ccxt."""
+    if exchange_row is None:
+        raise ExchangeNotConnected()
+    if exchange_row.is_paper:
+        from crypto.paper import PaperExchange
+        return PaperExchange(exchange_row.owner_id)
+    name = exchange_row.name
+    if name not in ccxt.exchanges:
+        raise ApiError(f"unsupported exchange: {name}", 400)
+    api_key, api_secret, password = exchange_row.get_creds()
+    opts = {'apiKey': api_key, 'secret': api_secret, **CCXT_OPTIONS}
+    if password:
+        opts['password'] = password
+    exchange = getattr(ccxt, name)(opts)
+    if exchange_row.demo:
+        exchange.set_sandbox_mode(True)
+    return exchange
+
+
+def resolve_user(id=None):
+    if id:
+        user = models.db.session.get(models.User, int(id))
+    else:
+        user = current_user if getattr(current_user, "is_authenticated", False) else None
+    if user is None:
+        raise ApiError("authentication required", 401)
+    return user
+
+
+def find_exchange_row(user, exchange_name=None):
+    """The user's exchange row by name (case-insensitive) or the active one."""
+    rows = user.exchanges
+    if not exchange_name:
+        row = rows.filter(models.Exchange.isActive == True).first() or rows.first()
+        if row is None:
+            raise ExchangeNotConnected()
+        return row
+    row = rows.filter(models.Exchange.name == exchange_name).first()
+    if row is None:
+        wanted = str(exchange_name).lower().replace("okex", "okx")
+        for r in rows.all():
+            if (r.name or "").lower().replace("okex", "okx") == wanted:
+                return r
+        raise ExchangeNotConnected(exchange_name)
+    return row
 
 
 def connectExchange(exchange_name=None,id=None):
-    if id:
-        current_user2 = models.User.query.get(id)
-    else:
-        current_user2 = current_user
-    if exchange_name is None:
-        if current_user2.exchanges.filter(models.Exchange.isActive==True).first():
-            exchange_name = current_user2.exchanges.filter(models.Exchange.isActive==True).first().name
-        else:
-            return redirect(url_for('exchanges'))
-    api_key,api_secret,password = current_user2.exchanges.filter(models.Exchange.name==exchange_name).first().get_creds()
-    if exchange_name not in ccxt.exchanges:
-        raise ValueError(f"unsupported exchange: {exchange_name}")
-    _opts = {'timeout': 10000, 'enableRateLimit': True}
-    if current_user2.exchanges.filter(models.Exchange.name==exchange_name).first().password:
-        exchange = getattr(ccxt, exchange_name)({
-            'apiKey': api_key,
-            'secret': api_secret,
-            'password': password,
-            **_opts,
-        })
-    else:
-        exchange = getattr(ccxt, exchange_name)({
-            'apiKey': api_key,
-            'secret': api_secret,
-            **_opts,
-        })
+    """Client for the current (or given) user's exchange. Raises
+    ExchangeNotConnected (pages redirect to /exchanges, APIs get a 400)."""
+    user = resolve_user(id)
+    return build_exchange(find_exchange_row(user, exchange_name))
 
-    if current_user2.exchanges.filter(models.Exchange.name==exchange_name).first().demo:
-            exchange.set_sandbox_mode(True)
-    
-    return exchange
+
+def _read_price_file(exchange_name, symbol):
+    """Prices written by the Celery `update_price_data` workers, if present."""
+    symbol_id = f"{exchange_name}{symbol.replace('/', '')}"
+    path = os.path.join("pricesData", f"{symbol_id}.json")
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, "r") as f:
+            data = json.load(f).get(symbol)
+        if data and data[0]:
+            return data
+    except (OSError, ValueError, AttributeError, IndexError):
+        return None
+    return None
+
 
 def getPrice_assets(exchange_name,symbol,id=None,volume_par=False,full=False):
-    exchange_name = exchange_name.replace('okex','okx').upper()
-    #exchange_name = "OKX"
-    #exchange_name = exchange_name.lower().replace('okx','okex')
-    '''exchange = connectExchange(exchange_name,id)
-    
-    
-    try:
-        if symbol.split("/")[0]=='USDK' or symbol.split("/")[0]=='USDP' or symbol.split("/")[0]=='PAX' or symbol.split("/")[0]=='USDT' or symbol.split("/")[0]=='TUSD' or symbol.split("/")[0]=='USDC' or symbol.split("/")[0]=='USDS':
-            return 1
-        else:
-            return exchange.fetch_ticker(symbol)['last']
-    except:
-        try:
-            pairs = []
-            print(exchange_name)
-            exchange = connectExchange(exchange_name,id)
-            for currency in exchange.fetch_markets():
-                pairs.append(currency['symbol'])
+    """Price snapshot for ``symbol``. Reads worker price files first (legacy
+    behaviour), then falls back to the cached market data service so prices
+    work on serverless / demo deploys without background workers.
 
-            common_pairs = []
-            
-            for pair in pairs:
-                if pair != symbol:
-                    common_symbol = set(pair.split('/')) & set(symbol.split('/'))
-                    
-                    if len(common_symbol) == 1:
-                        common_pairs.append(pair)
-            
-            common_pairs = common_pairs[:2]
-            related_pairs = []
-            for pair in pairs:
-                pair1=None
-                pair2=None
-                if pair.split('/')[0] == symbol.split('/')[0] or pair.split('/')[1] == symbol.split('/')[0]:
-                    pair1 = pair
-                if pair.split('/')[0] == symbol.split('/')[1] or pair.split('/')[1] == symbol.split('/')[1]:
-                    pair2 = pair
-                if pair1 and pair2:
-                    related_pairs.append(pair)
-                
-            print(symbol)
-            print(related_pairs)
+    Returns price, (price, volume) or the full 7-tuple depending on flags."""
+    exchange_name = str(exchange_name or "").replace('okex','okx').upper()
+    symbol = market.normalize_symbol(symbol)
+    price = volume = change = percentage = high = low = open_price = 0
+    base, quote = symbol.split("/")
 
-            related_pairs = related_pairs[:2]
-            
-            if symbol.split('/')[0] == symbol.split('/')[1]:
-                return 1
-            elif len(related_pairs) == 2:
-                if related_pairs[0].split('/')[0] == related_pairs[1].split('/')[0] or related_pairs[0].split('/')[1] == related_pairs[1].split('/')[1]:
-                    price1 = exchange.fetch_ticker(related_pairs[0])['last']
-                    price2 = exchange.fetch_ticker(related_pairs[1])['last']
-                else:
-                    price1 = exchange.fetch_ticker(related_pairs[1])['last']
-                    price2 = exchange.fetch_ticker(related_pairs[0])['last']
-                return price1*price2
-            else:
-                return 0
-            
-        except:
-            return 0
-
-        
-
-
-        if symbol.split('/')[1] != 'USDT':
-            price1 = 0
-            price2 = 0
-            exchange = connectExchange(exchange_name,id)
-            
-            price1 = exchange.fetch_ticker(symbol.split("/")[0]+"/"+"USDT")['last']
-            price2 = exchange.fetch_ticker(symbol.split("/")[1]+"/"+"USDT")['last']
-            if not price1 or not price2:
-                return 0
-            if  price1 == 0:
-                return 0
-            return price1/price2
-        elif symbol.split("/")[1] == 'USDT' and symbol.split("/")[0] != 'USDT':
-            price = 0
-            exchange = connectExchange(exchange_name,id)
-            price = exchange.fetch_ticker(symbol)['last']
-            return price
-        elif symbol.split("/")[0] == symbol.split("/")[1]:
-            return 1
-        else:
-            return 0
-    except Exception as e:
-        print(e)
-        return 0
-
-
-        if symbol.split("/")[0] == symbol.split("/")[1]:
-            price = 1
-        elif symbol.split('/')[1] != 'USDT':
-            price1 = 0
-            price2 = 0
-            exchange = connectExchange(exchange_name,id)
-            exchange_name = exchange_name.upper().replace('OKEX','OKX')
-            price1 = exchange.fetch_ticker(symbol.split("/")[1]+"/"+"USDT")['last']
-            if symbol.split("/")[0]!='USDT':
-                price2 = exchange.fetch_ticker(symbol.split("/")[0]+"/"+"USDT")['last']
-            else:
-                price2 = 1
-            if not price1 or not price2:
-                return 0
-            if  price1 == 0:
-                return 0
-            return price2/price1
-
-        else:
-            exchange = connectExchange(exchange_name,id)
-            exchange_name = exchange_name.upper().replace('OKEX','OKX')
-            price = exchange.fetch_ticker(symbol)['last']
-    except:
-        return 0'''
-    price = 0
-    volume = 0
-    change = 0
-    percentage = 0
-    high = 0
-    low = 0
-    open_price = 0
-    reversed = False
-    if (symbol == 'USDT/USDT' or symbol =='USDK/USDT' or symbol =='USDP/USDT' or symbol =='PAX/USDT' or symbol =='USDT/USDT' or symbol =='TUSD/USDT' or symbol =='USDS/USDT'):
-        price = 1
-        volume = 1
-
+    if base == quote or (base in market.STABLES and quote in market.STABLES):
+        price, volume = 1, 1
     else:
-        if symbol.split('/')[0] == 'USDT':
-            symbol = symbol.split('/')[1]+'/USDT'
-            reversed = True
-        try:
-            symbol_id = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[0]+symbol.split('/')[1]}"
-            with open("pricesData/"+f"{symbol_id}.json", "r") as f:
-                data = json.load(f)[symbol]
-                price = data[0]
-                volume = data[1]
-                change = data[2]
-                percentage = data[3]
-                high = data[4]
-                low = data[5]
-                open_price = data[6]
-            
-        except:
+        reversed_pair = base == 'USDT'
+        lookup = f"{quote}/USDT" if reversed_pair else symbol
+        data = _read_price_file(exchange_name, lookup)
+        if data:
+            price = data[0]
+            volume, change, percentage, high, low, open_price = (list(data[1:7]) + [0] * 6)[:6]
+        elif quote != 'USDT' and not reversed_pair:
+            # cross pair from the two USDT legs when the workers have them
+            leg_q = _read_price_file(exchange_name, f"{quote}/USDT")
+            leg_b = _read_price_file(exchange_name, f"{base}/USDT")
+            if leg_q and leg_b and leg_q[0]:
+                price = leg_b[0] / leg_q[0]
+        if not price:
             try:
-                symbol_id = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[0]+symbol.split('/')[1]}"
-                if symbol.split('/')[1] == 'USDT':
-                    with open("pricesData/"+f"{symbol_id}.json", "r") as f:
-                        data = json.load(f)[symbol]
-                        price = data[0]
-                            
-                else:
-                    price1 = 0
-                    price2 = 0
-                    symbol_id1 = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[1]+'USDT'}"
-                    with open("pricesData/"+f"{symbol_id1}.json", "r") as f:
-                        data = json.load(f)[symbol.split('/')[1]+"/"+'USDT']
-                        price1 = data[0]
-                    symbol_id2 = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[0]+'USDT'}"
-                    with open("pricesData/"+f"{symbol_id2}.json", "r") as f:
-                        price2 = json.load(f)[symbol.split('/')[0]+"/"+'USDT'][0]
-                    if (not price1 or not price2):
-                        price = 0
-                    if  price1 == 0:
-                        price = 0
-                    else:
-                        price = price2/price1
-                try:
-                    with open("pricesData/"+f"{symbol_id}.json", "r") as f:
-                        data = json.load(f)[symbol]
-                        volume = data[1]
-                        change = data[2]
-                        percentage = data[3]
-                        high = data[4]
-                        low = data[5]
-                        open_price = data[6]
-                except:
-                    volume = 0
-                    change = 0
-                    percentage = 0
-                    high = 0
-                    low = 0
-                    open_price = 0
-            except:
-                price = 0
-                volume = 0
-                change = 0
-                percentage = 0
-                high = 0
-                low = 0
-                open_price = 0
+                t = market.ticker(exchange_name.lower() or None, lookup)
+                price = t["last"]
+                volume, change, percentage = t["baseVolume"], t["change"], t["percentage"]
+                high, low, open_price = t["high"], t["low"], t["open"]
+            except Exception as e:
+                print(f"price lookup failed for {symbol} on {exchange_name}: {e}")
+        if reversed_pair:
+            price = (1 / price) if price else 0
 
-
-    if reversed:
-        if price != 0:
-            price = 1/price
-        else:
-            price = 0        
-    
     if volume_par:
         return price,volume
     elif full:
@@ -247,50 +127,28 @@ def getPrice_assets(exchange_name,symbol,id=None,volume_par=False,full=False):
 
 
 def getPrice(exchange_name,symbol,id=None,volume=False):
+    """Last price via the user's own exchange connection, falling back to the
+    market data service (which never needs credentials)."""
     try:
-        exchange_name = exchange_name.lower()
-        exchange = connectExchange(exchange_name,id)
+        exchange = connectExchange(str(exchange_name).lower(), id)
         data = exchange.fetch_ticker(symbol)
-        #data = asyncio.get_event_loop().run_until_complete(exchange.fetch_ticker(symbol))
-        price = data['close']
+        price = data.get('close') or data.get('last')
         if volume:
-            volume = data['baseVolume']
-            return price,volume
-        
-        '''if symbol == 'USDT/USDT':
-            price = 1
+            return price, data.get('baseVolume') or 0
+        if price:
             return price
+    except Exception:
+        pass
+    t = market.ticker(exchange_name, symbol)
+    if volume:
+        return t["last"], t["baseVolume"]
+    return t["last"]
 
-        if symbol.split('/')[1] == 'USDT':
-            symbol_id = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[0]+symbol.split('/')[1]}"
-            with open("pricesData/"+f"{symbol_id}.json", "r") as f:
-                price = json.load(f)[symbol][0]
-        else:
-            price1 = 0
-            price2 = 0
-            symbol_id1 = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[1]+'USDT'}"
-            with open("pricesData/"+f"{symbol_id1}.json", "r") as f:
-                price1 = json.load(f)[symbol.split('/')[1]+"/"+'USDT'][0]
-            symbol_id2 = f"{str(exchange_name).upper().replace('OKEX','OKX')}{symbol.split('/')[0]+'USDT'}"
-            with open("pricesData/"+f"{symbol_id2}.json", "r") as f:
-                price2 = json.load(f)[symbol.split('/')[0]+"/"+'USDT'][0]
-            if not price1 or not price2:
-                return 0
-            if  price1 == 0:
-                price = 0
-            else:
-                price = price2/price1'''
-
-        return price
-    except:
-        return 0
 
 def getVolume(exchange_name,symbol,id=None):
     try:
         exchange = connectExchange(exchange_name,id)
         volume = exchange.fetch_ticker(symbol)['baseVolume']
-            
-    except:
-        volume = 0
-        
+    except Exception:
+        volume = market.ticker(exchange_name, symbol)["baseVolume"]
     return volume

@@ -224,12 +224,14 @@ input{
                     admin: true,
                 })
             }).then(async function(response) {
+                let data = {}
+                try { data = await response.json() } catch (err) {}
                 if (response.ok) {
-                    window.location.href = "{{ url_for('verify_otp') }}";
+                    window.location.href = data.redirect || "{{ url_for('verify_otp') }}";
                 }
                 else{
                     // Show an error message with SweetAlert
-                    swal('Error', data.message, 'error');
+                    swal('Error', data.message || 'Login failed', 'error');
                 }
             }).catch(function(error) {
                 console.log(error)
@@ -260,6 +262,10 @@ input{
                     localStorage.setItem("jwt", response.access_token);
                     window.location.href = "{{ url_for('dashboard') }}";
                     swal('Success', response.message, 'success');
+                }
+                else if (response.otp_required && response.redirect) {
+                    // New IP or two-factor authentication: continue on the code page.
+                    window.location.href = response.redirect;
                 }
                 else{
                     // Show an error message with SweetAlert

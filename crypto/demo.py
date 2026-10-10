@@ -67,12 +67,9 @@ def demo_status():
     return jsonify({"demo": is_demo()})
 
 
-@app.route("/api/demo/seed")
-def demo_seed():
+def seed_catalog():
     """Create tables + minimal catalog rows (subscriptions, exchanges).
-    Safe to call repeatedly. Requires DEMO=1."""
-    if not is_demo():
-        return jsonify({"error": "DEMO=1 required"}), 403
+    Idempotent."""
     from crypto.models import Subscription, Exchange2
     db.create_all()
     if Subscription.query.count() < 3:
@@ -83,6 +80,14 @@ def demo_seed():
         if not Exchange2.query.filter_by(exchange=name).first():
             db.session.add(Exchange2(exchange=name, isActive=(name == "binance")))
     db.session.commit()
+
+
+@app.route("/api/demo/seed")
+def demo_seed():
+    """Safe to call repeatedly. Requires DEMO=1."""
+    if not is_demo():
+        return jsonify({"error": "DEMO=1 required"}), 403
+    seed_catalog()
     return jsonify({"status": "seeded", "demo": True})
 
 

@@ -1,32 +1,41 @@
-# PulseTrade — pinned for Python 3.12 + Flask 3
-Flask==3.1.0
-Werkzeug==3.1.3
+# PulseTrade — exact versions the test-suite runs against (Python 3.12 and 3.13).
+# Web
+Flask==3.1.3
+Werkzeug==3.1.9
 Flask-SQLAlchemy==3.1.1
 Flask-Login==0.6.3
 Flask-Mail==0.10.0
-Flask-SocketIO==5.3.6
-Flask-CORS==4.0.1
-Flask-JWT-Extended==4.6.0
-Flask-HTTPAuth==4.8.0
+Flask-SocketIO==5.7.0
+Flask-CORS==6.0.5
+Flask-JWT-Extended==4.7.4
+Flask-HTTPAuth==4.8.1
+Flask-Compress==1.25
 itsdangerous==2.2.0
-SQLAlchemy==2.0.30
-ccxt==4.2.25
+SQLAlchemy==2.0.54
+gunicorn==26.2.0
+python-dotenv==1.2.4
+# Exchanges & market data (ccxt includes ccxt.pro websockets)
+ccxt==4.5.85
 tradingview-ta==3.3.0
-stripe==9.5.0
-celery==5.4.0
-redis==5.0.4
-gevent==24.2.1
-websocket-client==1.8.0
-APScheduler==3.10.4
-pandas==2.2.2
-numpy==1.26.4
-pyotp==2.9.0
-cryptography==42.0.5
-tenacity==8.4.1
-attrs==23.2.0
-requests==2.32.3
-beautifulsoup4==4.12.3
+websocket-client==1.9.2
+requests==2.34.2
+beautifulsoup4==4.15.0
+# Payments
+stripe==11.6.0
+# Background work
+celery==5.6.3
+redis==5.3.1
+gevent==26.9.0
+APScheduler==3.11.3
+# Data / indicators
+pandas==2.3.3
+numpy==2.5.3
+# Security
+pyotp==2.10.0
+cryptography==50.0.2
+# Misc
+tenacity==9.2.1
+attrs==26.1.0
 logzero==1.7.0
-psycopg2-binary==2.9.9
-gunicorn==22.0.0
-python-dotenv==1.0.1
+# Databases
+psycopg2-binary==2.9.13
