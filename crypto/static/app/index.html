@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0e14" />
+    <meta name="description" content="PulseTrade — crypto trading terminal with DCA bots, smart trades, paper trading, backtesting and portfolio analytics across exchanges." />
+    <link rel="icon" type="image/png" href="/static/images/logo2.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>PulseTrade</title>
+    <script>
+      // Apply the saved theme and language before first paint (no flash).
+      (function () {
+        try {
+          var t = localStorage.getItem("pt.theme") || "dark";
+          var dark = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
+          var l = localStorage.getItem("pt.lang") || localStorage.getItem("lang") || "en";
+          document.documentElement.lang = l === "ar" ? "ar" : "en";
+          document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="/app/assets/index-BCM5FppI.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-BXfk_rf2.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

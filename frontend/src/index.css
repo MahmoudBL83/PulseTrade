@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic design tokens. Light first, then dark overrides. */
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f0f2f5;
+  --surface-3: #e7eaef;
+  --border: #e1e5eb;
+  --text: #0f141a;
+  --muted: #5d6877;
+  --primary: #f08c00;
+  --primary-hover: #d97d00;
+  --primary-fg: #1a1203;
+  --primary-soft: rgb(240 140 0 / 0.12);
+  --up: #0d9f6e;
+  --up-soft: rgb(13 159 110 / 0.12);
+  --down: #e5484d;
+  --down-soft: rgb(229 72 77 / 0.12);
+  --info: #2f7ced;
+  --ring: rgb(240 140 0 / 0.45);
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.08);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0b0e14;
+  --surface: #11151d;
+  --surface-2: #161b25;
+  --surface-3: #1e2430;
+  --border: #232a37;
+  --text: #e8ebf1;
+  --muted: #8c96a6;
+  --primary: #ff9a1f;
+  --primary-hover: #ffad4d;
+  --primary-fg: #1a1203;
+  --primary-soft: rgb(255 154 31 / 0.14);
+  --up: #22c55e;
+  --up-soft: rgb(34 197 94 / 0.14);
+  --down: #f2555a;
+  --down-soft: rgb(242 85 90 / 0.14);
+  --info: #5b9cff;
+  --ring: rgb(255 154 31 / 0.5);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-fg: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-up: var(--up);
+  --color-up-soft: var(--up-soft);
+  --color-down: var(--down);
+  --color-down-soft: var(--down-soft);
+  --color-info: var(--info);
+  --font-sans: "Inter", "Cairo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, monospace;
+  --shadow-card: var(--shadow);
+}
+
+html[lang="ar"] {
+  --font-sans: "Cairo", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Numbers line up in tables and tickers. */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--primary-soft);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+/* Value flash when a live price changes. */
+@keyframes flash-up {
+  from { background: var(--up-soft); }
+  to { background: transparent; }
+}
+@keyframes flash-down {
+  from { background: var(--down-soft); }
+  to { background: transparent; }
+}
+.flash-up { animation: flash-up 0.9s ease-out; }
+.flash-down { animation: flash-down 0.9s ease-out; }
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-up, .flash-down, .skeleton { animation: none; }
+}
+
+/* Rich text (knowledge-base articles). */
+.prose-pt { color: var(--text); line-height: 1.75; font-size: 0.95rem; overflow-wrap: anywhere; }
+.prose-pt > * + * { margin-top: 1em; }
+.prose-pt h1, .prose-pt h2, .prose-pt h3, .prose-pt h4 { font-weight: 600; line-height: 1.3; margin-top: 1.6em; }
+.prose-pt h1 { font-size: 1.6rem; }
+.prose-pt h2 { font-size: 1.35rem; }
+.prose-pt h3 { font-size: 1.15rem; }
+.prose-pt a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+.prose-pt ul, .prose-pt ol { padding-inline-start: 1.4em; }
+.prose-pt ul { list-style: disc; }
+.prose-pt ol { list-style: decimal; }
+.prose-pt li + li { margin-top: 0.35em; }
+.prose-pt img { max-width: 100%; height: auto; border-radius: 0.75rem; }
+.prose-pt blockquote { border-inline-start: 3px solid var(--primary); padding-inline-start: 1em; color: var(--muted); }
+.prose-pt code { font-family: var(--font-mono); font-size: 0.85em; background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 0.3em; }
+.prose-pt pre { background: var(--surface-2); padding: 1em; border-radius: 0.75rem; overflow-x: auto; }
+.prose-pt pre code { background: none; padding: 0; }
+.prose-pt table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+.prose-pt th, .prose-pt td { border: 1px solid var(--border); padding: 0.45em 0.7em; text-align: start; }
+.prose-pt hr { border-color: var(--border); }
