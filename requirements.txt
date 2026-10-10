@@ -25,7 +25,7 @@ stripe==11.6.0
 # Background work
 celery==5.6.3
 redis==5.3.1
-gevent==26.9.0
+gevent==25.9.1
 APScheduler==3.11.3
 # Data / indicators
 pandas==2.3.3
