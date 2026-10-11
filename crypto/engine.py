@@ -15,17 +15,17 @@ ALL_JOBS = ("paper", "alerts", "bots", "smart")
 
 
 def _pages(runner, budget, start, per_page=100):
-    stats, page = {}, 1
+    stats, cursor = {}, 0
     while True:
-        part = runner(page, per_page)
+        part, next_cursor, count = runner(cursor, per_page)
         for k, v in part.items():
             stats[k] = stats.get(k, 0) + v
-        if sum(part.values()) < per_page:
+        if count < per_page:
             break
         if budget and time.monotonic() - start > budget:
             stats["truncated"] = True
             break
-        page += 1
+        cursor = next_cursor
     return stats
 
 
@@ -43,9 +43,9 @@ def tick(jobs=ALL_JOBS, budget=None):
             elif job == "alerts":
                 stats[job] = {"fired": alerts.check_alerts()}
             elif job == "bots":
-                stats[job] = _pages(bots.run_bots_page, budget, start)
+                stats[job] = _pages(bots.run_bots_after, budget, start)
             elif job == "smart":
-                stats[job] = _pages(smartTrade.run_smart_trades_page, budget, start)
+                stats[job] = _pages(smartTrade.run_smart_trades_after, budget, start)
         except Exception as e:
             db.session.rollback()
             log.exception("engine job %s failed", job)

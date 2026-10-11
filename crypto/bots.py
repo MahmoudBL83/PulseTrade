@@ -855,9 +855,7 @@ def _after_take_profit(bot):
 from math import ceil
 
 
-def run_bots_page(page, per_page=100):
-    ids = [r[0] for r in db.session.query(Bot.id).filter(Bot.is_hidden == False, Bot.isActive == True)
-           .order_by(Bot.id.asc()).offset((page - 1) * per_page).limit(per_page).all()]
+def _run_bot_ids(ids):
     stats = {}
     for bot_id in ids:
         bot = db.session.get(Bot, bot_id)
@@ -871,6 +869,21 @@ def run_bots_page(page, per_page=100):
             status = "error"
         stats[status] = stats.get(status, 0) + 1
     return stats
+
+
+def run_bots_page(page, per_page=100):
+    """Legacy fixed page for the Celery worker."""
+    ids = [r[0] for r in db.session.query(Bot.id).filter(Bot.is_hidden == False, Bot.isActive == True)
+           .order_by(Bot.id.asc()).offset((page - 1) * per_page).limit(per_page).all()]
+    return _run_bot_ids(ids)
+
+
+def run_bots_after(after_id, per_page=100):
+    """Stable engine batch even when earlier bots deactivate during this tick."""
+    ids = [r[0] for r in db.session.query(Bot.id).filter(
+        Bot.is_hidden == False, Bot.isActive == True, Bot.id > after_id
+    ).order_by(Bot.id.asc()).limit(per_page).all()]
+    return _run_bot_ids(ids), (ids[-1] if ids else after_id), len(ids)
 
 
 @celery.task

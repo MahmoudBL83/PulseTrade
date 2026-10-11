@@ -618,9 +618,7 @@ def run_smart_trade_once(st, now=None):
     return "holding"
 
 
-def run_smart_trades_page(page, per_page=100):
-    ids = [r[0] for r in db.session.query(SmartTrade.id).filter(SmartTrade.isActive == True, SmartTrade.is_hidden == False)
-           .order_by(SmartTrade.id.asc()).offset((page - 1) * per_page).limit(per_page).all()]
+def _run_smart_trade_ids(ids):
     stats = {}
     for st_id in ids:
         st = db.session.get(SmartTrade, st_id)
@@ -634,6 +632,21 @@ def run_smart_trades_page(page, per_page=100):
             status = "error"
         stats[status] = stats.get(status, 0) + 1
     return stats
+
+
+def run_smart_trades_page(page, per_page=100):
+    """Legacy fixed page for the Celery worker."""
+    ids = [r[0] for r in db.session.query(SmartTrade.id).filter(SmartTrade.isActive == True, SmartTrade.is_hidden == False)
+           .order_by(SmartTrade.id.asc()).offset((page - 1) * per_page).limit(per_page).all()]
+    return _run_smart_trade_ids(ids)
+
+
+def run_smart_trades_after(after_id, per_page=100):
+    """Stable engine batch even when earlier trades complete during this tick."""
+    ids = [r[0] for r in db.session.query(SmartTrade.id).filter(
+        SmartTrade.isActive == True, SmartTrade.is_hidden == False, SmartTrade.id > after_id
+    ).order_by(SmartTrade.id.asc()).limit(per_page).all()]
+    return _run_smart_trade_ids(ids), (ids[-1] if ids else after_id), len(ids)
 
 
 @celery.task
