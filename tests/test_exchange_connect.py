@@ -38,3 +38,32 @@ def test_binance_outage_is_distinct_from_bad_credentials(user_client, monkeypatc
     assert response.status_code == 503
     assert "temporarily" in result["message"].lower()
     assert "credentials" not in result["message"].lower()
+
+
+def test_bad_exchange_key_does_not_expire_app_session(user_client, monkeypatch):
+    monkeypatch.setattr(ccxt, "binance", lambda _: FailingBinance(
+        ccxt.AuthenticationError("binance: invalid API key")
+    ))
+    response = user_client.post("/api/v1/connect/", json={
+        "exchange_name": "binance", "api_key": "fake-key",
+        "api_secret": "fake-secret", "demo": False,
+    })
+    result = response.get_json()
+    assert response.status_code == 422  # React reserves 401 for app login expiry.
+    assert result["code"] == "authentication_failed"
+    assert "API key" in result["message"]
+
+
+def test_missing_encryption_key_is_reported_before_exchange_request(user_client, monkeypatch):
+    monkeypatch.delenv("FERNET_KEY")
+    monkeypatch.setattr(ccxt, "binance", lambda _: (_ for _ in ()).throw(
+        AssertionError("Binance must not be called when credentials cannot be saved")
+    ))
+    response = user_client.post("/api/v1/connect/", json={
+        "exchange_name": "binance", "api_key": "fake-key",
+        "api_secret": "fake-secret", "demo": False,
+    })
+    result = response.get_json()
+    assert response.status_code == 503
+    assert result["code"] == "server_configuration_error"
+    assert "FERNET_KEY" in result["message"]

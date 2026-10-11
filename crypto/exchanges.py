@@ -107,6 +107,16 @@ def connect_exchange():
             'message': f'You have already linked {exchange_name} API',
         })
 
+    # A successful exchange check is useless if the credentials cannot be
+    # encrypted for storage. Report server setup before making a network call.
+    try:
+        Exchange._cipher()
+    except (RuntimeError, ValueError):
+        log.error('exchange connection disabled: FERNET_KEY is missing or invalid')
+        return jsonify({'status': 'error', 'ok': False,
+                        'code': 'server_configuration_error',
+                        'message': 'Server encryption key is missing or invalid. Configure FERNET_KEY in the hosting environment and redeploy.'}), 503
+
     # Initialize the exchange API client with the provided credentials
     opts = {'apiKey': api_key, 'secret': secret_key, **CCXT_OPTIONS}
     if password:
@@ -137,7 +147,7 @@ def connect_exchange():
     except ccxt.AuthenticationError:
         return jsonify({'status': 'error', 'ok': False, 'code': 'authentication_failed',
                         'message': 'Binance rejected the API key. Check the key, secret, account permissions, testnet setting, and any IP allowlist.'
-                        if exchange_name == 'binance' else 'The exchange rejected the API credentials.'}), 401
+                        if exchange_name == 'binance' else 'The exchange rejected the API credentials.'}), 422
     except ccxt.RequestTimeout:
         return jsonify({'status': 'error', 'ok': False, 'code': 'exchange_timeout',
                         'message': f'{exchange_name} did not respond in time. Please retry.'}), 504
