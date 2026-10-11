@@ -206,6 +206,9 @@ def edit_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'message': 'Smart trade not found or you do not have permission to edit it','ok':False}), 404
+    pending = _reconcile_pending_take_profit(smart_trade)
+    if pending is not None:
+        return pending
     body = _body()
     price = _num(body, 'price', smart_trade.bought_price or 0)
     total_amount = _num(body, 'amount', smart_trade.amount or 0)
@@ -279,6 +282,9 @@ def run_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'message': 'Smart trade not found or you do not have permission to run it','ok':False}), 404
+    pending = _reconcile_pending_take_profit(smart_trade)
+    if pending is not None:
+        return pending
     limit = current_user.subType.max_sma if current_user.subType else None
     if limit and not smart_trade.isActive:
         active = SmartTrade.query.filter(SmartTrade.isActive == True, SmartTrade.is_hidden == False, SmartTrade.user_id == current_user.id).count()
@@ -353,6 +359,9 @@ def close_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'message': 'Smart trade not found or you do not have permission to close it','ok':False}), 404
+    pending = _reconcile_pending_take_profit(smart_trade, cancel_open=True)
+    if pending is not None:
+        return pending
     exchange = connectExchange(smart_trade.exchange, current_user.id)
     symbol = smart_trade.symbol
     side = _close_side(smart_trade)
@@ -404,6 +413,9 @@ def cancel_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'error': 'Smart trade not found or you do not have permission to cancel it', 'ok': False}), 404
+    pending = _reconcile_pending_take_profit(smart_trade, cancel_open=True)
+    if pending is not None:
+        return pending
     symbol = smart_trade.symbol
     if smart_trade.buy_order_id:
         try:
@@ -479,6 +491,68 @@ def _tp_levels(st):
         except (TypeError, ValueError, IndexError):
             continue
     return out
+
+
+def _record_take_profit_fill(st, order, now, levels):
+    """Advance a target only after the exchange confirms an actual fill."""
+    idx = min(st.take_profit_index or 0, len(levels) - 1)
+    fallback = (st.units or 0) if idx == len(levels) - 1 else levels[idx][1] * (st.amount or 0) / 100
+    qty = min(float(order.get('filled') or order.get('amount') or fallback), st.units or 0)
+    if qty <= 0:
+        return False
+    fill = order.get('average') or order.get('price') or st.price_now or st.buy_price
+    side = _close_side(st)
+    db.session.add(Transaction(status=True, err_msg="", user_id=st.user_id, exchange=st.exchange,
+                               symbol=st.symbol, type=side, amount=qty, value=fill, sma_id=st.id))
+    profit = _profit_usd(st, fill, qty)
+    st.total_profit = (st.total_profit or 0) + profit
+    st.last_total_profit_time = now
+    st.units = max(0.0, (st.units or 0) - qty)
+    st.last_price = st.price_now
+    st.take_profit_index = min(idx + 1, len(levels) - 1)
+    st.last_take_profit_id = None
+    if st.move_to_break_even and len(levels) > 1 and idx == 0:
+        st.stop_loss_price = st.buy_price
+    gain_loss = "gained" if profit > 0 else "lost"
+    send_notification(f"{st.trade_type} has {gain_loss} {round(profit, 2)} USDT (take profit {idx + 1}/{len(levels)})***Smart Trade {gain_loss.capitalize()}", st.user_id, st.exchange)
+    if st.units <= 1e-12:
+        st.units = 0
+        st.isActive = False
+        st.deal_started = False
+    return True
+
+
+def _reconcile_pending_take_profit(st, cancel_open=False):
+    """Let manual actions settle a completed TP even when no engine worker runs."""
+    if not st.last_take_profit_id:
+        return None
+    try:
+        exchange = connectExchange(st.exchange, st.user_id)
+        order = exchange.fetch_order(st.last_take_profit_id, st.symbol)
+    except Exception:
+        return jsonify({'message': 'Could not verify the pending take-profit order. Smart trade was kept for review.', 'ok': False}), 502
+    state = str(order.get('status') or '').lower()
+    if state == 'open' and cancel_open:
+        try:
+            exchange.cancel_order(st.last_take_profit_id, st.symbol)
+            order = exchange.fetch_order(st.last_take_profit_id, st.symbol)
+            state = str(order.get('status') or '').lower()
+        except Exception:
+            return jsonify({'message': 'Could not cancel or verify the pending take-profit order. Smart trade was kept for review.', 'ok': False}), 502
+    levels = _tp_levels(st)
+    if state in ('closed', 'filled'):
+        if not levels or not _record_take_profit_fill(st, order, datetime.utcnow(), levels):
+            return jsonify({'message': 'Could not reconcile the take-profit fill. Smart trade was kept for review.', 'ok': False}), 502
+        db.session.commit()
+        return None
+    if state in ('canceled', 'cancelled', 'expired', 'rejected'):
+        st.last_take_profit_id = None
+        if float(order.get('filled') or 0) > 0:
+            if not levels or not _record_take_profit_fill(st, order, datetime.utcnow(), levels):
+                return jsonify({'message': 'Could not reconcile the partial take-profit fill. Smart trade was kept for review.', 'ok': False}), 502
+        db.session.commit()
+        return None
+    return jsonify({'message': 'A take-profit order is still pending. Cancel it on the exchange before changing this trade.', 'ok': False}), 409
 
 
 def _market_close(st, exchange, symbol, qty, price, label):
@@ -560,6 +634,45 @@ def run_smart_trade_once(st, now=None):
 
     # --- take profit levels: [percent from entry, % of amount]
     levels = _tp_levels(st)
+    if st.last_take_profit_id:
+        try:
+            pending = exchange.fetch_order(st.last_take_profit_id, symbol)
+        except Exception:
+            return "take-profit-unconfirmed"
+        state = str(pending.get('status') or '').lower()
+        if state in ('closed', 'filled'):
+            if levels and _record_take_profit_fill(st, pending, now, levels):
+                db.session.commit()
+                return "take-profit"
+            return "take-profit-unconfirmed"
+        if state in ('canceled', 'cancelled', 'expired', 'rejected'):
+            st.last_take_profit_id = None
+            if levels and float(pending.get('filled') or 0) > 0:
+                _record_take_profit_fill(st, pending, now, levels)
+                db.session.commit()
+                return "take-profit"
+            db.session.commit()
+            return "take-profit-cancelled"
+        stop = st.stop_loss_price or 0
+        stop_hit = stop > 0 and ((price >= stop) if cover else (price <= stop))
+        trailing_exit = bool(st.trailing_take_profit and st.last_take_profit)
+        if not stop_hit and st.stop_loss_triggered_at is not None:
+            st.stop_loss_triggered_at = None
+            db.session.commit()
+        if state == 'open' and stop_hit and (st.stop_loss or trailing_exit):
+            if st.stop_loss_time_out and st.stop_loss and not trailing_exit:
+                if st.stop_loss_triggered_at is None:
+                    st.stop_loss_triggered_at = now
+                    db.session.commit()
+                    return "stop-loss-pending"
+                if (now - st.stop_loss_triggered_at).total_seconds() < (st.stop_loss_time_out_time or 0):
+                    return "stop-loss-pending"
+            try:
+                exchange.cancel_order(st.last_take_profit_id, symbol)
+                return "take-profit-cancelling"
+            except Exception:
+                return "take-profit-pending"
+        return "take-profit-pending"
     if st.take_profit and levels and kind != "smart buy":
         idx = min(st.take_profit_index or 0, len(levels) - 1)
         pct, qty_pct = levels[idx]
@@ -567,7 +680,7 @@ def run_smart_trade_once(st, now=None):
         reached = price <= target if cover else price >= target
         is_last = idx == len(levels) - 1
         if reached:
-            if is_last:
+            if is_last and st.trailing_take_profit:
                 st.last_take_profit = True
             if not (is_last and st.trailing_take_profit):
                 qty = min(st.units or 0, qty_pct * (st.amount or 0) / 100) if not is_last else (st.units or 0)
@@ -576,34 +689,23 @@ def run_smart_trade_once(st, now=None):
                 side = _close_side(st)
                 try:
                     order = exchange.create_order(symbol, order_type, side, qty, target if order_type == 'limit' else None)
-                    fetched = exchange.fetch_order(order['id'], symbol)
-                    fill = fetched.get('average') or fetched.get('price') or price
-                    err_msg, status = "", True
+                    st.last_take_profit_id = str(order['id'])
                 except Exception as e:
-                    fill, err_msg, status = 0, str(e), False
-                db.session.add(Transaction(status=status, err_msg=err_msg, user_id=st.user_id, exchange=st.exchange, symbol=symbol,
-                                           type=side, amount=qty, value=fill, sma_id=st.id))
-                if status:
-                    profit = _profit_usd(st, fill, qty)
-                    st.total_profit = (st.total_profit or 0) + profit
-                    st.last_total_profit_time = now
-                    st.units = max(0.0, (st.units or 0) - qty)
-                    st.last_price = price
-                    if st.take_profit_index is None or st.take_profit_index < len(levels) - 1:
-                        st.take_profit_index = (st.take_profit_index or 0) + 1
-                    gain_loss = "gained" if profit > 0 else "lost"
-                    send_notification(f"{st.trade_type} has {gain_loss} {round(profit, 2)} USDT (take profit {idx + 1}/{len(levels)})***Smart Trade {gain_loss.capitalize()}", st.user_id, st.exchange)
-                    # move the stop to break-even after the first target
-                    if st.move_to_break_even and len(levels) > 1 and idx == 0:
-                        st.stop_loss_price = st.buy_price
-                    if is_last or st.units <= 1e-12:
-                        st.units = 0
-                        st.isActive = False
-                        st.deal_started = False
+                    send_notification(f"{st.trade_type} has failed to submit a Take profit {side} order for {symbol} on {st.exchange}: {str(e)[:120]}***Smart Trade Take Profit", st.user_id, st.exchange)
+                    db.session.commit()
+                    return "take-profit-failed"
+                try:
+                    fetched = exchange.fetch_order(st.last_take_profit_id, symbol)
+                except Exception:
+                    db.session.commit()
+                    return "take-profit-unconfirmed"
+                state = str(fetched.get('status') or '').lower()
+                if state in ('closed', 'filled'):
+                    result = "take-profit" if _record_take_profit_fill(st, fetched, now, levels) else "take-profit-unconfirmed"
                 else:
-                    send_notification(f"{st.trade_type} has failed to complete a Take profit {side} order for {symbol} on {st.exchange}: {err_msg[:120]}***Smart Trade Take Profit", st.user_id, st.exchange)
+                    result = "take-profit-pending"
                 db.session.commit()
-                return "take-profit"
+                return result
 
     # --- trailing stop / trailing take profit
     improved = (price < (st.last_price or float("inf"))) if cover else (price > (st.last_price or 0))

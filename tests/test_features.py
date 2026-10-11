@@ -299,6 +299,132 @@ def test_smart_trade_multi_level_take_profit(app, paper_user, prices):
     assert st["total_profit"] > 0
 
 
+def test_smart_trade_limit_take_profit_waits_for_exchange_fill(app, paper_user, prices, monkeypatch):
+    prices.set("ETH", 1000)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ETH/USDT", "price": 1000,
+        "triggerPrice": 0, "buy_type": "market", "amount": 1,
+        "take_profits": [[5, 100]], "tpTriggerType": "limit", "stop_loss": False,
+        "take_profit": True, "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+
+    class PendingExchange:
+        state = "open"
+        submitted = 0
+
+        def fetch_balance(self):
+            return {"ETH": {"free": 0.999}}
+
+        def create_order(self, symbol, order_type, side, amount, price):
+            self.submitted += 1
+            return {"id": "pending-tp", "status": "open", "amount": amount}
+
+        def fetch_order(self, order_id, symbol):
+            return {"id": order_id, "status": self.state, "filled": 0.999 if self.state == "closed" else 0,
+                    "amount": 0.999, "average": 1050}
+
+    exchange = PendingExchange()
+    monkeypatch.setattr("crypto.smartTrade.build_exchange", lambda row: exchange)
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", lambda *args: exchange)
+    from crypto import db
+    from crypto.models import SmartTrade
+    from crypto.smartTrade import run_smart_trade_once
+
+    prices.set("ETH", 1051)
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "take-profit-pending"
+        assert st.last_take_profit_id == "pending-tp"
+        assert st.units == pytest.approx(0.999)
+        assert st.total_profit == 0
+        assert run_smart_trade_once(st) == "take-profit-pending"
+        assert exchange.submitted == 1
+    exchange.state = "canceled"
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "take-profit-cancelled"
+        assert st.last_take_profit_id is None
+        assert st.units == pytest.approx(0.999)
+    exchange.state = "open"
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "take-profit-pending"
+        assert exchange.submitted == 2
+    assert paper_user.post(f"/api/v1/smart_trades/edit/{created['id']}").status_code == 409
+    assert paper_user.post(f"/api/v1/smart_trades/close/{created['id']}").status_code == 502
+    assert paper_user.post(f"/api/v1/smart_trades/cancel/{created['id']}").status_code == 502
+
+    exchange.state = "closed"
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "take-profit"
+        assert st.last_take_profit_id is None
+        assert st.units == 0
+        assert st.isActive is False
+        assert st.total_profit > 0
+
+
+def test_manual_close_cancels_pending_take_profit_first(app, paper_user, prices, monkeypatch):
+    prices.set("ETH", 1000)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ETH/USDT", "price": 1000,
+        "triggerPrice": 0, "buy_type": "market", "amount": 1,
+        "take_profits": [[5, 100]], "tpTriggerType": "limit", "stop_loss": False,
+        "take_profit": True, "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+    from crypto.paper import PaperExchange
+    from tests.conftest import current_user_id
+    paper = PaperExchange(current_user_id(paper_user))
+
+    class PendingExchange:
+        state = "open"
+        canceled = False
+
+        def fetch_balance(self):
+            return paper.fetch_balance()
+
+        def create_order(self, symbol, order_type, side, amount, price=None):
+            if order_type == "limit":
+                return {"id": "pending-tp", "status": "open"}
+            assert self.canceled, "close must cancel the take-profit order first"
+            return paper.create_order(symbol, order_type, side, amount, price)
+
+        def fetch_order(self, order_id, symbol):
+            if order_id == "pending-tp":
+                return {"status": self.state, "filled": 0, "amount": 0.999}
+            return paper.fetch_order(order_id, symbol)
+
+        def cancel_order(self, order_id, symbol):
+            assert order_id == "pending-tp"
+            self.canceled = True
+            self.state = "canceled"
+
+    exchange = PendingExchange()
+    monkeypatch.setattr("crypto.smartTrade.build_exchange", lambda row: exchange)
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", lambda *args: exchange)
+    from crypto import db
+    from crypto.models import SmartTrade
+    from crypto.smartTrade import run_smart_trade_once
+    prices.set("ETH", 1051)
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "take-profit-pending"
+    response = paper_user.post(f"/api/v1/smart_trades/close/{created['id']}")
+    assert response.get_json()["ok"], response.get_json()
+    assert exchange.canceled
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.last_take_profit_id is None
+        assert st.units == 0
+        assert paper.fetch_balance()["total"].get("ETH", 0) < 0.01
+
+
 def test_conditional_smart_trade_buys_on_trigger(app, paper_user, prices):
     prices.set("ADA", 1)
     res = paper_user.post("/api/v1/smart_trades/", json={
