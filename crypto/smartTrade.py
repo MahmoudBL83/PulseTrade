@@ -405,26 +405,51 @@ def cancel_smart_trade(smart_trade_id):
     if smart_trade is None:
         return jsonify({'error': 'Smart trade not found or you do not have permission to cancel it', 'ok': False}), 404
     symbol = smart_trade.symbol
-    try:
-        exchange = connectExchange(smart_trade.exchange, current_user.id)
-        if smart_trade.buy_order_id:
-            order = exchange.fetch_order(smart_trade.buy_order_id, symbol=symbol)
-            if order['status'] == 'open':
-                # entry never filled: just pull it
+    if smart_trade.buy_order_id:
+        try:
+            exchange = connectExchange(smart_trade.exchange, current_user.id)
+            entry = exchange.fetch_order(smart_trade.buy_order_id, symbol=symbol)
+            state = entry.get('status')
+            filled = float(entry.get('filled') or 0)
+            if state == 'open':
                 exchange.cancel_order(smart_trade.buy_order_id, symbol=symbol)
-            elif smart_trade.deal_started and (smart_trade.units or 0) > 0:
+            if state == 'closed':
+                qty = (smart_trade.units or 0) if smart_trade.deal_started else 0
+            elif filled > 0:
+                qty = _net_units(entry, smart_trade.quote_currency, filled)
+            else:
+                qty = 0
+            if state not in ('open', 'closed', 'canceled') and qty <= 0:
+                return jsonify({'message': 'Entry order status is unknown. Smart trade was kept for review.',
+                                'ok': False}), 502
+            if qty > 0:
                 side = _close_side(smart_trade)
+                qty = _sellable(exchange, smart_trade, qty)
                 try:
-                    o = exchange.create_order(symbol, 'market', side, smart_trade.units)
-                    value = exchange.fetch_order(o['id'], symbol).get('price')
-                    err_msg, status = "", True
-                except Exception as e:
-                    value, err_msg, status = 0, str(e), False
-                db.session.add(Transaction(status=status, err_msg=err_msg, user_id=current_user.id,
+                    close = exchange.create_order(symbol, 'market', side, qty)
+                except Exception:
+                    return jsonify({'message': 'Could not close the open position. Smart trade was kept for retry.',
+                                    'ok': False}), 502
+                try:
+                    confirmation = exchange.fetch_order(close['id'], symbol)
+                except Exception:
+                    smart_trade.isActive = False
+                    db.session.commit()
+                    return jsonify({'message': 'Close order submitted but its status could not be confirmed. Check the exchange before retrying.',
+                                    'code': 'close_unconfirmed', 'ok': False}), 502
+                if confirmation.get('status') != 'closed':
+                    smart_trade.isActive = False
+                    db.session.commit()
+                    return jsonify({'message': 'Close order is not confirmed filled. Check the exchange before retrying.',
+                                    'code': 'close_unconfirmed', 'ok': False}), 502
+                value = confirmation.get('average') or confirmation.get('price') or smart_trade.price_now or 0
+                db.session.add(Transaction(status=True, err_msg="", user_id=current_user.id,
                                            exchange=smart_trade.exchange, symbol=symbol, type=side,
-                                           amount=smart_trade.units, value=value))
-    except Exception as e:
-        print(f"cancel smart trade {smart_trade.id}: {e}")
+                                           amount=qty, value=value, sma_id=smart_trade.id))
+        except Exception:
+            db.session.rollback()
+            return jsonify({'message': 'Could not verify or cancel the exchange order. Smart trade was kept for retry.',
+                            'ok': False}), 502
 
     # Transactions keep their history: detach them before deleting the trade.
     Transaction.query.filter(Transaction.sma_id == smart_trade.id).update({Transaction.sma_id: None})

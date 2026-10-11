@@ -99,27 +99,25 @@ def delete_bot():
     if err is not None:
         return err, code
     symbol = bot.symbol or f"{bot.base_currency}/{bot.quote_currency}"
-    try:
-        exchange = connectExchange(bot.exchange, bot.owner_id)
-    except Exception as e:
-        exchange = None
-        print(f"delete_bot: exchange unavailable: {e}")
-
-    if exchange is not None:
-        # Cancel leftover open safety orders so no ghost orders stay on the exchange.
-        _cancel_safety_orders(exchange, bot, symbol)
-        # Close the position only when the bot actually holds one.
-        position = bot.total_volume or bot.units or 0
+    position = bot.total_volume or bot.units or 0
+    open_safety = any(so.isOpened and not so.isClosed and so.orderId for so in bot.safetyOrders.all())
+    if (bot.deal_started and position > 0) or open_safety:
+        try:
+            exchange = connectExchange(bot.exchange, bot.owner_id)
+        except Exception:
+            return jsonify({'message': 'Exchange unavailable. Bot and its open position were kept for retry.',
+                            'ok': False}), 503
+        if _cancel_safety_orders(exchange, bot, symbol):
+            db.session.commit()
+            return jsonify({'message': 'Could not cancel every safety order. Bot was kept for retry.',
+                            'ok': False}), 502
         if bot.deal_started and position > 0:
-            side = _close_side(bot)
-            try:
-                exchange.create_order(symbol, 'market', side, position)
-                err_msg, status = "", True
-            except Exception as e:
-                err_msg, status = str(e), False
-            db.session.add(Transaction(user_id=bot.owner_id, bot_id=bot.id, type=side, status=status,
-                                       err_msg=err_msg, amount=position, symbol=symbol, exchange=bot.exchange,
-                                       value=bot.price_now))
+            closed, _ = _close_position(bot, exchange, symbol, bot.price_now or 0,
+                                        'bot deletion', datetime.utcnow())
+            if not closed:
+                db.session.commit()
+                return jsonify({'message': 'Could not close the open position. Bot was kept for retry.',
+                                'ok': False}), 502
 
     bot.is_hidden = True
     bot.isActive = False
@@ -532,13 +530,17 @@ def _initial_stop(bot, price):
 
 
 def _cancel_safety_orders(exchange, bot, symbol):
+    failed = 0
     for so in bot.safetyOrders.all():
         if so.isOpened and not so.isClosed and so.orderId:
             try:
                 exchange.cancel_order(str(so.orderId), symbol)
             except Exception as e:
                 print(f"safety cancel skipped {so.orderId}: {e}")
+                failed += 1
+                continue
         so.isOpened = False
+    return failed
 
 
 def _finish_deal(bot, exchange, symbol, exit_price, reason, now):

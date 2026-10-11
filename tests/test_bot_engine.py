@@ -48,6 +48,61 @@ def test_bot_without_conditions_opens_deal(app, paper_user, prices):
     assert bot["total_trades"] == 1
 
 
+def test_failed_bot_delete_keeps_open_position_visible(app, paper_user, prices, monkeypatch):
+    prices.set("SOL", 100)
+    bot_id = make_bot(paper_user, safety_orders_count=0)
+    assert run(app, bot_id)[0] == "opened"
+
+    class FailedExchange:
+        def create_order(self, *args):
+            raise RuntimeError("close rejected")
+
+    from crypto.bots import connectExchange as real_connect
+    monkeypatch.setattr("crypto.bots.connectExchange", lambda *args: FailedExchange())
+    response = paper_user.post("/api/v1/delete_bot", json={"bot_id": bot_id})
+    assert response.get_json()["ok"] is False
+
+    from crypto import db
+    from crypto.models import Bot
+    with app.app_context():
+        bot = db.session.get(Bot, bot_id)
+        assert bot.is_hidden is False
+        assert bot.deal_started is True
+        assert bot.total_volume > 0
+
+    monkeypatch.setattr("crypto.bots.connectExchange", real_connect)
+    retried = paper_user.post("/api/v1/delete_bot", json={"bot_id": bot_id})
+    assert retried.get_json()["ok"] is True
+    from crypto.paper import PaperExchange
+    from tests.conftest import current_user_id
+    with app.app_context():
+        assert db.session.get(Bot, bot_id).is_hidden is True
+        assert PaperExchange(current_user_id(paper_user)).fetch_balance()["total"].get("SOL", 0) < 0.01
+
+
+def test_failed_safety_order_cancel_keeps_bot_and_order(app, paper_user, monkeypatch):
+    bot_id = make_bot(paper_user)
+    from crypto import db
+    from crypto.models import Bot, SafetyOrder
+    with app.app_context():
+        db.session.add(SafetyOrder(owner_id=bot_id, orderId="pending-order",
+                                   isOpened=True, isFilled=False, isClosed=False))
+        db.session.commit()
+
+    class FailedExchange:
+        def cancel_order(self, *args):
+            raise RuntimeError("exchange unavailable")
+
+    monkeypatch.setattr("crypto.bots.connectExchange", lambda *args: FailedExchange())
+    response = paper_user.post("/api/v1/delete_bot", json={"bot_id": bot_id})
+    assert response.get_json()["ok"] is False
+    with app.app_context():
+        bot = db.session.get(Bot, bot_id)
+        so = bot.safetyOrders.filter_by(orderId="pending-order").first()
+        assert bot.is_hidden is False
+        assert so.isOpened is True
+
+
 def test_safety_orders_average_down_then_take_profit(app, paper_user, prices):
     prices.set("SOL", 100)
     bot_id = make_bot(paper_user)
