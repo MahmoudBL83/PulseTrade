@@ -357,21 +357,28 @@ def close_smart_trade(smart_trade_id):
     symbol = smart_trade.symbol
     side = _close_side(smart_trade)
     qty = smart_trade.units or 0
-    smart_trade.isActive = False
     if qty <= 0 or not smart_trade.deal_started:
+        smart_trade.isActive = False
         db.session.commit()
         return jsonify({'message': 'Smart trade closed (no open position)', 'ok': True})
     qty = _sellable(exchange, smart_trade, qty)
+    submitted = False
     try:
         order = exchange.create_order(symbol, 'market', side, qty)
+        submitted = True
         fetched = exchange.fetch_order(order["id"], symbol)
         close_price = fetched.get('average') or fetched.get('price') or smart_trade.price_now
         err_msg, status = "", True
     except Exception as e:
         close_price, err_msg, status = smart_trade.price_now, str(e), False
+        if submitted:
+            # A close may have executed even when its follow-up lookup failed.
+            # Pause automation until the exchange order is reconciled.
+            smart_trade.isActive = False
     db.session.add(Transaction(status=status, err_msg=err_msg, user_id=current_user.id, exchange=smart_trade.exchange,
                                symbol=symbol, type=side, amount=qty, value=close_price if status else 0, sma_id=smart_trade.id))
     if status:
+        smart_trade.isActive = False
         profit = _profit_usd(smart_trade, close_price or 0, qty)
         smart_trade.total_profit = (smart_trade.total_profit or 0) + profit
         smart_trade.last_total_profit_time = datetime.utcnow()
@@ -383,7 +390,11 @@ def close_smart_trade(smart_trade_id):
         db.session.commit()
         return jsonify({'message': 'Smart trade closed successfully','ok':True})
     db.session.commit()
-    return jsonify({'message': f'Error closing smart trade: {err_msg}', 'ok': False})
+    if submitted:
+        return jsonify({'message': 'Close order submitted but its status could not be confirmed. Check the exchange order before retrying.',
+                        'code': 'close_unconfirmed', 'ok': False}), 502
+    return jsonify({'message': f'Error closing smart trade: {err_msg}',
+                    'code': 'close_failed', 'ok': False}), 502
 
 
 @app.route('/api/v1/smart_trades/cancel/<int:smart_trade_id>', methods=['POST'])

@@ -52,6 +52,11 @@ ccxt.pro streaming service. Set `CRON_SECRET` and schedule authenticated
 advance paper orders, alerts, bots, and smart trades. The `price` and
 `indicator` cron routes are compatibility routes; market data is fetched
 on demand. `/api/health` reports build, database, and engine status.
+No cron schedule is registered in `vercel.json` yet. Vercel Hobby cron
+jobs can run only once per day, which is too infrequent for live trading
+decisions. Run the scheduler on an always running Docker server for active
+bots, smart trades, and alerts; use the Vercel app for the dashboard. Both
+deployments must share the same persistent `DATABASE_URL` and `FERNET_KEY`.
 
 ## Binance connections
 

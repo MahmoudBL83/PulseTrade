@@ -141,6 +141,86 @@ def test_backtest_rejects_bad_params(client):
 
 # ------------------------------------------------------------------ smart trades
 
+
+def test_failed_manual_smart_trade_close_keeps_position_active(app, paper_user, prices, monkeypatch):
+    prices.set("ETH", 1000)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ETH/USDT",
+        "price": 1000, "triggerPrice": 0, "buy_type": "market", "amount": 1,
+        "take_profits": [[5, 100]], "tpTriggerType": "market",
+        "stop_loss": False, "take_profit": True, "stop_loss_type": "market",
+        "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+
+    class FailedExchange:
+        def fetch_balance(self):
+            return {"ETH": {"free": 1}}
+
+        def create_order(self, *args):
+            raise RuntimeError("exchange unavailable")
+
+    from crypto.smartTrade import connectExchange as real_connect
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", lambda *args: FailedExchange())
+    response = paper_user.post(f"/api/v1/smart_trades/close/{created['id']}")
+    assert response.get_json()["ok"] is False
+
+    from crypto import db
+    from crypto.models import SmartTrade
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.isActive is True
+        assert st.deal_started is True
+        assert st.units > 0
+
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", real_connect)
+    retried = paper_user.post(f"/api/v1/smart_trades/close/{created['id']}")
+    assert retried.get_json()["ok"] is True
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.isActive is False
+        assert st.deal_started is False
+        assert st.units == 0
+
+
+def test_unconfirmed_manual_close_does_not_submit_a_second_sell(app, paper_user, prices, monkeypatch):
+    prices.set("ETH", 1000)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ETH/USDT",
+        "price": 1000, "triggerPrice": 0, "buy_type": "market", "amount": 1,
+        "take_profits": [[5, 100]], "tpTriggerType": "market",
+        "stop_loss": False, "take_profit": True, "stop_loss_type": "market",
+        "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+
+    class UnconfirmedExchange:
+        def fetch_balance(self):
+            return {"ETH": {"free": 1}}
+
+        def create_order(self, *args):
+            return {"id": "submitted-close"}
+
+        def fetch_order(self, *args):
+            raise RuntimeError("exchange lookup unavailable")
+
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", lambda *args: UnconfirmedExchange())
+    response = paper_user.post(f"/api/v1/smart_trades/close/{created['id']}")
+    assert response.get_json()["code"] == "close_unconfirmed"
+
+    from crypto import db
+    from crypto.models import SmartTrade
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.isActive is False  # prevent an automatic second sell
+        assert st.deal_started is True
+        assert st.units > 0  # preserve position for manual reconciliation
+
+
 def test_smart_trade_multi_level_take_profit(app, paper_user, prices):
     prices.set("ETH", 1000)
     res = paper_user.post("/api/v1/smart_trades/", json={
