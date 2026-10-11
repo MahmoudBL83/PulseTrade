@@ -82,6 +82,11 @@ function ConnectForm() {
   const qc = useQueryClient();
   const { refresh } = useAuth();
   const list = useMarketExchanges();
+  const readiness = useQuery({
+    queryKey: ["health"],
+    queryFn: () => v1.get<{ exchange_credentials_ready: boolean }>("/api/health"),
+    staleTime: 60_000,
+  });
   const [form, setForm] = useState({ exchange_name: "", api_key: "", api_secret: "", password: "", demo: false });
   const exchanges = (list.data ?? []).filter((e) => !e.paper);
   const connect = useMutation({
@@ -105,6 +110,11 @@ function ConnectForm() {
       <CardHeader title={t("exchanges.connect", "Connect an exchange")} subtitle={t("exchanges.connect_sub", "Your keys are encrypted at rest and never shown again.")} />
       <CardBody>
         <form onSubmit={submit} className="space-y-4">
+          {readiness.data?.exchange_credentials_ready === false && (
+            <Notice tone="warning">
+              {t("exchanges.server_key_missing", "Exchange connections are unavailable until the server administrator configures FERNET_KEY and redeploys.")}
+            </Notice>
+          )}
           <Field label={t("exchanges.exchange", "Exchange")}>
             <Select required value={form.exchange_name} onChange={(e) => setForm({ ...form, exchange_name: e.target.value })}>
               <option value="" disabled>{t("exchanges.choose", "Choose…")}</option>
@@ -120,7 +130,10 @@ function ConnectForm() {
           <Notice tone="warning">
             <span className="flex gap-2"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-primary" />{t("exchanges.safety", "Create a key with trading permission only — never enable withdrawals — and restrict it to this server's IP when your exchange supports it.")}</span>
           </Notice>
-          <Button type="submit" className="w-full" icon={<KeyRound className="size-4" />} loading={connect.isPending}>{t("exchanges.verify_connect", "Verify & connect")}</Button>
+          <Button type="submit" className="w-full" icon={<KeyRound className="size-4" />}
+            loading={connect.isPending} disabled={readiness.data?.exchange_credentials_ready === false}>
+            {t("exchanges.verify_connect", "Verify & connect")}
+          </Button>
         </form>
       </CardBody>
     </Card>

@@ -67,3 +67,11 @@ def test_missing_encryption_key_is_reported_before_exchange_request(user_client,
     assert response.status_code == 503
     assert result["code"] == "server_configuration_error"
     assert "FERNET_KEY" in result["message"]
+
+
+def test_health_reports_exchange_credential_readiness(client, monkeypatch):
+    assert client.get("/api/health").get_json()["exchange_credentials_ready"] is True
+    monkeypatch.delenv("FERNET_KEY")
+    assert client.get("/api/health").get_json()["exchange_credentials_ready"] is False
+    monkeypatch.setenv("FERNET_KEY", "invalid")
+    assert client.get("/api/health").get_json()["exchange_credentials_ready"] is False

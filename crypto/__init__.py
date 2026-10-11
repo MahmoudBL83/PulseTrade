@@ -575,6 +575,12 @@ def api_health():
     except Exception as e:
         tables = []
         db_ok = False
+    from crypto.models import Exchange as ConnectedExchange
+    try:
+        ConnectedExchange._cipher()
+        exchange_credentials_ready = True
+    except (RuntimeError, ValueError):
+        exchange_credentials_ready = False
     from crypto import market as _market
     return {
         "status": "ok" if db_ok else "degraded",
@@ -587,6 +593,7 @@ def api_health():
         "engine": engine_mode(),
         "market_data": _market.mode(),
         "react_app": spa.has_build(),
+        "exchange_credentials_ready": exchange_credentials_ready,
         "time": datetime.utcnow().isoformat() + "Z",
     }
 
