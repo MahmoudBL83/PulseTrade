@@ -1,9 +1,13 @@
+import logging
+
 from flask import render_template, request, redirect, url_for, jsonify
 import ccxt
 from crypto import app,db, jwt_required, auth_required
 from crypto.models import Exchange,Exchange2, Post, User, Notification, PAPER_EXCHANGE
 from crypto import get_current_user
 from crypto.functions import connectExchange, build_exchange, CCXT_OPTIONS  # noqa: F401 (re-exported)
+
+log = logging.getLogger("pulsetrade.exchanges")
 
 
 def nav_context(user):
@@ -131,20 +135,33 @@ def connect_exchange():
             'ok': True,
         })
     except ccxt.AuthenticationError:
-        return jsonify({'status': 'error', 'message': 'Invalid API credentials'})
+        return jsonify({'status': 'error', 'ok': False, 'code': 'authentication_failed',
+                        'message': 'Binance rejected the API key. Check the key, secret, account permissions, testnet setting, and any IP allowlist.'
+                        if exchange_name == 'binance' else 'The exchange rejected the API credentials.'}), 401
     except ccxt.RequestTimeout:
-        return jsonify({'status': 'error', 'message': 'Request timeout'})
-    except ccxt.ExchangeNotAvailable:
-        return jsonify({'status': 'error', 'message': 'Exchange not available'})
+        return jsonify({'status': 'error', 'ok': False, 'code': 'exchange_timeout',
+                        'message': f'{exchange_name} did not respond in time. Please retry.'}), 504
+    except ccxt.ExchangeNotAvailable as e:
+        detail = str(e).lower()
+        if 'restricted location' in detail or ' 451' in detail:
+            log.warning('%s rejected the server region (HTTP 451) during connection', exchange_name)
+            return jsonify({'status': 'error', 'ok': False, 'code': 'exchange_region_restricted',
+                            'message': f'{exchange_name} rejected this server location (HTTP 451). The request comes from the hosting server, not your browser. Use a supported deployment region or contact the exchange.'}), 503
+        log.warning('%s unavailable during connection: %s', exchange_name, type(e).__name__)
+        return jsonify({'status': 'error', 'ok': False, 'code': 'exchange_unavailable',
+                        'message': f'{exchange_name} is temporarily unreachable from this server. Please retry later.'}), 503
     except ccxt.NetworkError:
-        return jsonify({'status': 'error', 'message': 'Network error occurred'})
+        return jsonify({'status': 'error', 'ok': False, 'code': 'exchange_network_error',
+                        'message': f'This server could not reach {exchange_name}. Please retry later.'}), 502
     except ccxt.ExchangeError:
-        return jsonify({'status': 'error', 'message': f'Failed to connect to {exchange_name} API'})
+        return jsonify({'status': 'error', 'ok': False, 'code': 'exchange_error',
+                        'message': f'{exchange_name} rejected the connection. Check account permissions and the production/testnet setting.'}), 502
     except RuntimeError as e:  # FERNET_KEY missing
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    except Exception as e:
-        print(f"connect {exchange_name} failed: {e}")
-        return jsonify({'status': 'error', 'message': 'An unexpected error occurred'})
+    except Exception:
+        log.exception('unexpected connection failure for %s', exchange_name)
+        return jsonify({'status': 'error', 'ok': False, 'code': 'connection_error',
+                        'message': 'An unexpected error occurred'}), 500
 
 
 # Define an endpoint to disconnect from an exchange
