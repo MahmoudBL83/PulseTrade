@@ -139,17 +139,23 @@ def create_smart_trade():
             try:
                 buy_trade = exchange.create_order(symbol, buy_type, side, total_amount, price if buy_type == 'limit' else None)
                 buy_trade_id = str(buy_trade['id'])
-                fetched = exchange.fetch_order(buy_trade['id'], symbol)
-                buy_price = fetched.get('average') or fetched.get('price') or price or market.price(exchange_name, symbol)
-                if side == 'buy' and fetched.get('status') == 'closed':
-                    units = _net_units(fetched, symbol.split('/')[0], total_amount)
-                deal_started = True
-                send_notification(f'{trade_type} has completed a Quick {side} on {exchange_name} for {symbol} with {round(total_amount * buy_price,2)} {symbol.split("/")[1]}***{buy_type} {trade_type} {side} Order')
             except Exception as e:
                 err_msg, status = str(e), False
                 send_notification(f'{trade_type} has failed to start a Quick {side} on {exchange_name} for {symbol}: {err_msg[:120]}***{buy_type} {trade_type} {side} Order')
                 return jsonify({'message': f"Smart Trade failed {err_msg}", 'ok': False})
-            if not take_profit and not stop_loss:
+            try:
+                fetched = exchange.fetch_order(buy_trade_id, symbol)
+            except Exception:
+                fetched = None
+            if fetched and str(fetched.get('status') or '').lower() in ('closed', 'filled'):
+                buy_price = fetched.get('average') or fetched.get('price') or price or market.price(exchange_name, symbol)
+                if side == 'buy':
+                    units = _net_units(fetched, symbol.split('/')[0], total_amount)
+                deal_started = True
+                send_notification(f'{trade_type} has completed a Quick {side} on {exchange_name} for {symbol} with {round(total_amount * buy_price,2)} {symbol.split("/")[1]}***{buy_type} {trade_type} {side} Order')
+            else:
+                send_notification(f'{trade_type} submitted a Quick {side} on {exchange_name} for {symbol}; waiting for exchange confirmation***{buy_type} {trade_type} {side} Order')
+            if deal_started and not take_profit and not stop_loss:
                 units = 0
                 isActive = False
         elif not buy_type.startswith('cond.'):
@@ -193,11 +199,14 @@ def create_smart_trade():
     )
     db.session.add(smart_trade)
     db.session.flush()
-    if buy_trade_id:
+    if buy_trade_id and deal_started:
         db.session.add(Transaction(user_id=current_user.id, err_msg=err_msg, status=status, exchange=exchange_name,
                                    symbol=symbol, type=side, amount=total_amount, value=buy_price, sma_id=smart_trade.id))
     db.session.commit()
-    return jsonify({'message':f"Smart Trade executed successfully.",'ok':True, 'id': smart_trade.id})
+    message = ("Smart Trade executed successfully." if deal_started else
+               "Order submitted; waiting for exchange confirmation." if buy_trade_id else
+               "Smart Trade armed and waiting for its entry trigger.")
+    return jsonify({'message': message, 'ok': True, 'id': smart_trade.id})
 
 
 @app.route('/api/v1/smart_trades/edit/<int:smart_trade_id>', methods=['POST'])
@@ -225,8 +234,13 @@ def edit_smart_trade(smart_trade_id):
     # A still-open entry order can be replaced with the new parameters.
     try:
         if smart_trade.buy_order_id:
-            if exchange.fetch_order(smart_trade.buy_order_id, symbol=symbol)['status'] == 'open':
+            entry = exchange.fetch_order(smart_trade.buy_order_id, symbol=symbol)
+            state = str(entry.get('status') or '').lower()
+            if state == 'open':
                 exchange.cancel_order(smart_trade.buy_order_id, symbol=symbol)
+                entry = exchange.fetch_order(smart_trade.buy_order_id, symbol=symbol)
+                state = str(entry.get('status') or '').lower()
+            if state in ('canceled', 'cancelled', 'expired', 'rejected') and not float(entry.get('filled') or 0):
                 smart_trade.deal_started = False
                 smart_trade.units = total_amount
                 smart_trade.amount = total_amount
@@ -235,8 +249,14 @@ def edit_smart_trade(smart_trade_id):
                 smart_trade.buy_trigger_price = _num(body, 'triggerPrice', smart_trade.buy_trigger_price or 0)
                 smart_trade.order_type = 'cond.limit' if body.get('buy_type') in ('limit', 'cond.limit') else 'cond.market'
                 smart_trade.buy_order_id = None
+            elif state in ('closed', 'filled', 'canceled', 'cancelled', 'expired', 'rejected'):
+                if not smart_trade.deal_started:
+                    if _reconcile_entry(smart_trade, exchange, smart_trade.buy_price or price) != 'opened':
+                        return jsonify({'message': 'Entry fill could not be reconciled before editing.', 'ok': False}), 502
+            else:
+                return jsonify({'message': 'Entry status is not confirmed. Smart trade was kept for review.', 'ok': False}), 502
     except Exception as e:
-        return jsonify({'message': f'Error editing smart trade: {e}', 'ok': False})
+        return jsonify({'message': f'Error verifying entry before editing: {e}', 'ok': False}), 502
     if not smart_trade.deal_started and body.get('buy_type'):
         smart_trade.order_type = str(body.get('buy_type')).lower()
         smart_trade.buy_trigger_price = _num(body, 'triggerPrice', smart_trade.buy_trigger_price or 0)
@@ -282,9 +302,13 @@ def run_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'message': 'Smart trade not found or you do not have permission to run it','ok':False}), 404
+    if smart_trade.buy_order_id and not smart_trade.deal_started:
+        return jsonify({'message': 'An entry order is pending. Reconcile or cancel it before restarting.', 'ok': False}), 409
     pending = _reconcile_pending_take_profit(smart_trade)
     if pending is not None:
         return pending
+    if smart_trade.deal_started and (smart_trade.units or 0) > 0:
+        return jsonify({'message': 'Close the current position before restarting this smart trade.', 'ok': False}), 409
     limit = current_user.subType.max_sma if current_user.subType else None
     if limit and not smart_trade.isActive:
         active = SmartTrade.query.filter(SmartTrade.isActive == True, SmartTrade.is_hidden == False, SmartTrade.user_id == current_user.id).count()
@@ -299,28 +323,33 @@ def run_smart_trade(smart_trade_id):
     isActive = True
     buy_price = smart_trade.bought_price or 0
     buy_type = (smart_trade.order_type or 'market').lower()
+    buy_trade_id = None
 
     if not smart_trade.use_assets:
         if buy_type in ('limit', 'market'):
             try:
                 buy_trade = exchange.create_order(symbol, buy_type, side, total_amount, smart_trade.bought_price if buy_type == 'limit' else None)
-                fetched = exchange.fetch_order(buy_trade['id'], symbol)
+                buy_trade_id = str(buy_trade['id'])
+            except Exception as e:
+                err_msg = str(e)
+                send_notification(f'{smart_trade.trade_type} has failed to start a Quick {side} on {smart_trade.exchange} for {symbol}: {err_msg[:120]}***{buy_type} Smart Trade {side} Order')
+                return jsonify({'message': f'Error running smart trade: {err_msg}', 'ok': False}), 502
+            try:
+                fetched = exchange.fetch_order(buy_trade_id, symbol)
+            except Exception:
+                fetched = None
+            if fetched and str(fetched.get('status') or '').lower() in ('closed', 'filled'):
                 buy_price = fetched.get('average') or fetched.get('price') or buy_price
-                if side == 'buy' and fetched.get('status') == 'closed':
+                if side == 'buy':
                     total_amount = _net_units(fetched, smart_trade.quote_currency, total_amount)
-                err_msg, status = "", True
                 deal_started = True
                 send_notification(f'{smart_trade.trade_type} has completed a Quick {side} on {smart_trade.exchange} for {symbol} with {round(total_amount * buy_price, 2)} {symbol.split("/")[1]}***{buy_type} Smart Trade {side} Order')
-            except Exception as e:
-                err_msg, status = str(e), False
-                send_notification(f'{smart_trade.trade_type} has failed to start a Quick {side} on {smart_trade.exchange} for {symbol}: {err_msg[:120]}***{buy_type} Smart Trade {side} Order')
-            db.session.add(Transaction(err_msg=err_msg, status=status, user_id=current_user.id, exchange=smart_trade.exchange,
-                                       symbol=symbol, type=side, amount=total_amount, value=buy_price if status else 0,
-                                       sma_id=smart_trade.id))
-            if not status:
-                db.session.commit()
-                return jsonify({'message': f'Error running smart trade: {err_msg}', 'ok': False})
-        if not smart_trade.take_profit and not smart_trade.stop_loss:
+                db.session.add(Transaction(err_msg="", status=True, user_id=current_user.id, exchange=smart_trade.exchange,
+                                           symbol=symbol, type=side, amount=total_amount, value=buy_price,
+                                           sma_id=smart_trade.id))
+            else:
+                send_notification(f'{smart_trade.trade_type} submitted a Quick {side} on {smart_trade.exchange} for {symbol}; waiting for exchange confirmation***{buy_type} Smart Trade {side} Order')
+        if deal_started and not smart_trade.take_profit and not smart_trade.stop_loss:
             total_amount = 0
             isActive = False
     else:
@@ -329,7 +358,7 @@ def run_smart_trade(smart_trade_id):
     smart_trade.units = total_amount
     smart_trade.deal_started = deal_started
     smart_trade.isActive = isActive
-    smart_trade.buy_order_id = None
+    smart_trade.buy_order_id = buy_trade_id
     smart_trade.trailing_order_id = None
     smart_trade.stop_loss_id = None
     smart_trade.last_take_profit_id = None
@@ -341,7 +370,10 @@ def run_smart_trade(smart_trade_id):
     smart_trade.buy_price = buy_price
     smart_trade.stop_loss_price = buy_price + buy_price * float(smart_trade.stop_loss_price_percent or 0) / 100 if smart_trade.stop_loss else 0
     db.session.commit()
-    return jsonify({'message': 'Smart trade ran again successfully', 'ok': True})
+    message = ('Smart trade ran again successfully' if deal_started else
+               'Order submitted; waiting for exchange confirmation' if buy_trade_id else
+               'Smart trade armed and waiting for its entry trigger')
+    return jsonify({'message': message, 'ok': True})
 
 
 def _profit_usd(st, exit_price, qty):
@@ -359,6 +391,9 @@ def close_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'message': 'Smart trade not found or you do not have permission to close it','ok':False}), 404
+    entry = _prepare_pending_entry_for_exit(smart_trade)
+    if entry is not None:
+        return entry
     pending = _reconcile_pending_take_profit(smart_trade, cancel_open=True)
     if pending is not None:
         return pending
@@ -413,6 +448,9 @@ def cancel_smart_trade(smart_trade_id):
     smart_trade = _owned(smart_trade_id)
     if smart_trade is None:
         return jsonify({'error': 'Smart trade not found or you do not have permission to cancel it', 'ok': False}), 404
+    entry = _prepare_pending_entry_for_exit(smart_trade)
+    if entry is not None:
+        return entry
     pending = _reconcile_pending_take_profit(smart_trade, cancel_open=True)
     if pending is not None:
         return pending
@@ -555,6 +593,63 @@ def _reconcile_pending_take_profit(st, cancel_open=False):
     return jsonify({'message': 'A take-profit order is still pending. Cancel it on the exchange before changing this trade.', 'ok': False}), 409
 
 
+def _reconcile_entry(st, exchange, fallback_price):
+    """Resolve one submitted entry without ever submitting it a second time."""
+    try:
+        order = exchange.fetch_order(st.buy_order_id, st.symbol)
+    except Exception:
+        return "entry-unconfirmed"
+    state = str(order.get('status') or '').lower()
+    filled = float(order.get('filled') or 0)
+    if state in ('open', 'pending'):
+        return "entry-pending"
+    if state in ('canceled', 'cancelled', 'expired', 'rejected') and filled <= 0:
+        st.buy_order_id = None
+        if not (st.order_type or '').startswith('cond.'):
+            st.isActive = False
+        db.session.commit()
+        return "entry-cancelled"
+    if state not in ('closed', 'filled', 'canceled', 'cancelled', 'expired', 'rejected'):
+        return "entry-unconfirmed"
+    side = _open_side(st)
+    qty = filled or (st.amount or 0)
+    if side == 'buy':
+        qty = _net_units(order, st.quote_currency, qty)
+    fill = order.get('average') or order.get('price') or fallback_price
+    st.units = qty
+    st.buy_price = fill
+    st.deal_started = True
+    st.stop_loss_price = fill + fill * float(st.stop_loss_price_percent or 0) / 100 if st.stop_loss else 0
+    db.session.add(Transaction(status=True, err_msg="", user_id=st.user_id, exchange=st.exchange,
+                               symbol=st.symbol, type=side, value=fill, amount=qty, sma_id=st.id))
+    send_notification(f'{st.trade_type} confirmed a {side} entry on {st.exchange} for {st.symbol}***Smart Trade Entry', st.user_id, st.exchange)
+    if not st.take_profit and not st.stop_loss:
+        st.units = 0
+        st.isActive = False
+    db.session.commit()
+    return "opened"
+
+
+def _prepare_pending_entry_for_exit(st):
+    """Cancel an open entry and account for any fill before an exit or delete."""
+    if not st.buy_order_id or st.deal_started:
+        return None
+    try:
+        exchange = connectExchange(st.exchange, st.user_id)
+        status = _reconcile_entry(st, exchange, st.buy_price or st.price_now or 0)
+        if status == "entry-pending":
+            try:
+                exchange.cancel_order(st.buy_order_id, st.symbol)
+            except Exception:
+                pass  # it may have filled between fetch and cancel
+            status = _reconcile_entry(st, exchange, st.buy_price or st.price_now or 0)
+    except Exception:
+        return jsonify({'message': 'Could not reconcile the pending entry. Smart trade was kept for review.', 'ok': False}), 502
+    if status not in ('opened', 'entry-cancelled'):
+        return jsonify({'message': 'Entry status is not confirmed. Smart trade was kept for review.', 'ok': False}), 502
+    return None
+
+
 def _market_close(st, exchange, symbol, qty, price, label):
     side = _close_side(st)
     qty = _sellable(exchange, st, qty)
@@ -602,32 +697,22 @@ def run_smart_trade_once(st, now=None):
 
     # --- conditional entry (cond.limit / cond.market) once the trigger is hit
     if not st.use_assets and not st.deal_started:
+        if st.buy_order_id:
+            return _reconcile_entry(st, exchange, price)
         if (st.order_type or "").startswith("cond.") and st.buy_trigger_price and price >= st.buy_trigger_price:
             side = _open_side(st)
             order_type = 'limit' if st.order_type == 'cond.limit' else 'market'
             limit_price = (st.bought_price or st.buy_price or price) if order_type == 'limit' else None
             try:
                 order = exchange.create_order(symbol, order_type, side, st.amount, limit_price)
-                fetched = exchange.fetch_order(order['id'], symbol)
-                fill = fetched.get('average') or fetched.get('price') or limit_price or price
-                if side == 'buy' and fetched.get('status') == 'closed':
-                    st.units = _net_units(fetched, st.quote_currency, st.amount)
-                st.buy_price = fill
                 st.buy_order_id = str(order['id'])
-                st.deal_started = True
-                st.stop_loss_price = fill + fill * float(st.stop_loss_price_percent or 0) / 100 if st.stop_loss else 0
-                err_msg, status = "", True
-                send_notification(f'{st.trade_type} has started a Condtional {side} on {st.exchange} for {symbol} with {round(fill * st.amount, 2)} {st.base_currency}***{st.order_type} {st.trade_type} {side} Order', st.user_id, st.exchange)
-                if not st.take_profit and not st.stop_loss:
-                    st.units = 0
-                    st.isActive = False
             except Exception as e:
-                fill, err_msg, status = price, str(e), False
-                send_notification(f'{st.trade_type} has failed to start a Condtional {side} on {st.exchange} for {symbol}: {err_msg[:120]}***{st.order_type} {st.trade_type} {side} Order', st.user_id, st.exchange)
-            db.session.add(Transaction(status=status, err_msg=err_msg, user_id=st.user_id, exchange=st.exchange, symbol=symbol,
-                                       type=side, value=fill if status else 0, amount=st.amount, sma_id=st.id))
+                send_notification(f'{st.trade_type} has failed to start a Conditional {side} on {st.exchange} for {symbol}: {str(e)[:120]}***{st.order_type} {st.trade_type} {side} Order', st.user_id, st.exchange)
+                return "entry-failed"
+            db.session.commit()
+            return _reconcile_entry(st, exchange, limit_price or price)
         db.session.commit()
-        return "waiting" if not st.deal_started else "opened"
+        return "waiting"
 
     if not st.deal_started:
         return "waiting"

@@ -448,6 +448,197 @@ def test_conditional_smart_trade_buys_on_trigger(app, paper_user, prices):
         assert tx[-1].type == "buy"                                   # legacy bug: conditional Smart Trades sold
 
 
+@pytest.mark.parametrize("recovery", ["engine", "manual_close"])
+def test_smart_trade_entry_survives_order_lookup_failure(app, paper_user, prices, monkeypatch, recovery):
+    prices.set("ADA", 1)
+    from crypto.paper import PaperExchange
+    from tests.conftest import current_user_id
+    paper = PaperExchange(current_user_id(paper_user))
+
+    class ExchangeWithSlowOrderLookup:
+        submitted = 0
+        lookup_fails = True
+
+        def create_order(self, *args, **kwargs):
+            self.submitted += 1
+            return paper.create_order(*args, **kwargs)
+
+        def fetch_order(self, *args, **kwargs):
+            if self.lookup_fails:
+                raise RuntimeError("order lookup temporarily unavailable")
+            return paper.fetch_order(*args, **kwargs)
+
+        def fetch_balance(self):
+            return paper.fetch_balance()
+
+    exchange = ExchangeWithSlowOrderLookup()
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", lambda *args: exchange)
+    monkeypatch.setattr("crypto.smartTrade.build_exchange", lambda row: exchange)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ADA/USDT", "price": 1,
+        "triggerPrice": 0, "buy_type": "market", "amount": 100,
+        "take_profits": [[10, 100]], "tpTriggerType": "market", "stop_loss": False,
+        "take_profit": True, "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+    from crypto import db
+    from crypto.models import SmartTrade
+    from crypto.smartTrade import run_smart_trade_once
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.buy_order_id
+        assert st.deal_started is False
+        assert run_smart_trade_once(st) == "entry-unconfirmed"
+        assert exchange.submitted == 1
+    assert paper_user.post(f"/api/v1/smart_trades/run/{created['id']}").status_code == 409
+    assert paper_user.post(f"/api/v1/smart_trades/close/{created['id']}").status_code == 502
+    exchange.lookup_fails = False
+    if recovery == "manual_close":
+        response = paper_user.post(f"/api/v1/smart_trades/close/{created['id']}")
+        assert response.get_json()["ok"], response.get_json()
+        with app.app_context():
+            st = db.session.get(SmartTrade, created["id"])
+            assert st.units == 0
+            assert st.deal_started is False
+            assert paper.fetch_balance()["total"].get("ADA", 0) < 0.01
+        assert exchange.submitted == 2
+        return
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "opened"
+        assert st.deal_started is True
+        assert st.units == pytest.approx(99.9)
+        assert exchange.submitted == 1
+
+
+def test_conditional_entry_does_not_repeat_unconfirmed_order(app, paper_user, prices, monkeypatch):
+    prices.set("ADA", 1)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ADA/USDT", "price": 1.06,
+        "triggerPrice": 1.05, "buy_type": "cond.market", "amount": 100,
+        "take_profits": [[10, 100]], "tpTriggerType": "market", "stop_loss": False,
+        "take_profit": True, "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+    from crypto.paper import PaperExchange
+    from tests.conftest import current_user_id
+    paper = PaperExchange(current_user_id(paper_user))
+
+    class SlowLookup:
+        submitted = 0
+        fail = True
+
+        def create_order(self, *args, **kwargs):
+            self.submitted += 1
+            return paper.create_order(*args, **kwargs)
+
+        def fetch_order(self, *args, **kwargs):
+            if self.fail:
+                raise RuntimeError("lookup unavailable")
+            return paper.fetch_order(*args, **kwargs)
+
+    exchange = SlowLookup()
+    monkeypatch.setattr("crypto.smartTrade.build_exchange", lambda row: exchange)
+    from crypto import db
+    from crypto.models import SmartTrade
+    from crypto.smartTrade import run_smart_trade_once
+    prices.set("ADA", 1.06)
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "entry-unconfirmed"
+        assert run_smart_trade_once(st) == "entry-unconfirmed"
+        assert exchange.submitted == 1
+    exchange.fail = False
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "opened"
+        assert exchange.submitted == 1
+
+
+def test_open_limit_entry_can_still_be_replaced_safely(app, paper_user, prices):
+    prices.set("ADA", 1)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ADA/USDT", "price": 0.9,
+        "triggerPrice": 0, "buy_type": "limit", "amount": 100,
+        "take_profits": [[10, 100]], "tpTriggerType": "market", "stop_loss": False,
+        "take_profit": True, "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+    from crypto import db
+    from crypto.models import SmartTrade
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        old_order_id = st.buy_order_id
+        assert old_order_id and st.deal_started is False
+    response = paper_user.post(f"/api/v1/smart_trades/edit/{created['id']}", json={
+        "price": 1.1, "triggerPrice": 1.1, "amount": 50, "buy_type": "cond.market",
+        "trade_type": "Smart Trade", "take_profit": True,
+    })
+    assert response.get_json()["ok"], response.get_json()
+    from crypto.paper import PaperExchange
+    from tests.conftest import current_user_id
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.buy_order_id is None
+        assert st.deal_started is False
+        assert st.amount == 50
+        assert PaperExchange(current_user_id(paper_user)).fetch_order(old_order_id, "ADA/USDT")["status"] == "canceled"
+
+
+def test_smart_trade_rerun_tracks_unconfirmed_entry(app, paper_user, prices, monkeypatch):
+    prices.set("ADA", 1)
+    created = paper_user.post("/api/v1/smart_trades/", json={
+        "trade_type": "Smart Trade", "use_assets": False, "symbol": "ADA/USDT", "price": 1,
+        "triggerPrice": 0, "buy_type": "market", "amount": 100,
+        "take_profits": [], "tpTriggerType": "market", "stop_loss": False,
+        "take_profit": False, "trailing_take_profit": False, "trailing_stop_loss": False,
+        "trailing_deviation": 0, "stop_loss_time_out": False,
+        "exchange": "paper", "move_to_break_even": False,
+    }).get_json()
+    assert created["ok"], created
+    from crypto.paper import PaperExchange
+    from tests.conftest import current_user_id
+    paper = PaperExchange(current_user_id(paper_user))
+
+    class SlowLookup:
+        submitted = 0
+        fail = True
+
+        def create_order(self, *args, **kwargs):
+            self.submitted += 1
+            return paper.create_order(*args, **kwargs)
+
+        def fetch_order(self, *args, **kwargs):
+            if self.fail:
+                raise RuntimeError("lookup unavailable")
+            return paper.fetch_order(*args, **kwargs)
+
+    exchange = SlowLookup()
+    monkeypatch.setattr("crypto.smartTrade.connectExchange", lambda *args: exchange)
+    monkeypatch.setattr("crypto.smartTrade.build_exchange", lambda row: exchange)
+    response = paper_user.post(f"/api/v1/smart_trades/run/{created['id']}")
+    assert response.get_json()["ok"], response.get_json()
+    from crypto import db
+    from crypto.models import SmartTrade
+    from crypto.smartTrade import run_smart_trade_once
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert st.buy_order_id and not st.deal_started
+        assert run_smart_trade_once(st) == "entry-unconfirmed"
+        assert exchange.submitted == 1
+    exchange.fail = False
+    with app.app_context():
+        st = db.session.get(SmartTrade, created["id"])
+        assert run_smart_trade_once(st) == "opened"
+        assert exchange.submitted == 1
+
+
 # ------------------------------------------------------------------ portfolio / notifications
 
 def test_portfolio_with_paper_account(app, paper_user, prices):
