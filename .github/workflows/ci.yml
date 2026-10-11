@@ -13,6 +13,20 @@ jobs:
       - run: python -m compileall -q crypto wsgi.py api
       - name: secret scan
         run: |
-          ! grep -rEn "2odabahaa|mzdkqpflejakjled|526af4fbd93bc393a6392db7|sk_test_51NzIN6|AIzaSyCy3nFZyl|AIzaSyD11IUa00|hf_byPxtOKREZdQALBXC|kxDtCIn7F_SBhfirpwzK4MnaflmujcbtEWwuEqwFqi4|XKokBfNWv6FIYuTMg5sLPjhJ|GOCSPX|password == '123'" --include='*.py' --include='*.yaml' --include='*.json' --exclude-dir=static --exclude-dir=templates --exclude-dir=node_modules . || (echo 'leaked secret pattern found' && exit 1)
+          ! grep -rEn "2odabahaa|mzdkqpflejakjled|526af4fbd93bc393a6392db7|sk_test_51NzIN6|AIzaSyCy3nFZyl|AIzaSyD11IUa00|hf_byPxtOKREZdQALBXC|kxDtCIn7F_SBhfirpwzK4MnaflmujcbtEWwuEqwFqi4|XKokBfNWv6FIYuTMg5sLPjhJ|GOCSPX|password == '123'" --include='*.py' --include='*.yaml' --include='*.json' --exclude=ci.yml --exclude-dir=static --exclude-dir=templates --exclude-dir=node_modules . || (echo 'leaked secret pattern found' && exit 1)
       - name: tests (route smoke + engine + security)
         run: python -m pytest -q -p no:warnings
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
