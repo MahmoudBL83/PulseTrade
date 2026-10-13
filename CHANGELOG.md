@@ -9,6 +9,8 @@
   endpoints and pages retain their original response shapes.
 - Corrected Smart Trade price fields in its API serialization and showed
   working entry/exit order badges.
+- Alerts, notifications, support, watchlist, and journal now show retryable
+  load errors instead of empty states; price alert deletion asks for confirmation.
 
 ## 2.0.0 — 2026 modernization
 

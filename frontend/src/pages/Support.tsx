@@ -6,7 +6,7 @@ import { useToast } from "../context/toast";
 import { useT } from "../i18n";
 import { v1, v2 } from "../lib/api";
 import type { Ticket } from "../lib/types";
-import { Button, Card, EmptyState, Field, Input, Modal, Notice, PageHeader, Segmented, Skeleton, Textarea } from "../components/ui";
+import { Button, Card, EmptyState, ErrorState, Field, Input, Modal, Notice, PageHeader, Segmented, Skeleton, Textarea } from "../components/ui";
 import { TicketListItem, TicketThread, ticketState } from "../components/support";
 
 function NewTicket({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (t: Ticket) => void }) {
@@ -80,7 +80,7 @@ export default function Support() {
         }
       />
       {answered > 0 && <Notice tone="success">{t("support.has_answers", "{n} ticket(s) have a new reply from support.", { n: answered })}</Notice>}
-      {list.isLoading ? <Skeleton className="h-96" /> : !list.data?.length ? (
+      {list.isLoading ? <Skeleton className="h-96" /> : list.isError ? <Card><ErrorState error={list.error} onRetry={() => void list.refetch()} /></Card> : !list.data?.length ? (
         <Card>
           <EmptyState
             icon={<LifeBuoy className="size-6" />}

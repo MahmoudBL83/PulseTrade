@@ -7,7 +7,7 @@ import { useT } from "../i18n";
 import { v2 } from "../lib/api";
 import type { PriceAlert } from "../lib/types";
 import { fmtPrice, symbolToSlug, timeAgo } from "../lib/format";
-import { Badge, Button, Card, EmptyState, IconButton, Notice, PageHeader, Skeleton, Switch, Table, Td, Th } from "../components/ui";
+import { Badge, Button, Card, ConfirmButton, EmptyState, ErrorState, IconButton, Notice, PageHeader, Skeleton, Switch, Table, Td, Th } from "../components/ui";
 import { AlertModal } from "../components/orders";
 
 export default function Alerts() {
@@ -37,7 +37,7 @@ export default function Alerts() {
         <Link to="/settings?tab=notifications" className="text-primary hover:underline">{t("alerts.configure", "Configure channels")}</Link>
       </Notice>
       <Card>
-        {list.isLoading ? <Skeleton className="m-4 h-40" /> : !list.data?.length ? (
+        {list.isLoading ? <Skeleton className="m-4 h-40" /> : list.isError ? <ErrorState error={list.error} onRetry={() => void list.refetch()} /> : !list.data?.length ? (
           <EmptyState icon={<BellRing className="size-6" />} title={t("alerts.empty", "No alerts yet")} action={<Button size="sm" onClick={() => setModal({ open: true, alert: null })}>{t("alerts.new", "New price alert")}</Button>} />
         ) : (
           <Table>
@@ -58,7 +58,7 @@ export default function Alerts() {
                   <Td align="center"><Switch checked={a.active} onChange={() => toggle.mutate(a)} /></Td>
                   <Td align="end">
                     <IconButton label={t("common.edit", "Edit")} onClick={() => setModal({ open: true, alert: a })}><Pencil className="size-4" /></IconButton>
-                    <IconButton label={t("common.delete", "Delete")} onClick={() => remove.mutate(a.id)}><Trash2 className="size-4" /></IconButton>
+                    <ConfirmButton title={t("alerts.delete_q", "Delete this price alert?")} confirmLabel={t("common.delete", "Delete")} onConfirm={() => remove.mutateAsync(a.id)}><Trash2 className="size-4" /></ConfirmButton>
                   </Td>
                 </tr>
               ))}

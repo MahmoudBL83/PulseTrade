@@ -9,7 +9,7 @@ import { v2 } from "../lib/api";
 import type { Notification } from "../lib/types";
 import { fmtDateTime } from "../lib/format";
 import { cn } from "../lib/utils";
-import { Badge, Button, Card, EmptyState, IconButton, PageHeader, Segmented, Skeleton } from "../components/ui";
+import { Badge, Button, Card, EmptyState, ErrorState, IconButton, PageHeader, Segmented, Skeleton } from "../components/ui";
 
 export default function Notifications() {
   const t = useT();
@@ -27,7 +27,7 @@ export default function Notifications() {
     refresh();
   };
   const readAll = useMutation({ mutationFn: () => v2.post("/notifications/read"), onSuccess: after, onError: (e) => toast.error(e) });
-  const readOne = useMutation({ mutationFn: (id: number) => v2.post("/notifications/read", { ids: [id] }), onSuccess: after });
+  const readOne = useMutation({ mutationFn: (id: number) => v2.post("/notifications/read", { ids: [id] }), onSuccess: after, onError: (e) => toast.error(e) });
   const del = useMutation({ mutationFn: (id: number) => v2.del(`/notifications/${id}`), onSuccess: after, onError: (e) => toast.error(e) });
   const rows = list.data?.data ?? [];
 
@@ -46,7 +46,7 @@ export default function Notifications() {
         }
       />
       <Card>
-        {list.isLoading ? <Skeleton className="m-4 h-64" /> : !rows.length ? <EmptyState icon={<Bell className="size-6" />} title={t("notifications.empty", "You're all caught up")} /> : (
+        {list.isLoading ? <Skeleton className="m-4 h-64" /> : list.isError ? <ErrorState error={list.error} onRetry={() => void list.refetch()} /> : !rows.length ? <EmptyState icon={<Bell className="size-6" />} title={t("notifications.empty", "You're all caught up")} /> : (
           <ul>
             {rows.map((n) => (
               <li key={n.id} className={cn("flex items-start gap-3 border-b border-line/60 px-5 py-3 last:border-0", !n.read && "bg-primary-soft/30")}>

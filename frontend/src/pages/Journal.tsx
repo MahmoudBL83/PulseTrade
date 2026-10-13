@@ -7,7 +7,7 @@ import { download, v2 } from "../lib/api";
 import type { JournalEntry } from "../lib/types";
 import { fmtDateTime, fmtPct, fmtPrice, fmtUsd, trendClass } from "../lib/format";
 import { cn, toNumber, useDebounced } from "../lib/utils";
-import { Badge, Button, Card, CardBody, CardHeader, ConfirmButton, EmptyState, Field, IconButton, Input, Modal, PageHeader, Segmented, Select, Skeleton, Stat, Textarea } from "../components/ui";
+import { Badge, Button, Card, CardBody, CardHeader, ConfirmButton, EmptyState, ErrorState, Field, IconButton, Input, Modal, PageHeader, Segmented, Select, Skeleton, Stat, Textarea } from "../components/ui";
 
 interface JStats { entries: number; closed: number; pnl: number; win_rate: number; avg_win: number; avg_loss: number; by_tag: { tag: string; trades: number; pnl: number }[] }
 
@@ -113,6 +113,7 @@ export default function Journal() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("journal.search", "Search entries…")} prefix={<Search className="size-4" />} />
           {tag && <Badge tone="primary" className="py-1">#{tag} <button type="button" onClick={() => setTag("")}>✕</button></Badge>}
           {list.isLoading && <Skeleton className="h-40" />}
+          {list.isError && <Card><ErrorState error={list.error} onRetry={() => void list.refetch()} /></Card>}
           {list.data && !list.data.length && <Card><EmptyState icon={<NotebookPen className="size-6" />} title={t("journal.empty", "No entries yet")} body={t("journal.empty_b", "Journaling your trades is the fastest way to improve.")} /></Card>}
           {list.data?.map((e) => (
             <Card key={e.id}>

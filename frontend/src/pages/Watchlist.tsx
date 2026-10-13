@@ -8,7 +8,7 @@ import { v2 } from "../lib/api";
 import { useMarketExchange } from "../lib/hooks";
 import type { Candle, WatchItem } from "../lib/types";
 import { fmtCompact, fmtPrice, symbolToSlug } from "../lib/format";
-import { Button, Card, CardBody, EmptyState, IconButton, PageHeader, Skeleton } from "../components/ui";
+import { Button, Card, CardBody, EmptyState, ErrorState, IconButton, PageHeader, Skeleton } from "../components/ui";
 import { Sparkline } from "../components/charts";
 import { Change, Price, SymbolCell, SymbolPicker, useWatchlist } from "../components/market";
 import { AlertModal } from "../components/orders";
@@ -29,7 +29,7 @@ export default function Watchlist() {
   const refresh = () => qc.invalidateQueries({ queryKey: ["watchlist"] });
   const add = useMutation({ mutationFn: () => v2.post("/watchlist", { symbol: pick }), onSuccess: refresh, onError: (e) => toast.error(e) });
   const remove = useMutation({ mutationFn: (id: number) => v2.del(`/watchlist/${id}`), onSuccess: refresh, onError: (e) => toast.error(e) });
-  const reorder = useMutation({ mutationFn: (ids: number[]) => v2.put("/watchlist/order", { ids }), onSuccess: refresh });
+  const reorder = useMutation({ mutationFn: (ids: number[]) => v2.put("/watchlist/order", { ids }), onSuccess: refresh, onError: (e) => toast.error(e) });
   const items = list.data ?? [];
   const move = (i: number, d: -1 | 1) => {
     const ids = items.map((x) => x.id);
@@ -53,6 +53,7 @@ export default function Watchlist() {
         }
       />
       {list.isLoading && <Skeleton className="h-64" />}
+      {list.isError && <Card><ErrorState error={list.error} onRetry={() => void list.refetch()} /></Card>}
       {list.data && !items.length && <Card><EmptyState icon={<Star className="size-6" />} title={t("watch.empty", "Your watchlist is empty")} body={t("watch.empty_b", "Tap the ☆ next to any market to follow it.")} /></Card>}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((w, i) => (
