@@ -95,6 +95,27 @@ def account_orders(user, report):
     return ok(rows, sources=sources)
 
 
+@bp.get("/exchanges/capabilities")
+@login_required
+def exchange_capabilities(user):
+    """Expose CCXT's per-venue capability map without touching private APIs."""
+    from crypto.functions import build_exchange
+    from crypto.order_history import _error
+
+    reports = []
+    for row in user.exchanges.all():
+        try:
+            exchange = build_exchange(row)
+            capabilities = getattr(exchange, "has", {}) or {}
+            reports.append({"exchange": row.name, "capabilities": {
+                key: value for key, value in capabilities.items()
+                if isinstance(value, (bool, str)) and value in (True, False, "emulated")
+            }, "error": None})
+        except Exception as exc:
+            reports.append({"exchange": row.name, "capabilities": {}, "error": _error(exc)})
+    return ok(reports)
+
+
 def _float(v, name):
     try:
         f = float(v)

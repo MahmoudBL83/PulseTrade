@@ -113,6 +113,7 @@ def test_separate_trigger_book_is_opt_in(app, user_client, monkeypatch):
     response = user_client.get("/api/v2/orders/open?symbol=BTC%2FUSDT&conditional=1").get_json()
     assert response["data"][0]["id"] == "stop-1"
     assert response["data"][0]["trigger_price"] == "90 USDT"
+    assert response["sources"][0]["count"] == 1
 
 
 def test_emulated_history_uses_one_fetch_orders_call(app, user_client, monkeypatch):
@@ -135,3 +136,12 @@ def test_emulated_history_uses_one_fetch_orders_call(app, user_client, monkeypat
     response = user_client.get("/api/v2/orders/history?symbol=BTC%2FUSDT").get_json()
     assert [item["id"] for item in response["data"]] == ["2", "3"]
     assert exchange.calls == 1
+
+
+def test_connected_capabilities_are_scoped_to_user(paper_user, make_user_client):
+    report = paper_user.get("/api/v2/exchanges/capabilities").get_json()["data"]
+    assert len(report) == 1
+    assert report[0]["exchange"] == "paper"
+    assert report[0]["capabilities"]["fetchMyTrades"] is True
+    assert "api_key" not in str(report).lower()
+    assert make_user_client().get("/api/v2/exchanges/capabilities").get_json()["data"] == []

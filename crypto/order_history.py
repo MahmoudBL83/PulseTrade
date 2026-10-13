@@ -191,5 +191,7 @@ def collect(user, kind, *, exchange_name=None, symbol=None, limit=100, condition
     for item in rows:
         key = (item["exchange"], item.get("id") or item.get("order"), item.get("symbol"))
         unique[key] = item
+    for source in sources:
+        source["count"] = sum(item["exchange"] == source["exchange"] for item in unique.values())
     result = sorted(unique.values(), key=lambda item: item.get("timestamp") or 0, reverse=True)[:limit]
     return result, sources

@@ -11,6 +11,8 @@
   working entry/exit order badges.
 - Alerts, notifications, support, watchlist, and journal now show retryable
   load errors instead of empty states; price alert deletion asks for confirmation.
+- Connected exchanges display CCXT's current order/report capability map,
+  including native and emulated methods, without making private API requests.
 
 ## 2.0.0 — 2026 modernization
 

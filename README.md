@@ -24,6 +24,11 @@ permission, network, unsupported-report, or pair-required message. The old
 Exchange history may be limited by the venue's retention period and API key
 permissions; fills are separate from completed order records.
 
+`GET /api/v2/exchanges/capabilities` shows the connected venue's CCXT `has`
+map, including native and emulated methods. The Exchanges page displays key
+order/report capabilities and lets you inspect the complete supported list.
+Actual trading permissions still depend on the API key, market type, and venue.
+
 ## Run locally
 
 Use Python 3.12 or 3.13 and Node.js 22 or newer. Copy `.env.example` to

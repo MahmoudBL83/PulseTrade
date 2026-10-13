@@ -10,7 +10,37 @@ import { useMarketExchanges } from "../lib/hooks";
 import type { PaperSummary } from "../lib/types";
 import { fmtAmount, fmtPct, fmtUsd, trendClass } from "../lib/format";
 import { cn, toNumber } from "../lib/utils";
-import { Badge, Button, Card, CardBody, CardHeader, ConfirmButton, Field, Input, Modal, Notice, PageHeader, Select, Stat, Switch } from "../components/ui";
+import { Badge, Button, Card, CardBody, CardHeader, ConfirmButton, ErrorState, Field, Input, Modal, Notice, PageHeader, Select, Stat, Switch } from "../components/ui";
+
+interface ExchangeCapabilities { exchange: string; capabilities: Record<string, boolean | "emulated">; error: string | null }
+
+function CapabilityBadges({ report }: { report: ExchangeCapabilities }) {
+  const t = useT();
+  const has = report.capabilities;
+  const reports = [
+    ["Open orders", has.fetchOpenOrders],
+    ["Order history", has.fetchClosedOrders || has.fetchOrders],
+    ["Trade fills", has.fetchMyTrades],
+    ["Edit orders", has.editOrder],
+    ["Batch orders", has.createOrders],
+    ["Positions", has.fetchPositions],
+  ] as const;
+  const available = Object.entries(has).filter(([, value]) => value).sort(([a], [b]) => a.localeCompare(b));
+  return <div className="mt-2 space-y-2">
+    {report.error && <p className="text-xs text-down">{report.error}</p>}
+    <div className="flex flex-wrap gap-1.5">
+      {reports.map(([label, value]) => <Badge key={label} tone={value === true ? "up" : value === "emulated" ? "info" : "neutral"}>
+        {label}: {value === true ? t("common.available", "Available") : value === "emulated" ? t("exchanges.emulated", "Emulated") : t("common.unavailable", "Unavailable")}
+      </Badge>)}
+    </div>
+    {!!available.length && <details className="text-xs text-muted">
+      <summary className="cursor-pointer hover:text-fg">{t("exchanges.all_caps", "All available CCXT methods")} ({available.length})</summary>
+      <div className="mt-2 flex max-h-44 flex-wrap gap-1 overflow-y-auto">
+        {available.map(([name, value]) => <Badge key={name} tone={value === "emulated" ? "info" : "neutral"}>{name}{value === "emulated" ? " · emulated" : ""}</Badge>)}
+      </div>
+    </details>}
+  </div>;
+}
 
 function PaperCard() {
   const t = useT();
@@ -145,6 +175,9 @@ export default function Exchanges() {
   const toast = useToast();
   const qc = useQueryClient();
   const { user, refresh } = useAuth();
+  const capabilities = useQuery({ queryKey: ["exchange-capabilities", user?.exchanges.map((e) => e.id).join(",")],
+    queryFn: () => v2.get<ExchangeCapabilities[]>("/exchanges/capabilities"), enabled: !!user?.exchanges.length,
+    staleTime: 5 * 60_000 });
   const [params] = useSearchParams();
   const act = async (fn: () => Promise<{ message: string }>) => {
     try {
@@ -165,6 +198,7 @@ export default function Exchanges() {
         <Card>
           <CardHeader title={t("exchanges.connected", "Connected exchanges")} />
           <CardBody className="space-y-3">
+            {capabilities.isError && <ErrorState error={capabilities.error} onRetry={() => void capabilities.refetch()} />}
             {!user?.exchanges.length && <p className="text-sm text-muted">{t("exchanges.none_yet", "No exchanges connected yet.")}</p>}
             {user?.exchanges.map((e) => (
               <div key={e.id} className={cn("flex flex-wrap items-center gap-3 rounded-xl border p-4", e.isActive ? "border-primary/60 bg-primary-soft/30" : "border-line")}>
@@ -176,6 +210,7 @@ export default function Exchanges() {
                     {e.demo && <Badge tone="info">testnet</Badge>}
                   </p>
                   <p className="text-xs text-muted">{e.paper ? t("paper.simulated", "Simulated balances") : `${t("exchanges.api_key", "API key")} ••••${e.has_password ? ` · ${t("exchanges.passphrase", "Passphrase")}` : ""}`}</p>
+                  {capabilities.data?.find((r) => r.exchange === e.name) && <CapabilityBadges report={capabilities.data.find((r) => r.exchange === e.name)!} />}
                 </div>
                 {!e.isActive && <Button size="sm" variant="secondary" onClick={() => act(() => v1.post("/api/v1/fav_exchange/", { exchange_name: e.name }))}>{t("exchanges.make_active", "Make active")}</Button>}
                 <ConfirmButton
