@@ -69,6 +69,32 @@ def page_args(default=50, maximum=500):
     return limit, offset
 
 
+@bp.get("/orders/<report>")
+@login_required
+def account_orders(user, report):
+    """Orders and private fills with per-exchange capability/error status."""
+    if report not in ("open", "history", "fills"):
+        raise ApiError("Unknown order report", 404)
+    from crypto.order_history import collect
+    from crypto.orders import format_history_order, format_open_order
+
+    limit = max(1, min(int(request.args.get("limit", 100)), 200))
+    try:
+        rows, sources = collect(user, report, exchange_name=request.args.get("exchange"),
+                                symbol=request.args.get("symbol"), limit=limit,
+                                conditional=request.args.get("conditional") == "1")
+    except ValueError as exc:
+        raise ApiError(str(exc), 400) from exc
+    if report == "open":
+        rows = [format_open_order(row) for row in rows]
+    elif report == "history":
+        rows = [format_history_order(row) for row in rows]
+    else:
+        rows = [{key: row.get(key) for key in ("id", "order", "exchange", "symbol", "timestamp", "side", "price", "amount", "cost", "fee", "type", "takerOrMaker")}
+                for row in rows]
+    return ok(rows, sources=sources)
+
+
 def _float(v, name):
     try:
         f = float(v)

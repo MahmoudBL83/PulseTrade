@@ -1,5 +1,15 @@
 # Changelog
 
+## Order reports and exchange diagnostics
+
+- Fixed Binance style closed-order retrieval by retrying with recent account
+  pairs when CCXT requires a symbol. History can request any pair explicitly.
+- Added private exchange fills, per-exchange capability and failure details,
+  retry controls, and visible errors in React order panels. Legacy order
+  endpoints and pages retain their original response shapes.
+- Corrected Smart Trade price fields in its API serialization and showed
+  working entry/exit order badges.
+
 ## 2.0.0 — 2026 modernization
 
 Every legacy page and `/api/v1` endpoint is kept; the classic UI still works at

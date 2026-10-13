@@ -230,6 +230,7 @@ export default function SmartTrades() {
         <Tabs value={tab} onChange={setTab} className="px-3" tabs={[{ value: "active", label: t("smart.active", "Active"), count: counts.active }, { value: "history", label: t("smart.history", "Finished"), count: counts.history }]} />
         <CardBody className="space-y-3">
           {list.isLoading && <Skeleton className="h-40" />}
+          {list.isError && <Notice tone="error">{list.error.message} <Button size="xs" variant="outline" onClick={() => void list.refetch()}>{t("common.retry", "Retry")}</Button></Notice>}
           {list.data && !rows.length && <EmptyState icon={<Target className="size-6" />} title={tab === "active" ? t("smart.none", "No open smart trades") : t("smart.no_history", "No finished smart trades yet")} action={tab === "active" && <Button size="sm" onClick={() => setOpen(true)}>{t("smart.new", "New smart trade")}</Button>} />}
           {rows.map((st) => {
             const pnl = pnlPct(st);
@@ -241,6 +242,8 @@ export default function SmartTrades() {
                     <span className="font-semibold text-fg">{st.symbol}</span>
                     <Badge tone={smartSide(st) === "short" ? "down" : "up"}>{st.trade_type}</Badge>
                     <Badge tone={st.isActive ? (st.deal_started ? "up" : "info") : "neutral"}>{st.isActive ? (st.deal_started ? t("smart.open", "Open") : t("smart.pending", "Pending")) : t("smart.closed", "Closed")}</Badge>
+                    {st.isActive && !st.deal_started && st.buy_order_id && <Badge tone="info">{t("smart.entry_waiting", "Entry order waiting for fill")}</Badge>}
+                    {st.isActive && st.deal_started && !!st.sell_order_ids?.length && <Badge tone="info">{t("smart.exit_waiting", "Take profit order working")}</Badge>}
                     <span className="text-xs text-muted capitalize">{st.exchange}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">

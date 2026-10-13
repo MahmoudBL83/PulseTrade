@@ -289,6 +289,7 @@ def test_smart_trade_multi_level_take_profit(app, paper_user, prices):
 
     prices.set("ETH", 1051)
     status, st = tick()
+    assert st["price_now"] == pytest.approx(1051)
     # 1 ETH bought (0.999 received after the 0.1% fee), 50% of the order sold at TP1
     assert status == "take-profit" and st["take_profit_index"] == 1 and st["units"] == pytest.approx(0.499)
     assert st["isActive"] is True                                     # second target still pending

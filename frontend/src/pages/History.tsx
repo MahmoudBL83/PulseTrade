@@ -9,10 +9,11 @@ import { download, v1, v2 } from "../lib/api";
 import type { Transaction } from "../lib/types";
 import { fmtAmount, fmtDateTime, fmtPrice, fmtUsd } from "../lib/format";
 import { cn } from "../lib/utils";
-import { Badge, Button, Card, EmptyState, Input, Notice, PageHeader, Select, Skeleton, Table, Tabs, Td, Th } from "../components/ui";
-import { OpenOrdersTable } from "../components/orders";
+import { Badge, Button, Card, EmptyState, ErrorState, Input, Notice, PageHeader, Select, Skeleton, Table, Tabs, Td, Th } from "../components/ui";
+import { OpenOrdersTable, OrderReportStatus } from "../components/orders";
+import type { OrderReport } from "../components/orders";
 
-type Tab = "open" | "orders" | "pulse" | "ledger" | "positions" | "funding";
+type Tab = "open" | "orders" | "fills" | "pulse" | "ledger" | "positions" | "funding";
 
 interface ClosedOrder {
   id: string; exchange: string; timestamp: number; side: string; order_type: string; order_price: string;
@@ -28,14 +29,20 @@ function useHistory<T>(key: string, url: string, enabled: boolean) {
 
 function Orders() {
   const t = useT();
-  const q = useHistory<ClosedOrder[]>("orders", "/api/v1/history/orders/", true);
-  const [filter, setFilter] = useState("");
-  if (q.isLoading) return <Skeleton className="m-4 h-40" />;
-  const rows = (q.data ?? []).filter((o) => !filter || o.symbol.includes(filter.toUpperCase()));
+  const [draft, setDraft] = useState("");
+  const [symbol, setSymbol] = useState("");
+  const q = useQuery({ queryKey: ["history", "orders", symbol],
+    queryFn: () => v2.raw<OrderReport<ClosedOrder>>("/orders/history", { symbol }), staleTime: 30_000 });
+  const rows = q.data?.data ?? [];
   return (
     <>
-      <div className="p-4"><Input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder={t("market.search_pair", "Search pair…")} className="max-w-xs" /></div>
-      {!rows.length ? <EmptyState title={t("history.no_orders", "No closed or cancelled orders")} /> : (
+      <form className="flex flex-wrap gap-2 p-4" onSubmit={(e) => { e.preventDefault(); setSymbol(draft.trim().toUpperCase()); }}>
+        <Input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="BTC/USDT" aria-label={t("history.fetch_pair", "Fetch orders for pair")} className="max-w-xs" />
+        <Button type="submit" size="sm" variant="secondary">{t("history.fetch_pair", "Fetch orders for pair")}</Button>
+        {symbol && <Button size="sm" variant="outline" onClick={() => { setDraft(""); setSymbol(""); }}>{t("common.all", "All")}</Button>}
+      </form>
+      <OrderReportStatus sources={q.data?.sources} error={q.error} retry={() => void q.refetch()} />
+      {q.isLoading ? <Skeleton className="m-4 h-40" /> : !q.isError && !rows.length ? <EmptyState title={t("history.no_orders", "No closed or cancelled orders")} body={t("history.pair_hint", "Some exchanges require a pair. Enter one above to search its orders.")} /> : rows.length > 0 ? (
         <Table>
           <thead><tr><Th>{t("market.time", "Time")}</Th><Th>{t("market.pair", "Pair")}</Th><Th>{t("order.side", "Side")}</Th><Th>{t("order.type", "Type")}</Th><Th align="end">{t("order.price", "Price")}</Th><Th align="end">{t("order.avg", "Avg fill")}</Th><Th align="end">{t("order.amount", "Amount")}</Th><Th align="end">{t("order.fee", "Fee")}</Th><Th>{t("order.status", "Status")}</Th></tr></thead>
           <tbody>
@@ -54,9 +61,36 @@ function Orders() {
             ))}
           </tbody>
         </Table>
-      )}
+      ) : null}
     </>
   );
+}
+
+interface Fill { id: string; order?: string; exchange: string; symbol: string; timestamp: number; side: string; price: number; amount: number; cost: number; fee?: { cost?: number; currency?: string } }
+
+function Fills() {
+  const t = useT();
+  const [draft, setDraft] = useState("");
+  const [symbol, setSymbol] = useState("");
+  const q = useQuery({ queryKey: ["history", "fills", symbol],
+    queryFn: () => v2.raw<OrderReport<Fill>>("/orders/fills", { symbol }), staleTime: 30_000 });
+  return <>
+    <form className="flex flex-wrap gap-2 p-4" onSubmit={(e) => { e.preventDefault(); setSymbol(draft.trim().toUpperCase()); }}>
+      <Input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="BTC/USDT" aria-label={t("history.fetch_pair", "Fetch orders for pair")} className="max-w-xs" />
+      <Button type="submit" size="sm" variant="secondary">{t("history.fetch_pair", "Fetch orders for pair")}</Button>
+      {symbol && <Button size="sm" variant="outline" onClick={() => { setDraft(""); setSymbol(""); }}>{t("common.all", "All")}</Button>}
+    </form>
+    <OrderReportStatus sources={q.data?.sources} error={q.error} retry={() => void q.refetch()} />
+    {q.isLoading ? <Skeleton className="m-4 h-40" /> : !q.isError && !q.data?.data.length ? <EmptyState title={t("history.no_fills", "No exchange fills found")} body={t("history.pair_hint", "Some exchanges require a pair. Enter one above to search its orders.")} /> : q.data?.data.length ? <Table>
+      <thead><tr><Th>{t("market.time", "Time")}</Th><Th>{t("market.pair", "Pair")}</Th><Th>{t("order.side", "Side")}</Th><Th align="end">{t("order.price", "Price")}</Th><Th align="end">{t("order.amount", "Amount")}</Th><Th align="end">{t("tx.value", "Value")}</Th><Th>{t("order.fee", "Fee")}</Th></tr></thead>
+      <tbody>{q.data.data.map((fill) => <tr key={`${fill.exchange}-${fill.id}-${fill.order}`}>
+        <Td className="text-muted">{fmtDateTime(fill.timestamp)}</Td><Td className="font-medium">{fill.symbol} <span className="text-xs text-muted">{fill.exchange}</span></Td>
+        <Td><Badge tone={fill.side === "buy" ? "up" : "down"}>{fill.side}</Badge></Td>
+        <Td align="end" className="num">{fmtPrice(fill.price)}</Td><Td align="end" className="num">{fmtAmount(fill.amount)}</Td>
+        <Td align="end" className="num">{fmtUsd(fill.cost)}</Td><Td className="text-muted">{fill.fee?.cost ?? "—"} {fill.fee?.currency}</Td>
+      </tr>)}</tbody>
+    </Table> : null}
+  </>;
 }
 
 function PulseActivity() {
@@ -85,7 +119,7 @@ function PulseActivity() {
           {t("history.export", "Export CSV")}
         </Button>
       </div>
-      {q.isLoading ? <Skeleton className="m-4 h-40" /> : !q.data?.data.length ? <EmptyState title={t("dash.no_activity", "No trades yet")} /> : (
+      {q.isLoading ? <Skeleton className="m-4 h-40" /> : q.isError ? <ErrorState error={q.error} onRetry={() => void q.refetch()} /> : !q.data?.data.length ? <EmptyState title={t("dash.no_activity", "No trades yet")} /> : (
         <>
           <Table>
             <thead><tr><Th>{t("market.time", "Time")}</Th><Th>{t("market.pair", "Pair")}</Th><Th>{t("order.side", "Side")}</Th><Th align="end">{t("order.price", "Price")}</Th><Th align="end">{t("order.amount", "Amount")}</Th><Th align="end">{t("tx.value", "Value")}</Th><Th>{t("history.source", "Source")}</Th><Th>{t("order.status", "Status")}</Th></tr></thead>
@@ -121,6 +155,7 @@ function Ledger() {
   const t = useT();
   const q = useHistory<LedgerRow[]>("ledger", "/api/v1/history/trades/", true);
   if (q.isLoading) return <Skeleton className="m-4 h-40" />;
+  if (q.isError) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data?.length) return <EmptyState title={t("history.no_ledger", "No ledger entries (or this exchange does not provide them)")} />;
   return (
     <Table>
@@ -146,6 +181,7 @@ function Positions() {
   const t = useT();
   const q = useHistory<Position[]>("positions", "/api/v1/history/positions_history/", true);
   if (q.isLoading) return <Skeleton className="m-4 h-40" />;
+  if (q.isError) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data?.length) return <EmptyState title={t("history.no_positions", "No open derivative positions")} />;
   return (
     <Table>
@@ -171,6 +207,7 @@ function Funding() {
   const t = useT();
   const q = useHistory<TransferRow[]>("funding", "/api/v1/history/funding_history/", true);
   if (q.isLoading) return <Skeleton className="m-4 h-40" />;
+  if (q.isError) return <ErrorState error={q.error} onRetry={() => void q.refetch()} />;
   if (!q.data?.length) return <EmptyState title={t("wallet.no_transfers", "No transfers yet")} />;
   return (
     <Table>
@@ -214,6 +251,7 @@ export default function History() {
           tabs={[
             { value: "open", label: t("order.open", "Open orders") },
             { value: "orders", label: t("order.history", "Order history") },
+            { value: "fills", label: t("history.fills", "Exchange fills") },
             { value: "pulse", label: t("history.pulse", "PulseTrade activity") },
             { value: "ledger", label: t("history.ledger", "Ledger") },
             { value: "positions", label: t("history.positions", "Positions") },
@@ -222,6 +260,7 @@ export default function History() {
         />
         {tab === "open" && <OpenOrdersTable />}
         {tab === "orders" && <Orders />}
+        {tab === "fills" && <Fills />}
         {tab === "pulse" && <PulseActivity />}
         {tab === "ledger" && <Ledger />}
         {tab === "positions" && <Positions />}

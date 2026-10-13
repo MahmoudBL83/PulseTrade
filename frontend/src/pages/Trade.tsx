@@ -3,13 +3,14 @@ import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/auth";
 import { useT } from "../i18n";
-import { v1 } from "../lib/api";
+import { v2 } from "../lib/api";
 import { useCandles, useOrderBook, useTicker, useTrades } from "../lib/hooks";
 import { fmtAmount, fmtDateTime, fmtPrice, slugToSymbol, symbolToSlug } from "../lib/format";
-import { Badge, Card, CardHeader, EmptyState, Segmented, Skeleton, Table, Tabs, Td, Th } from "../components/ui";
+import { Badge, Card, CardHeader, EmptyState, ErrorState, Segmented, Skeleton, Table, Tabs, Td, Th } from "../components/ui";
 import { PriceChart } from "../components/charts";
 import { Change, OrderBookView, Price, SymbolPicker, TIMEFRAMES, TradesTape } from "../components/market";
-import { OpenOrdersTable, OrderForm, useFreeBalances } from "../components/orders";
+import { OpenOrdersTable, OrderForm, OrderReportStatus, useFreeBalances } from "../components/orders";
+import type { OrderReport } from "../components/orders";
 
 interface ClosedOrder {
   id: string;
@@ -28,11 +29,14 @@ interface ClosedOrder {
 
 function OrderHistory({ symbol }: { symbol: string }) {
   const t = useT();
-  const q = useQuery({ queryKey: ["order-history"], queryFn: () => v1.post<ClosedOrder[]>("/api/v1/history/orders/"), refetchInterval: 30_000 });
-  const rows = (q.data ?? []).filter((o) => o.symbol === symbol).slice(0, 50);
+  const q = useQuery({ queryKey: ["order-history", symbol], queryFn: () => v2.raw<OrderReport<ClosedOrder>>("/orders/history", { symbol, limit: 50 }), refetchInterval: 30_000 });
+  const rows = q.data?.data ?? [];
   if (q.isLoading) return <Skeleton className="m-4 h-32" />;
-  if (!rows.length) return <EmptyState title={t("order.no_history", "No orders for this pair yet")} />;
   return (
+    <>
+    <OrderReportStatus sources={q.data?.sources} error={q.error} retry={() => void q.refetch()} />
+    {!q.isError && !rows.length && <EmptyState title={t("order.no_history", "No orders for this pair yet")} />}
+    {rows.length > 0 &&
     <Table>
       <thead>
         <tr>
@@ -60,13 +64,16 @@ function OrderHistory({ symbol }: { symbol: string }) {
           </tr>
         ))}
       </tbody>
-    </Table>
+    </Table>}
+    </>
   );
 }
 
 function Balances() {
   const t = useT();
   const b = useFreeBalances();
+  if (b.isError) return <ErrorState error={b.error} onRetry={() => void b.refetch()} />;
+  if (b.isLoading) return <Skeleton className="m-4 h-32" />;
   const rows = Object.entries(b.data ?? {}).filter(([, v]) => v > 0).sort((a, z) => z[1] - a[1]);
   if (!rows.length) return <EmptyState title={t("trade.no_balance", "No free balances")} />;
   return (
@@ -133,7 +140,7 @@ export default function Trade() {
             { value: "balances", label: t("trade.balances", "Balances") },
           ]}
         />
-        {bottom === "open" && <OpenOrdersTable />}
+        {bottom === "open" && <OpenOrdersTable symbol={symbol} />}
         {bottom === "history" && <OrderHistory symbol={symbol} />}
         {bottom === "balances" && <Balances />}
       </Card>

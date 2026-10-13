@@ -287,6 +287,9 @@ export interface SmartTrade {
   tpTriggerType: string;
   isActive: boolean;
   deal_started: boolean;
+  buy_order_id?: string | null;
+  sell_order_ids?: string[] | null;
+  stop_loss_id?: string | null;
   buy_trigger_price: number;
   move_to_break_even: boolean;
   total_profit: number;

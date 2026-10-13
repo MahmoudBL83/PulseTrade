@@ -6,6 +6,7 @@ from crypto.models import Exchange,Post,Transaction
 from crypto.notify import send_notification
 from crypto.exchanges import connectExchange, nav_context
 from crypto.functions import build_exchange, find_exchange_row
+from crypto.order_history import collect
 
 
 def _body():
@@ -144,6 +145,8 @@ def cancel_order():
 
 def _require_exchange(user):
     if user.exchanges.filter(Exchange.isActive==True).first() is None and user.exchanges.first() is None:
+        if request.method == 'POST':
+            return jsonify({'ok': False, 'message': 'Connect an exchange first'}), 400
         return redirect(url_for('exchanges'))
     return None
 
@@ -162,6 +165,42 @@ def _trigger_text(order, quote):
     return f"{trig} {quote}" if trig else "--"
 
 
+def format_open_order(order):
+    quote = _quote(order.get('symbol'))
+    price = order.get('price')
+    return {
+        'id': order.get('id'), 'exchange': order.get('exchange'),
+        'symbol': order.get('symbol'), 'filled_amount': order.get('filled') or 0,
+        'order_type': order.get('type'), 'total_amount': order.get('amount'),
+        'remaining_amount': order.get('remaining'), 'cost': order.get('cost'),
+        'trigger_price': _trigger_text(order, quote),
+        'order_price': f"{price} {quote}" if price and price != -1 else "market",
+        'side': order.get('side'), 'status': order.get('status'),
+        'time': order.get('timestamp'), 'reduceOnly': order.get('reduceOnly'),
+    }
+
+
+def format_history_order(order):
+    quote = _quote(order.get('symbol'))
+    base = str(order.get('symbol') or "").split("/")[0]
+    price = order.get('price')
+    fee = order.get('fee') or {}
+    return {
+        'id': order.get('id'), 'exchange': order.get('exchange'),
+        'timestamp': order.get('timestamp'), 'datetime': order.get('datetime'),
+        'side': order.get('side'), 'order_type': order.get('type'),
+        'reduceOnly': order.get('reduceOnly'),
+        'stopLossPrice': order.get('stopLossPrice'), 'stopPrice': order.get('stopPrice'),
+        'takeProfitPrice': order.get('takeProfitPrice'),
+        'trigger_price': _trigger_text(order, quote),
+        'order_price': f"{price if price >= 0 else 'market'} {quote}" if price else "market",
+        'average': order.get('average'), 'status': order.get('status'),
+        'symbol': order.get('symbol'),
+        'amount': f"{abs(order.get('amount') or 0)} {base}",
+        'fee': f"{fee.get('cost')} {fee.get('currency')}" if fee.get('cost') is not None else 0,
+    }
+
+
 @app.route('/api/v1/history/open_orders/', methods=['GET','POST'])
 @jwt_required
 def history_open_orders():
@@ -169,58 +208,14 @@ def history_open_orders():
     missing = _require_exchange(current_user)
     if missing is not None:
         return missing
-    open_orders = []
-    trigger_orders_all = []
-    limit_market_orders_all = []
-    not_supported_open_orders = []
-    for exchange_user in current_user.exchanges.all():
-        try:
-            exchangeNow = build_exchange(exchange_user)
-            if not _has(exchangeNow, 'fetchOpenOrders'):
-                not_supported_open_orders.append(exchange_user.name)
-                continue
-            limit_market_orders = list(exchangeNow.fetch_open_orders())
-            trigger_orders = []
-            for params in ({"stop": True, "ordType": "limit"}, {"stop": True, "ordType": "market"}):
-                try:
-                    limit_market_orders += exchangeNow.fetch_open_orders(params=params)
-                except Exception:
-                    pass
-            try:
-                trigger_orders = exchangeNow.fetch_open_orders(params={"stop": True, "ordType": "trigger"})
-            except Exception:
-                pass
-            for x in limit_market_orders + trigger_orders:
-                x['exchange'] = exchange_user.name
-            limit_market_orders_all += _unique(limit_market_orders)
-            trigger_orders_all += _unique(trigger_orders)
-            open_orders += _unique(limit_market_orders + trigger_orders)
-        except Exception as e:
-            print(f"open orders for {exchange_user.name} unavailable: {e}")
-            not_supported_open_orders.append(exchange_user.name)
+    open_orders, sources = collect(current_user, 'open',
+                                   symbol=request.values.get('symbol'),
+                                   exchange_name=request.values.get('exchange'), conditional=True)
+    not_supported_open_orders = [s['exchange'] for s in sources if s['status'] != 'ok']
+    trigger_orders_all = [o for o in open_orders if o.get('triggerPrice') or o.get('stopPrice')]
+    limit_market_orders_all = [o for o in open_orders if o not in trigger_orders_all]
 
-    open_orders = sorted(_unique(open_orders), key = lambda i: i.get('timestamp') or 0,reverse=True)
-
-    formatted_history = []
-    for order in open_orders:
-        quote = _quote(order.get('symbol'))
-        price = order.get('price')
-        formatted_history.append({
-            'id': order.get('id'),
-            'exchange': order.get('exchange'),
-            'symbol': order.get('symbol'),
-            'filled_amount': order.get('filled') or 0,
-            'order_type': order.get('type'),
-            'total_amount': order.get('amount'),
-            'remaining_amount': order.get('remaining'),
-            'cost': order.get('cost'),
-            'trigger_price': _trigger_text(order, quote),
-            'order_price': f"{price} {quote}" if price and price != -1 else "market",
-            'side': order.get('side'),
-            'status': order.get('status'),
-            'time': order.get('timestamp'),
-            'reduceOnly': order.get('reduceOnly'),
-        })
+    formatted_history = [format_open_order(order) for order in open_orders]
 
     not_supported_open_orders = list(dict.fromkeys(not_supported_open_orders))
     if request.method == 'POST':
@@ -240,66 +235,14 @@ def history_orders():
     missing = _require_exchange(current_user)
     if missing is not None:
         return missing
-    history_orders = []
-    not_supported_closed_orders = []
-    closed_count = 0
-    cancelled_count = 0
-    for exchange_user in current_user.exchanges.all():
-        try:
-            exchangeNow = build_exchange(exchange_user)
-        except Exception as e:
-            not_supported_closed_orders.append(exchange_user.name)
-            continue
-        closed, cancelled = [], []
-        if _has(exchangeNow, 'fetchClosedOrders'):
-            try:
-                closed = list(exchangeNow.fetch_closed_orders())
-            except Exception:
-                not_supported_closed_orders.append(exchange_user.name)
-        else:
-            not_supported_closed_orders.append(exchange_user.name)
-        if _has(exchangeNow, 'fetchCanceledOrders'):
-            for kind in ("limit", "market", "trigger"):
-                try:
-                    cancelled += exchangeNow.fetch_canceled_orders(params={"stop": True, "ordType": kind})
-                except Exception:
-                    continue
-        else:
-            not_supported_closed_orders.append(exchange_user.name)
-        for x in closed + cancelled:
-            x['exchange'] = exchange_user.name
-        closed, cancelled = _unique(closed), _unique(cancelled)
-        closed_count += len(closed)
-        cancelled_count += len(cancelled)
-        history_orders += cancelled + closed
+    history_orders, sources = collect(current_user, 'history',
+                                      symbol=request.values.get('symbol'),
+                                      exchange_name=request.values.get('exchange'))
+    not_supported_closed_orders = [s['exchange'] for s in sources if s['status'] != 'ok']
+    closed_count = sum(o.get('status') == 'closed' for o in history_orders)
+    cancelled_count = sum(o.get('status') in ('canceled', 'cancelled') for o in history_orders)
 
-    history_orders = sorted(_unique(history_orders), key = lambda i: i.get('timestamp') or 0,reverse=True)
-
-    formatted_history = []
-    for order in history_orders:
-        quote = _quote(order.get('symbol'))
-        base = str(order.get('symbol') or "").split("/")[0]
-        price = order.get('price')
-        fee = order.get('fee') or {}
-        formatted_history.append({
-            'id': order.get('id'),
-            'exchange': order.get('exchange'),
-            'timestamp': order.get('timestamp'),
-            'datetime': order.get('datetime'),
-            'side': order.get('side'),
-            'order_type': order.get('type'),
-            'reduceOnly': order.get('reduceOnly'),
-            'stopLossPrice': order.get('stopLossPrice'),
-            'stopPrice': order.get('stopPrice'),
-            'takeProfitPrice': order.get('takeProfitPrice'),
-            'trigger_price': _trigger_text(order, quote),
-            'order_price': f"{price if price >= 0 else 'market'} {quote}" if price else "market",
-            'average': order.get('average'),
-            'status': order.get('status'),
-            'symbol': order.get('symbol'),
-            'amount': f"{abs(order.get('amount') or 0)} {base}",
-            'fee': f"{fee.get('cost')} {fee.get('currency')}" if fee.get('cost') is not None else 0,
-        })
+    formatted_history = [format_history_order(order) for order in history_orders]
 
     if request.method == 'POST':
         return Response(json.dumps(formatted_history, indent=4, default=str), content_type='application/json')

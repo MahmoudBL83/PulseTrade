@@ -156,13 +156,30 @@ interface OpenOrder {
   time: number;
 }
 
-export function useOpenOrders(enabled = true) {
+export interface OrderSource { exchange: string; status: "ok" | "partial" | "error" | "unsupported" | "pair_required"; count: number; symbols: string[]; message: string }
+export interface OrderReport<T> { data: T[]; sources: OrderSource[] }
+
+export function OrderReportStatus({ sources, error, retry }: { sources?: OrderSource[]; error?: Error | null; retry: () => void }) {
+  const t = useT();
+  if (error) return <Notice tone="error" className="m-4">{error.message} <Button size="xs" variant="outline" onClick={retry}>{t("common.retry", "Retry")}</Button></Notice>;
+  if (!sources?.length) return null;
+  return <div className="flex flex-wrap items-center gap-2 px-4 py-3 text-xs">
+    {sources.map((source) => <Badge key={source.exchange} tone={source.status === "ok" ? "up" : source.status === "partial" || source.status === "pair_required" ? "info" : "down"}>
+      {source.exchange}: {source.status === "ok" ? `${source.count} ${t("order.found", "found")}` : source.status.replace("_", " ")}
+    </Badge>)}
+    {sources.filter((source) => source.status !== "ok").map((source) =>
+      <span key={`${source.exchange}-error`} className="text-amber-500">{source.exchange}: {source.message}</span>)}
+    <Button size="xs" variant="secondary" onClick={retry}>{t("common.refresh", "Refresh")}</Button>
+  </div>;
+}
+
+export function useOpenOrders(enabled = true, symbol?: string, conditional = false) {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ["open-orders"],
-    queryFn: () => v1.post<OpenOrder[]>("/api/v1/history/open_orders/"),
+    queryKey: ["open-orders", symbol, conditional],
+    queryFn: () => v2.raw<OrderReport<OpenOrder>>("/orders/open", { symbol, conditional: conditional ? 1 : undefined }),
     enabled: enabled && !!user?.exchanges.length,
-    refetchInterval: 15_000,
+    refetchInterval: conditional ? 60_000 : 15_000,
   });
 }
 
@@ -170,7 +187,8 @@ export function OpenOrdersTable({ symbol }: { symbol?: string }) {
   const t = useT();
   const toast = useToast();
   const qc = useQueryClient();
-  const orders = useOpenOrders();
+  const [conditional, setConditional] = useState(false);
+  const orders = useOpenOrders(true, symbol, conditional);
   const cancel = useMutation({
     mutationFn: (o: OpenOrder) => v1.post<{ message: string }>("/api/v1/order/cancel", { id: o.id, symbol: o.symbol, exchange: o.exchange }),
     onSuccess: (r) => {
@@ -180,10 +198,14 @@ export function OpenOrdersTable({ symbol }: { symbol?: string }) {
     },
     onError: (e) => toast.error(e),
   });
-  const rows = useMemo(() => (orders.data ?? []).filter((o) => !symbol || o.symbol === symbol), [orders.data, symbol]);
-  if (!rows.length) return <EmptyState title={orders.isLoading ? t("common.loading", "Loading…") : t("order.no_open", "No open orders")} />;
+  const rows = useMemo(() => (orders.data?.data ?? []).filter((o) => !symbol || o.symbol === symbol), [orders.data, symbol]);
+  if (orders.isLoading) return <EmptyState title={t("common.loading", "Loading…")} />;
   return (
-    <Table>
+    <>
+    <div className="flex items-center gap-3 px-4 pt-3"><Switch checked={conditional} onChange={setConditional} label={t("order.include_triggers", "Include separate trigger orders")} /></div>
+    <OrderReportStatus sources={orders.data?.sources} error={orders.error} retry={() => void orders.refetch()} />
+    {!orders.isError && !rows.length ? <EmptyState title={t("order.no_open", "No open orders")} /> : null}
+    {rows.length > 0 && <Table>
       <thead>
         <tr>
           <Th>{t("market.time", "Time")}</Th>
@@ -214,7 +236,8 @@ export function OpenOrdersTable({ symbol }: { symbol?: string }) {
           </tr>
         ))}
       </tbody>
-    </Table>
+    </Table>}
+    </>
   );
 }
 

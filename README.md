@@ -5,6 +5,25 @@ portfolio analytics, paper trading, backtesting, and multi-exchange access
 through ccxt. The original Flask/Jinja interface and API remain available.
 The React interface is served at `/app/`.
 
+## Exchange order reports
+
+The History page shows open orders, closed and cancelled orders, and private
+trade fills from connected exchanges. The Trade page fetches orders for the
+selected pair. Some CCXT exchanges, including Binance spot for closed orders,
+require a symbol. PulseTrade tries recent account pairs (up to eight per
+exchange); enter a pair such as `BTC/USDT` in History to fetch older or unseen
+pairs. Derivative symbols such as `BTC/USDT:USDT` are accepted.
+
+`GET /api/v2/orders/open`, `/api/v2/orders/history`, and `/api/v2/orders/fills`
+accept optional `exchange`, `symbol`, and `limit` query parameters. The open
+orders report also accepts `conditional=1` for venues with a separate trigger
+order book. This makes additional exchange calls and can be enabled in the UI.
+Responses include `data` and a `sources` array with each exchange's status and any
+permission, network, unsupported-report, or pair-required message. The old
+`/api/v1/history/*` endpoints remain available and keep their array format.
+Exchange history may be limited by the venue's retention period and API key
+permissions; fills are separate from completed order records.
+
 ## Run locally
 
 Use Python 3.12 or 3.13 and Node.js 22 or newer. Copy `.env.example` to
